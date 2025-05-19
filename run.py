@@ -27,10 +27,11 @@ def conn_db():
 def index():
     return render_template("index.html")
 
+# EVENT画面
+@app.route('/event')
+def event():
+    return render_template("event.html")
 
-
-
-aaaaaaaaaaaaaaaaaa
 
 
 
