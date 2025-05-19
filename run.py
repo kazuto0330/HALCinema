@@ -25,7 +25,7 @@ def conn_db():
 # TOP画面
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("top.html")
 
 
 
