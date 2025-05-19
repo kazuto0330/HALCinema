@@ -1,53 +1,55 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>映画情報ページ</title>
-  <link rel="stylesheet" href="css/movie_info.css" />
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/movie_information.css') }}">
 </head>
+
 <body>
-<header>
-  <div class="headerContainer">
-    <a href="">
-      <img src="images/logosiro.png" alt="ロゴ" width="130px">
-    </a>
-    <!-- <div class="siteName">HALシネマ</div> -->
-    <nav class="nav">
-      <ul>
-        <li>
-          <a href="#">
-            上映中<br/>
-            <span class="subtext">Now playing</span>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            公開予定
-            <span class="subtext">Coming Soon</span>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            劇場を探す
-            <span class="subtext">Theater LIst</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-    <div class="userIcon">
-      <img src="images/genta.jpg" alt="ユーザーアイコン" />
+  <header>
+    <div class="headerContainer">
+      <a href="">
+        <img src="image/logosiro.png" alt="ロゴ" width="130px">
+      </a>
+      <!-- <div class="siteName">HALシネマ</div> -->
+      <nav class="nav">
+        <ul>
+          <li>
+            <a href="#">
+              上映中<br />
+              <span class="subtext">Now playing</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              公開予定
+              <span class="subtext">Coming Soon</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              劇場を探す
+              <span class="subtext">Theater LIst</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="userIcon">
+        <img src="image/genta.jpg" alt="ユーザーアイコン" />
+      </div>
     </div>
-  </div>
-</header>
+  </header>
   <main>
     <section class="movieCard">
-      <img src="images/conan.png" alt="映画ポスター" class="moviePoster" />
+      <img src="image/conan.png" alt="映画ポスター" class="moviePoster" />
       <div class="movieInfo">
         <h2 class="movieTitle">名探偵コナン<br>隻眼の残像</h2>
         <p class="movieRelease">公開日: 2025年6月1日</p>
         <p class="movieDescription">
-          長野県・八ヶ岳連峰未宝岳。長野県警の大和敢助が雪山で“ある男”を追っていた時、不意に何者かの影が敢助の視界に。気をとられた瞬間、“ある男”が放ったライフル弾が敢助の左眼をかすめ、大きな地響きとともに雪崩が発生。そのまま敢助を飲み込んでしまい......。10カ月後。国立天文台野辺山の施設研究員が何者かに襲われたという通報を受け、雪崩から奇跡的に生還した敢助と、上原由衣が現場へ駆けつけた。事情聴取のさなか天文台の巨大パラボラアンテナが動き出すと...... 
+          長野県・八ヶ岳連峰未宝岳。長野県警の大和敢助が雪山で“ある男”を追っていた時、不意に何者かの影が敢助の視界に。気をとられた瞬間、“ある男”が放ったライフル弾が敢助の左眼をかすめ、大きな地響きとともに雪崩が発生。そのまま敢助を飲み込んでしまい......。10カ月後。国立天文台野辺山の施設研究員が何者かに襲われたという通報を受け、雪崩から奇跡的に生還した敢助と、上原由衣が現場へ駆けつけた。事情聴取のさなか天文台の巨大パラボラアンテナが動き出すと......
         </p>
         <p class="movieTime">上映時間 : 110分</p>
       </div>
@@ -211,7 +213,7 @@
       </div>
 
       <div class="reservationSchedule hidden" id="schedule-Thu">
-        <h2>11/14(木)　　　　　　　　　　　　　　　　　予約状況</h2>
+        <h2>11/14(木木)　　　　　　　　　　　　　　　　　予約状況</h2>
         <hr>
         <div class="slot">
           <span class="label">A</span>
@@ -351,7 +353,7 @@
         </div>
       </div>
 
-      
+
     </section>
 
     <div class="eiga">&copy; 2025 青山剛昌／名探偵コナン製作委員会</div>
@@ -360,10 +362,13 @@
 
   <footer>
     <a href="">
-      <img src="images/logosiro.png" alt="ロゴ" width="100px">
+      <img src="image/logosiro.png" alt="ロゴ" width="100px">
     </a>
     <p> &copy; 2025 HALシネマ. All rights reserved.</p>
   </footer>
 </body>
-<script src="js/Jouhou.js"></script>
+
+<script src="{{ url_for('static', filename='js/movie_information.js') }}"></script>
+
+
 </html>

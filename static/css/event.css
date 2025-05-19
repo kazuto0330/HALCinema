@@ -1,0 +1,114 @@
+body{
+    margin: 0;
+    padding: 0;
+    background-color: #000918;
+    color: white;
+}
+/* ----------------------------------------------------------------ヘッダー------------------------------------------------------------------------- */
+
+#Header{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 50px;
+    margin-bottom: 10px;
+    background-color: #000610;
+}
+#HeaderRogo{
+    margin-left: 20px;
+    width: 100px;
+
+}
+.HeaderButton{
+    padding: 5px 10px;
+    margin: 0 10px;
+    text-align: center;
+    line-height: 0.8rem;
+    border-radius: 10px;
+}
+.HeaderButton:hover{
+    background-color: #ffffff2a;
+}
+.HeaderButtonText{
+    font-size: 0.9rem;
+}
+.HeaderButtonEnText{
+    font-size: 0.7rem;
+}
+#HeaderIcon{
+    margin: 0 15px 0 auto;
+    opacity: 0.9;
+}
+#HeaderIcon:hover{
+    opacity: 1;
+}
+
+#IconImg{
+    height: 42px;
+}
+
+body{
+    width: 100%;
+}
+a{
+    color: white;
+    text-decoration: none;
+}
+
+#MainContent{
+    display: flex;
+    width: 80%;
+    max-width: 1650px;
+    margin: 0 auto;
+}
+#Left{
+    width: 70%;
+}
+#MainImg{
+    width: 100%;
+}
+#Title{
+    font-size: 1.6rem;
+}
+#Date{
+    margin: 10px 0 0 0;
+}
+#TagList{
+    display: flex;
+    margin: 10px 0 0 0;
+}
+.Tag{
+    padding: 2px 8px 5px 8px;
+    margin: 0 15px 0 0;
+    border-radius: 15px;
+    background-color: #2e2e2e;
+    user-select: none;
+}
+#MainText{
+    margin: 25px 0 0 0 ;
+    font-size: 1.2rem;
+    
+}
+
+
+
+
+#Right{
+    width: 30%;
+    margin-left: 2vw;
+}
+.Event{
+    display: flex;
+    margin-bottom: 20px;
+}
+.EventImg{
+    width: 45%;
+}
+.EventImg img{
+    width: 100%;
+}
+.EventText{
+    width: 55%;
+    margin-left: 5px;
+    font-size: 0.9rem;
+}
