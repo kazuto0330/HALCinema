@@ -1,0 +1,36 @@
+@charset "utf-8";
+
+body{
+  font-family: 'メイリオ','Meiryo','Hiragino Kaku Gothic Pro',sans-serif;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ########### 599px以下(smartphone) ########### */
+@media (max-width: 599px) {}
+
+
+
+/* ########### 600px以上～768px以下(tablet) ########### */
+@media (min-width: 600px) and (max-width: 768px) {}
+
+
+
+/* ########### 769px以上(pc) ########### */
+@media (min-width: 769px) {}
+
+
+
+/* ########### 1000px以上(pc) ########### */
+@media (min-width: 1000px) {}

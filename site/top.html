@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/top.css">
+    <title>HALシネマ トップページ</title>
+</head>
+<body>
+    <div id="Header">
+        <a href=""><div id="HeaderRogo">HALシネマ（仮ロゴ）</div></a>
+
+        <a href=""><div class="HeaderButton">
+            <div class="HeaderButtonText">上映中</div>
+            <div class="HeaderButtonEnText">Now Playing</div>
+        </div></a>
+        <a href=""><div class="HeaderButton">
+            <div class="HeaderButtonText">公開予定</div>
+            <div class="HeaderButtonEnText">Coming Soon</div>
+        </div></a>
+        <a href=""><div class="HeaderButton">
+            <div class="HeaderButtonText">劇場を探す</div>
+            <div class="HeaderButtonEnText">Theater List</div>
+        </div></a>
+
+        <a href="" id="HeaderIcon"><img src="images/kkrn_icon_user_3.png" alt="" id="IconImg"></a>
+    </div>
+
+
+<!-- -------------------スライドショー-------------------------- -->
+    <div class="slideshow-container">
+        <div class="slides-wrapper">
+            <div class="mySlides">
+                <a href=""><img src="images/kishiberohan_bnr1920_960.jpg" alt="岸辺露伴"></a>
+            </div>
+            <div class="mySlides">
+                <a href=""><img src="images/MEGAMI_109_POP_W1920×H960_W_B.jpg" alt="MEGAMI"></a>
+            </div>
+            <div class="mySlides">
+                <a href=""><img src="images/missionimpossible2025_bnr1920_960.jpg" alt="ミッション：インポッシブル"></a>
+            </div>
+            <div class="mySlides">
+                <a href=""><img src="images/Paddington3_109conce_W1920xH960.jpg" alt="パディントン3"></a>
+            </div>
+            <div class="mySlides">
+                <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt="名古屋ScreenX"></a>
+            </div>
+        </div>
+
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    </div>
+
+
+
+<!-- -----------------------メインコンテンツ------------------------ -->
+
+    <div class="ContentContainer">
+        <div class="ContentBox">
+            <div class="ContentText">人気の映画</div>
+            <a href="" class="ContentTextMore"><div>もっとみる</div></a>
+        </div>
+
+        <div class="Content">
+            <div class="ScrollButton LeftButton">
+                <div>
+                    <div class="arrow-line top"></div>
+                    <div class="arrow-line bottom"></div>
+                </div>
+            </div>
+
+            <div class="ScrollContainer CssOnly JsScroll">
+                <div class="ImageWrapper">
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="images/320.jpg" alt=""></a>
+                </div>
+            </div>
+            <div class="ScrollButton RightButton">
+                <div>
+                    <div class="arrow-line top1"></div>
+                    <div class="arrow-line bottom1"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+        <div class="ContentContainer">
+        <div class="ContentBox">
+            <div class="ContentText">イベント</div>
+            <a href="" class="ContentTextMore"><div>もっとみる</div></a>
+        </div>
+        <div class="Content">
+            <div class="ScrollButton LeftButton EventButton">
+                <div>
+                    <div class="arrow-line top"></div>
+                    <div class="arrow-line bottom"></div>
+                </div>
+            </div>
+            <div class="ScrollContainer CssOnly JsScroll">
+                <div class="ImageWrapper Event">
+                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
+                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
+                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
+                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
+                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
+                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
+                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
+
+                </div>
+            </div>
+            <div class="ScrollButton RightButton EventButton">
+                <div>
+                    <div class="arrow-line top1"></div>
+                    <div class="arrow-line bottom1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="ContentContainer">
+        <div class="ContentBox">
+            <div class="ContentText">公開予定の映画</div>
+            <a href="" class="ContentTextMore"><div>もっとみる</div></a>
+        </div>
+        <div class="Content">
+            <div class="ScrollButton LeftButton">
+                <div>
+                    <div class="arrow-line top"></div>
+                    <div class="arrow-line bottom"></div>
+                </div>
+            </div>
+
+            <div class="ScrollContainer CssOnly JsScroll">
+                <div class="ImageWrapper">
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="images/320.jpg" alt=""><div>2025年5月23日公開</div></a>
+                </div>
+            </div>
+            <div class="ScrollButton RightButton">
+                <div>
+                    <div class="arrow-line top1"></div>
+                    <div class="arrow-line bottom1"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- -----------------------------フッター------------------------------------- -->
+    <div id="Footer">
+        <!-- <a href=""><img src="" alt=""></a> -->
+        <a href="" id="FooterLogo"><div>HALシネマ</div></a>
+        <div id="Copyright">© 2025 HALシネマ All Rights Reserved.</div>
+    </div>
+
+
+
+
+    <script src="js/top.js" defer></script>
+
+
+</body>
+</html>
