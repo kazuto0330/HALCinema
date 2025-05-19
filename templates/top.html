@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/top.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
     <title>HALシネマ トップページ</title>
 </head>
 
@@ -15,19 +15,19 @@
     <div class="slideshow-container">
         <div class="slides-wrapper">
             <div class="mySlides">
-                <a href=""><img src="images/kishiberohan_bnr1920_960.jpg" alt="岸辺露伴"></a>
+                <a href=""><img src="{{ url_for('static', filename='images/kishiberohan_bnr1920_960.jpg') }}" alt="岸辺露伴"></a>
             </div>
             <div class="mySlides">
-                <a href=""><img src="images/MEGAMI_109_POP_W1920×H960_W_B.jpg" alt="MEGAMI"></a>
+                <a href=""><img src="{{ url_for('static', filename='images/MEGAMI_109_POP_W1920×H960_W_B.jpg') }}" alt="MEGAMI"></a>
             </div>
             <div class="mySlides">
-                <a href=""><img src="images/missionimpossible2025_bnr1920_960.jpg" alt="ミッション：インポッシブル"></a>
+                <a href=""><img src="{{ url_for('static', filename='images/missionimpossible2025_bnr1920_960.jpg') }}" alt="ミッション：インポッシブル"></a>
             </div>
             <div class="mySlides">
-                <a href=""><img src="images/Paddington3_109conce_W1920xH960.jpg" alt="パディントン3"></a>
+                <a href=""><img src="{{ url_for('static', filename='images/Paddington3_109conce_W1920xH960.jpg') }}" alt="パディントン3"></a>
             </div>
             <div class="mySlides">
-                <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt="名古屋ScreenX"></a>
+                <a href=""><img src="{{ url_for('static', filename='images/nagoyaScreenX.jpg') }}" alt="名古屋ScreenX"></a>
             </div>
         </div>
 
@@ -57,18 +57,18 @@
 
             <div class="ScrollContainer CssOnly JsScroll">
                 <div class="ImageWrapper">
-                    <a href=""><img src="images/320.jpg" alt=""></a>
-                    <a href=""><img src="images/320.jpg" alt=""></a>
-                    <a href=""><img src="images/320.jpg" alt=""></a>
-                    <a href=""><img src="images/320.jpg" alt=""></a>
-                    <a href=""><img src="images/320.jpg" alt=""></a>
-                    <a href=""><img src="images/320.jpg" alt=""></a>
-                    <a href=""><img src="images/320.jpg" alt=""></a>
-                    <a href=""><img src="images/320.jpg" alt=""></a>
-                    <a href=""><img src="images/320.jpg" alt=""></a>
-                    <a href=""><img src="images/320.jpg" alt=""></a>
-                    <a href=""><img src="images/320.jpg" alt=""></a>
-                    <a href=""><img src="images/320.jpg" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
                 </div>
             </div>
             <div class="ScrollButton RightButton">
@@ -96,13 +96,12 @@
             </div>
             <div class="ScrollContainer CssOnly JsScroll">
                 <div class="ImageWrapper Event">
-                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
-                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
-                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
-                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
-                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
-                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
-                    <a href=""><img src="images/nagoyaScreenXバナー.jpg" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a>
 
                 </div>
             </div>
@@ -131,42 +130,43 @@
 
             <div class="ScrollContainer CssOnly JsScroll">
                 <div class="ImageWrapper">
-                    <a href=""><img src="images/320.jpg" alt="">
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
-                    <a href=""><img src="images/320.jpg" alt="">
+                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
-                    <a href=""><img src="images/320.jpg" alt="">
+                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
-                    <a href=""><img src="images/320.jpg" alt="">
+                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
-                    <a href=""><img src="images/320.jpg" alt="">
+                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
-                    <a href=""><img src="images/320.jpg" alt="">
+                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
-                    <a href=""><img src="images/320.jpg" alt="">
+                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
-                    <a href=""><img src="images/320.jpg" alt="">
+                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
-                    <a href=""><img src="images/320.jpg" alt="">
+                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
-                    <a href=""><img src="images/320.jpg" alt="">
+                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
-                    <a href=""><img src="images/320.jpg" alt="">
+                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
-                    <a href=""><img src="images/320.jpg" alt="">
+                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
                         <div>2025年5月23日公開</div>
                     </a>
+                    
                 </div>
             </div>
             <div class="ScrollButton RightButton">

@@ -8,47 +8,7 @@ a{
     color: white;
     text-decoration: none;
 }
-/* ----------------------------------------------------------------ヘッダー------------------------------------------------------------------------- */
-#Header{
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 50px;
-    margin-bottom: 10px;
-    background-color: #000610;
-}
-#HeaderRogo{
-    margin-left: 20px;
-    width: 100px;
 
-}
-.HeaderButton{
-    padding: 5px 10px;
-    margin: 0 10px;
-    text-align: center;
-    line-height: 0.8rem;
-    border-radius: 10px;
-}
-.HeaderButton:hover{
-    background-color: #ffffff2a;
-}
-.HeaderButtonText{
-    font-size: 0.9rem;
-}
-.HeaderButtonEnText{
-    font-size: 0.7rem;
-}
-#HeaderIcon{
-    margin: 0 15px 0 auto;
-    opacity: 0.9;
-}
-#HeaderIcon:hover{
-    opacity: 1;
-}
-
-#IconImg{
-    height: 42px;
-}
 /* ----------------------------------------------------------------スライドショー------------------------------------------------------------------------- */
 .slideshow-container {
     width: 99vw; /* スライドショー全体の幅 */
@@ -198,6 +158,7 @@ a{
     border: transparent;
     color: white;
     border-radius: 5px;
+    z-index: 100;
 }
 .ScrollButton:hover{
     .arrow-line{
@@ -256,7 +217,7 @@ a{
 }
 
 .ScrollButton:active {
-     background-color: #ccc;
+     background-color: #1f1f1fb2;
 }
 
 
