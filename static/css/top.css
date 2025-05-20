@@ -241,24 +241,6 @@ a{
 }
 
 
-/* ----------------------------------------------------------------フッター------------------------------------------------------------------------- */
-#Footer{
-    margin-top: 100px;
-    padding: 20px 0;
-    background-color: #000624;
-}
-#FooterLogo{
-    margin: 0 auto;
-}
-#FooterLogo div{
-    width: fit-content;
-    margin: 0 auto;
-}
-#Copyright{
-    margin: 15px 0 0 0;
-    text-align: center;
-}
-
 
 
 @media (max-width: 840px){
