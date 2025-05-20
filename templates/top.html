@@ -11,33 +11,30 @@
 <body>
     {% include '_header.html' %}
 
-    <!-- -------------------スライドショー-------------------------- -->
-    <div class="slideshow-container">
-        <div class="slides-wrapper">
-            <div class="mySlides">
+    <div class="SlideshowContainer">
+        <div class="SlidesWrapper">
+            <div class="MySlides">
                 <a href=""><img src="{{ url_for('static', filename='images/kishiberohan_bnr1920_960.jpg') }}" alt="岸辺露伴"></a>
             </div>
-            <div class="mySlides">
+            <div class="MySlides">
                 <a href=""><img src="{{ url_for('static', filename='images/MEGAMI_109_POP_W1920×H960_W_B.jpg') }}" alt="MEGAMI"></a>
             </div>
-            <div class="mySlides">
+            <div class="MySlides">
                 <a href=""><img src="{{ url_for('static', filename='images/missionimpossible2025_bnr1920_960.jpg') }}" alt="ミッション：インポッシブル"></a>
             </div>
-            <div class="mySlides">
+            <div class="MySlides">
                 <a href=""><img src="{{ url_for('static', filename='images/Paddington3_109conce_W1920xH960.jpg') }}" alt="パディントン3"></a>
             </div>
-            <div class="mySlides">
+            <div class="MySlides">
                 <a href=""><img src="{{ url_for('static', filename='images/nagoyaScreenX.jpg') }}" alt="名古屋ScreenX"></a>
             </div>
         </div>
 
-        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+        <a class="Prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="Next" onclick="plusSlides(1)">&#10095;</a>
     </div>
 
 
-
-    <!-- -----------------------メインコンテンツ------------------------ -->
 
     <div class="ContentContainer">
         <div class="ContentBox">
@@ -50,8 +47,8 @@
         <div class="Content">
             <div class="ScrollButton LeftButton">
                 <div>
-                    <div class="arrow-line top"></div>
-                    <div class="arrow-line bottom"></div>
+                    <div class="ArrowLine Top"></div>
+                    <div class="ArrowLine Bottom"></div>
                 </div>
             </div>
 
@@ -69,12 +66,13 @@
                     <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
                     <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
                     <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""></a>
                 </div>
             </div>
             <div class="ScrollButton RightButton">
                 <div>
-                    <div class="arrow-line top1"></div>
-                    <div class="arrow-line bottom1"></div>
+                    <div class="ArrowLine Top1"></div>
+                    <div class="ArrowLine Bottom1"></div>
                 </div>
             </div>
         </div>
@@ -90,8 +88,8 @@
         <div class="Content">
             <div class="ScrollButton LeftButton EventButton">
                 <div>
-                    <div class="arrow-line top"></div>
-                    <div class="arrow-line bottom"></div>
+                    <div class="ArrowLine Top"></div>
+                    <div class="ArrowLine Bottom"></div>
                 </div>
             </div>
             <div class="ScrollContainer CssOnly JsScroll">
@@ -107,8 +105,8 @@
             </div>
             <div class="ScrollButton RightButton EventButton">
                 <div>
-                    <div class="arrow-line top1"></div>
-                    <div class="arrow-line bottom1"></div>
+                    <div class="ArrowLine Top1"></div>
+                    <div class="ArrowLine Bottom1"></div>
                 </div>
             </div>
         </div>
@@ -123,69 +121,36 @@
         <div class="Content">
             <div class="ScrollButton LeftButton">
                 <div>
-                    <div class="arrow-line top"></div>
-                    <div class="arrow-line bottom"></div>
+                    <div class="ArrowLine Top"></div>
+                    <div class="ArrowLine Bottom"></div>
                 </div>
             </div>
 
             <div class="ScrollContainer CssOnly JsScroll">
                 <div class="ImageWrapper">
-                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                                        <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt="">
-                        <div>2025年5月23日公開</div>
-                    </a>
-                    
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""><div>2025年5月23日公開</div></a>
+                    <a href=""><img src="{{ url_for('static', filename='images/320.jpg') }}" alt=""><div>2025年5月23日公開</div></a>
+
+
                 </div>
             </div>
             <div class="ScrollButton RightButton">
                 <div>
-                    <div class="arrow-line top1"></div>
-                    <div class="arrow-line bottom1"></div>
+                    <div class="ArrowLine Top1"></div>
+                    <div class="ArrowLine Bottom1"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- -----------------------------フッター------------------------------------- -->
-    <div id="Footer">
-        <!-- <a href=""><img src="" alt=""></a> -->
-        <a href="" id="FooterLogo">
-            <div>HALシネマ</div>
-        </a>
-        <div id="Copyright">© 2025 HALシネマ All Rights Reserved.</div>
-    </div>
+    {% include '_footer.html' %}
 
 
 
