@@ -75,6 +75,20 @@ a{
 .prev:hover, .next:hover {
     background-color: rgba(0,0,0,0.3);
 }
+@media (max-width: 620px) {
+    .mySlides {
+        flex: 0 0 100vw; /* 画面幅いっぱいに */
+        margin: 0; /* マージンなし */
+    }
+
+    /* ボタンの位置を調整する場合 */
+    .prev {
+        left: 5px;
+    }
+    .next {
+        right: 5px;
+    }
+}
 /* ----------------------------------------------------------------メインコンテンツ------------------------------------------------------------------------- */
 .ContentContainer{
     margin: 40px 0;
@@ -248,6 +262,12 @@ a{
 
 
 @media (max-width: 840px){
+    .ContentText{
+        font-size: 1.3rem;
+    }
+    .ContentTextMore{
+        font-size: 0.9rem;
+    }
     .ImageWrapper a img{
         height: 25vw;
     }
@@ -260,5 +280,29 @@ a{
     }
     .EventButton{
     height: 15vw;
+    }
+}
+@media (max-width: 520px){
+    .ContentContainer{
+        margin: 20px 0;
+    }
+    .ImageWrapper{
+        padding-left: 20px;
+    }
+    .ContentText{
+        font-size: 1.2rem;
+    }
+    .ContentTextMore{
+        font-size: 0.85rem;
+    }
+    .ImageWrapper a img{
+        height: 30vw;
+    }
+
+    .Event a img{
+        height: 20vw;
+    }
+    .ScrollButton{
+    display: none;
     }
 }

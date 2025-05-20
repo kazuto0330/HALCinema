@@ -82,3 +82,14 @@ header {
         height: 35px;
     }
 }
+@media (max-width: 520px){
+    header{
+        padding: 5px 10px 5px 0;
+    }
+    .Text{
+        font-size: 0.8rem;
+    }
+    .SubText{
+        font-size: 0.5rem;
+    }
+}
