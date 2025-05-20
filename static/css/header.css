@@ -63,4 +63,8 @@ header {
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
+    opacity: 0.8;
+}
+.userIcon img:hover{
+    opacity: 1;
 }

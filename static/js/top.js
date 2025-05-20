@@ -112,3 +112,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+// ------------------------公開日付の処理--------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    const targetSelector = '.ImageWrapper a div';
+    const yearPattern = /\b20\d{2}年\b/g;
+    const breakpoint = 1000;
+
+    function toggleYearDisplay(element, hide) {
+        if (!element.dataset.originalHtml) {
+            element.dataset.originalHtml = element.innerHTML;
+        }
+        element.innerHTML = hide ? element.dataset.originalHtml.replace(yearPattern, '') : element.dataset.originalHtml;
+    }
+
+    function handleResize() {
+        const hideYear = window.innerWidth <= breakpoint;
+        document.querySelectorAll(targetSelector).forEach(element => {
+            toggleYearDisplay(element, hideYear);
+        });
+    }
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+});

@@ -157,7 +157,6 @@ a{
     background-color: transparent;
     border: transparent;
     color: white;
-    border-radius: 5px;
     z-index: 100;
 }
 .ScrollButton:hover{
@@ -213,7 +212,7 @@ a{
 }
 
 .ScrollButton:hover {
-     background-color: #00050eb2;
+     background-color: #00050ed2;
 }
 
 .ScrollButton:active {
@@ -244,4 +243,22 @@ a{
 #Copyright{
     margin: 15px 0 0 0;
     text-align: center;
+}
+
+
+
+@media (max-width: 840px){
+    .ImageWrapper a img{
+        height: 25vw;
+    }
+
+    .Event a img{
+        height: 15vw;
+    }
+    .ScrollButton {
+    height: 25vw;
+    }
+    .EventButton{
+    height: 15vw;
+    }
 }
