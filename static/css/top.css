@@ -1,45 +1,47 @@
-body{
+body {
     margin: 0;
     padding: 0;
     background-color: #000918;
     color: white;
 }
-a{
+
+a {
     color: white;
     text-decoration: none;
 }
 
 /* ----------------------------------------------------------------スライドショー------------------------------------------------------------------------- */
-.slideshow-container {
+.SlideshowContainer {
     width: 99vw; /* スライドショー全体の幅 */
     position: relative;
     overflow: hidden;
 }
 
-.slides-wrapper {
+.SlidesWrapper {
     /* widthはJavaScriptで動的に計算 */
     display: flex;
-    transition: transform 0.3s ease-in-out; 
+    transition: transform 0.3s ease-in-out;
     align-items: center; /* 画像を縦方向中央に揃える */
 }
 
-.mySlides {
-    flex: 0 0 65vw;/* スライドの幅 */
+.MySlides {
+    flex: 0 0 65vw; /* スライドの幅 */
     margin: 0 0.25vw;
     box-sizing: border-box;
     overflow: hidden;
-    opacity: 0.3;/*不透明度*/
+    opacity: 0.3; /*不透明度*/
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
-.mySlides:hover{
+
+.MySlides:hover {
     opacity: 0.5;
 }
 
-.mySlides.active {
+.MySlides.active {
     opacity: 1;
 }
 
-.mySlides img {
+.MySlides img {
     display: block;
     width: 100%;
     height: auto;
@@ -47,7 +49,8 @@ a{
 }
 
 /* 前後のボタンのスタイル */
-.prev, .next {
+.Prev,
+.Next {
     cursor: pointer;
     position: absolute;
     top: 50%;
@@ -64,55 +67,64 @@ a{
     text-decoration: none;
 }
 
-.prev {
+.Prev {
     left: 10px;
 }
 
-.next {
+.Next {
     right: 10px;
 }
 
-.prev:hover, .next:hover {
-    background-color: rgba(0,0,0,0.3);
+.Prev:hover,
+.Next:hover {
+    background-color: rgba(0, 0, 0, 0.3);
 }
+
 @media (max-width: 620px) {
-    .mySlides {
+    .MySlides {
         flex: 0 0 100vw; /* 画面幅いっぱいに */
         margin: 0; /* マージンなし */
     }
 
     /* ボタンの位置を調整する場合 */
-    .prev {
+    .Prev {
         left: 5px;
     }
-    .next {
+
+    .Next {
         right: 5px;
     }
 }
+
 /* ----------------------------------------------------------------メインコンテンツ------------------------------------------------------------------------- */
-.ContentContainer{
+.ContentContainer {
     margin: 40px 0;
 }
 
-.ContentBox{
+.ContentBox {
     display: flex;
     align-items: center;
 }
-.ContentText{
+
+.ContentText {
     margin-left: 25px;
     font-size: 1.5rem;
 }
-.ContentTextMore{
+
+.ContentTextMore {
     margin: 0 25px 0 auto;
     font-size: 1rem;
 }
-.ContentTextMore:hover{
+
+.ContentTextMore:hover {
     color: #bbb;
 }
-.Content{
+
+.Content {
     display: flex;
     position: relative;
 }
+
 .ScrollContainer {
     margin: 10px 0 0 0;
     overflow-y: hidden; /* スクロール非表示 */
@@ -134,15 +146,18 @@ a{
     margin-right: 20px;
     object-fit: cover; /* 要素に合わせて画像を拡大縮小し、アスペクト比を維持（はみ出しは切り取る） */
     border-radius: 5px;
-    box-shadow: 3px 5px 10px rgba(255, 255, 255, 0.1); 
+    box-shadow: 3px 5px 10px rgba(255, 255, 255, 0.1);
 }
-.ImageWrapper a img:hover{
+
+.ImageWrapper a img:hover {
     transform: scale(1.1);
 }
-.Event a img{
+
+.ImageWrapper.Event a img {
     height: 10vw;
 }
-.ImageWrapper a div{
+
+.ImageWrapper a div {
     margin-right: 20px;
     text-align: center;
     font-size: 0.8rem;
@@ -150,9 +165,9 @@ a{
 
 
 .GalleryWithButtons .ScrollContainer.JsScroll {
-     width: calc(100% - 80px); /* 全体幅から左右のボタン幅を引く（ボタン幅に合わせて調整） */
-     margin: 0 10px;
-     padding: 10px 0;
+    width: calc(100% - 80px); /* 全体幅から左右のボタン幅を引く（ボタン幅に合わせて調整） */
+    margin: 0 10px;
+    padding: 10px 0;
 }
 
 
@@ -173,19 +188,23 @@ a{
     color: white;
     z-index: 100;
 }
-.ScrollButton:hover{
-    .arrow-line{
+
+.ScrollButton:hover {
+    .ArrowLine {
         width: 18px;
         background-color: white;
     }
 }
-.EventButton{
+
+.ScrollButton.EventButton {
     height: 10vw;
 }
-.ScrollButton div{
+
+.ScrollButton div {
     position: relative;
 }
-.arrow-line {
+
+.ArrowLine {
     position: absolute;
     width: 15px; /* 線の長さ */
     height: 2px; /* 線の太さ */
@@ -194,43 +213,46 @@ a{
 }
 
 /* 左側 */
-.top {
+.ArrowLine.Top {
     top: 50%; /* コンテナの中央に配置 */
     left: 0;
     transform: translateY(-50%) rotate(45deg); /* 上側の線: 垂直方向中央に移動後、45度回転 */
 }
-.bottom {
-    top: 50%; 
+
+.ArrowLine.Bottom {
+    top: 50%;
     left: 0;
-    transform: translateY(-50%) rotate(-45deg); 
+    transform: translateY(-50%) rotate(-45deg);
 }
 
 /* 右側 */
-.top1 {
+.ArrowLine.Top1 {
     top: 50%;
-    left: 12px; 
-    transform: translateY(50%) rotate(-135deg); 
+    left: 12px;
+    transform: translateY(50%) rotate(-135deg);
 }
-.bottom1 {
+
+.ArrowLine.Bottom1 {
     top: 50%;
     left: 12px;
     transform: translateY(-50%) rotate(135deg);
 }
 
 
-.LeftButton{
+.LeftButton {
     left: 0;
 }
-.RightButton{
+
+.RightButton {
     right: 0;
 }
 
 .ScrollButton:hover {
-     background-color: #00050ed2;
+    background-color: #00050ed2;
 }
 
 .ScrollButton:active {
-     background-color: #1f1f1fb2;
+    background-color: #1f1f1fb2;
 }
 
 
@@ -241,50 +263,58 @@ a{
 }
 
 
-
-
-@media (max-width: 840px){
-    .ContentText{
+@media (max-width: 840px) {
+    .ContentText {
         font-size: 1.3rem;
     }
-    .ContentTextMore{
+
+    .ContentTextMore {
         font-size: 0.9rem;
     }
-    .ImageWrapper a img{
+
+    .ImageWrapper a img {
         height: 25vw;
     }
 
-    .Event a img{
+    .ImageWrapper.Event a img {
         height: 15vw;
     }
+
     .ScrollButton {
-    height: 25vw;
+        height: 25vw;
     }
-    .EventButton{
-    height: 15vw;
+
+    .ScrollButton.EventButton {
+        height: 15vw;
     }
 }
-@media (max-width: 520px){
-    .ContentContainer{
+
+@media (max-width: 520px) {
+    .ContentContainer {
         margin: 20px 0;
     }
-    .ImageWrapper{
+
+    .ImageWrapper {
         padding-left: 20px;
     }
-    .ContentText{
+
+    .ContentText {
         font-size: 1.2rem;
     }
-    .ContentTextMore{
+
+    .ContentTextMore {
         font-size: 0.85rem;
     }
-    .ImageWrapper a img{
+
+    .ImageWrapper a img {
         height: 30vw;
     }
 
-    .Event a img{
+    .ImageWrapper.Event a img {
         height: 20vw;
     }
-    .ScrollButton{
-    display: none;
+
+    .ScrollButton {
+        display: none;
     }
 }

@@ -11,8 +11,8 @@ const defaultSlideMarginVw = 0.25;
 
 // ページ読み込み後の初期化
 document.addEventListener('DOMContentLoaded', () => {
-    slides = document.getElementsByClassName("mySlides");
-    slidesWrapper = document.querySelector(".slides-wrapper");
+    slides = document.getElementsByClassName("MySlides");
+    slidesWrapper = document.querySelector(".SlidesWrapper");
 
     // 初回スライド表示開始
     showSlides();
@@ -79,29 +79,26 @@ function plusSlides(n) {
 
 // コンテンツスクロールとボタン操作 (ユーザー提供のコードをそのまま残します)
 document.addEventListener('DOMContentLoaded', () => {
-    const ContentContainers = document.querySelectorAll('.ContentContainer');
+    const contentContainers = document.querySelectorAll('.ContentContainer');
 
-    ContentContainers.forEach(ContentContainer => {
-        const ScrollContainer = ContentContainer.querySelector('.ScrollContainer.JsScroll');
-        const LeftButton = ContentContainer.querySelector('.LeftButton');
-        const RightButton = ContentContainer.querySelector('.RightButton');
+    contentContainers.forEach(contentContainer => {
+        const scrollContainer = contentContainer.querySelector('.ScrollContainer.JsScroll');
+        const leftButton = contentContainer.querySelector('.LeftButton');
+        const rightButton = contentContainer.querySelector('.RightButton');
 
-        if (ScrollContainer && LeftButton && RightButton) {
-            const ScrollAmount = ScrollContainer.clientWidth;
+        if (scrollContainer && leftButton && rightButton) {
+            const scrollAmount = scrollContainer.clientWidth;
 
-            RightButton.addEventListener('click', () => {
-                ScrollContainer.scrollBy({ left: ScrollAmount, behavior: 'smooth' });
+            rightButton.addEventListener('click', () => {
+                scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
             });
 
-            LeftButton.addEventListener('click', () => {
-                ScrollContainer.scrollBy({ left: -ScrollAmount, behavior: 'smooth' });
+            leftButton.addEventListener('click', () => {
+                scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
             });
         }
     });
 });
-
-
-
 
 
 // ボタンのホバー表示/非表示
