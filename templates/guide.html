@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>施設案内</title>
-  <link rel="stylesheet" href="css/annai.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/guide.css') }}">
 </head>
 <body>
   <header>
     <div class="headerContainer">
       <a href="">
-        <img src="static/images/logosiro.png" alt="ロゴ" width="130px">
+        <img src="{{ url_for('static', filename='images/logosiro.png') }}" alt="ロゴ" width="130px">
       </a>
       <!-- <div class="siteName">HALシネマ</div> -->
       <nav class="nav">
@@ -35,7 +35,7 @@
         </ul>
       </nav>
       <div class="userIcon">
-        <img src="static/images/usericon.png" alt="ユーザーアイコン" />
+        <img src="{{ url_for('static', filename='images/kkrn_icon_user_3.png') }}" alt="ユーザーアイコン" />
       </div>
     </div>
   </header>
@@ -118,7 +118,7 @@
 
         <div class="container2">
             <div class="image">
-                <img src="static/images/annai1.jpg" alt="" width="400px">
+                <img src="{{ url_for('static', filename='images/annai1.jpg') }}" alt="" width="400px">
             </div>
             <div class="description">
                 <h2>エグゼクティブシート</h2>
@@ -132,7 +132,7 @@
         </div>
         <div class="container3">
           <div class="image">
-            <img src="static/images/annai222.jpg" alt="" width="400px">
+            <img src="{{ url_for('static', filename='images/annai2.jpg') }}" alt="" width="400px">
         </div>
           <div class="description">
             <h2>ロッキングシート</h2>
@@ -150,7 +150,7 @@
 
   <footer>
     <a href="">
-      <img src="static/images/logosiro.png" alt="ロゴ" width="100px">
+      <img src="{{ url_for('static', filename='images/logosiro.png') }}" alt="ロゴ" width="100px">
     </a>
     <p> &copy; 2025 HALシネマ. All rights reserved.</p>
   </footer>

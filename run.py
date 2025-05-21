@@ -119,7 +119,10 @@ def movie_information():
     return render_template("movie_information.html")
 
 
-
+# guide画面
+@app.route('/guide')
+def guide():
+    return render_template("guide.html")
 
 
 
