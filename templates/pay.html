@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支払い方法選択</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pay.css') }}">
+</head>
+<body>
+    <header>
+        <div class="headerContainer">
+            <div class="siteName">サイト名</div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="#">ホーム</a></li>
+                    <li><a href="#">商品一覧</a></li>
+                    <li><a href="#">カート</a></li>
+                    <li><a href="#">
+                        マイページ
+                        <span class="subtext">会員情報</span>
+                    </a></li>
+                </ul>
+            </nav>
+            <div class="userIcon">
+                <img src="{{ url_for('static', filename='images/genta.jpg') }}" alt="ユーザーアイコン" class="userIcon">
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h1>支払い方法を選択してください</h1>
+
+        <form id="payment-form" class="payment-container">
+            <div class="payment-method">
+                <input type="radio" id="credit-card" name="payment-method" value="credit-card" checked>
+                <label for="credit-card">
+                    <img src="{{ url_for('static', filename='images/visa.png') }}" alt="クレジットカード"
+                         class="method-icon">
+                    クレジットカード
+                </label>
+                <div class="method-details" id="credit-card-details">
+                    <div class="form-group">
+                        <label for="card-number">カード番号</label>
+                        <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expiry-date">有効期限</label>
+                            <input type="text" id="expiry-date" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="security-code">セキュリティコード</label>
+                            <input type="text" id="security-code" placeholder="123" maxlength="3">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="card-name">カード名義</label>
+                        <input type="text" id="card-name" placeholder="TARO YAMADA">
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-method">
+                <input type="radio" id="convenience" name="payment-method" value="convenience">
+                <label for="convenience">
+                    <img src="{{ url_for('static', filename='images/7.png') }}" alt="コンビニ払い" class="method-icon">
+                    コンビニ払い
+                </label>
+                <div class="method-details" id="convenience-details">
+                    <p>お支払い用の番号を発行します。コンビニエンスストアでお支払いください。</p>
+                </div>
+            </div>
+
+            <div class="payment-method">
+                <input type="radio" id="paypay" name="payment-method" value="paypay">
+                <label for="paypay">
+                    <img src="{{ url_for('static', filename='images/paypay.png') }}" alt="PayPay" class="method-icon">
+                    PayPay
+                </label>
+                <div class="method-details" id="paypay-details">
+                    <p>PayPayアプリでQRコードを表示してください。</p>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">支払いを確定する</button>
+        </form>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/pay.js') }}"></script>
+</body>
+</html>
