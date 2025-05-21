@@ -1,0 +1,2 @@
+データベースのエクスポート
+mysqldump -u root -p halchinemadb > halchinemadb.sql
