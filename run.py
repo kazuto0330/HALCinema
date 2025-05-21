@@ -11,7 +11,7 @@ def conn_db():
         host="127.0.0.1",
         user="root",
         password="ngr256256",
-        db="2024py23db",
+        db="halchinemadb",
         charset="utf8"
     )
     return conn
@@ -39,7 +39,10 @@ def profile():
 
 
 
-
+# movie_information画面
+@app.route('/movie_information')
+def movie_information():
+    return render_template("movie_information.html")
 
 
 
