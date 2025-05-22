@@ -8,7 +8,7 @@
 <body>
   <header>
     <div class="headerContainer">
-      <a href="">
+      <a href="{{ url_for('index') }}">
         <img src="{{ url_for('static', filename='images/logosiro.png') }}" alt="ロゴ" width="130px">
       </a>
       <!-- <div class="siteName">HALシネマ</div> -->
@@ -54,7 +54,7 @@
         </div>
 
         <div class="theater">
-            <a href="#" class="theater-name2">シアター1</a>
+            <a href="{{ url_for('seat_reservation') }}" class="theater-name2">シアター1</a>
             <span class="seat-info2" style="margin-left: -5px;">274</span>
             <span class="seat-info2" style="margin-left: 120px;">20</span>
             <span class="seat-info2" style="margin-left: 135px;">6</span>
@@ -63,7 +63,7 @@
         </div>
 
         <div class="theater">
-            <a href="#" class="theater-name2">シアター2</a>
+            <a href="{{ url_for('seat_reservation') }}" class="theater-name2">シアター2</a>
             <span class="seat-info2" style="margin-left: -5px;">274</span>
             <span class="seat-info2" style="margin-left: 120px;">20</span>
             <span class="seat-info2" style="margin-left: 135px;">6</span>
@@ -72,7 +72,7 @@
         </div>
 
         <div class="theater">
-            <a href="#" class="theater-name2">シアター3</a>
+            <a href="{{ url_for('seat_reservation') }}" class="theater-name2">シアター3</a>
             <span class="seat-info2" style="margin-left: -5px;">110</span>
             <span class="seat-info2" style="margin-left: 125px;">8</span>
             <span class="seat-info2" style="margin-left: 140px;">2</span>
@@ -81,7 +81,7 @@
         </div>
 
         <div class="theater">
-            <a href="#" class="theater-name2">シアター4</a>
+            <a href="{{ url_for('seat_reservation') }}" class="theater-name2">シアター4</a>
             <span class="seat-info2" style="margin-left: -5px;">110</span>
             <span class="seat-info2" style="margin-left: 125px;">8</span>
             <span class="seat-info2" style="margin-left: 140px;">2</span>
@@ -90,7 +90,7 @@
         </div>
 
         <div class="theater">
-            <a href="#" class="theater-name2">シアター5</a>
+            <a href="{{ url_for('seat_reservation') }}" class="theater-name2">シアター5</a>
             <span class="seat-info2" style="margin-left: 0px;">63</span>
             <span class="seat-info2" style="margin-left: 128px;">5</span>
             <span class="seat-info2" style="margin-left: 140px;">2</span>
@@ -99,7 +99,7 @@
         </div>
 
         <div class="theater">
-            <a href="#" class="theater-name2">シアター6</a>
+            <a href="{{ url_for('seat_reservation') }}" class="theater-name2">シアター6</a>
             <span class="seat-info2" style="margin-left: 0px;">63</span>
             <span class="seat-info2" style="margin-left: 128px;">5</span>
             <span class="seat-info2" style="margin-left: 140px;">2</span>
@@ -108,7 +108,7 @@
         </div>
 
         <div class="theater">
-            <a href="#" class="theater-name1" style="margin-left: 32px;">計</a>
+            <a href="{{ url_for('seat_reservation') }}" class="theater-name1" style="margin-left: 32px;">計</a>
             <span class="seat-info2" style="margin-left: 20px;">894</span>
             <span class="seat-info2" style="margin-left: 120px;">66</span>
             <span class="seat-info2" style="margin-left: 132px;">20</span>
@@ -126,7 +126,7 @@
                    ゆったりとした座席幅。荷物置きにも使えるサイドテーブル。空間を贅沢に使ったエグゼクティブシートでいつもよりリッチな気分で映画をお楽しみいただけます。
                    シネマポイント会員に入会すれば、いつでも通常価格でご利用いただけます。<br>
                    会員のご入会は
-                <a href="https://example.com" target="_blank">こちら</a>
+                <a href="{{ url_for('member_login') }}" target="_blank">こちら</a>
                 </p>
             </div>
         </div>

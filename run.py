@@ -124,11 +124,15 @@ def movie_information():
 def guide():
     return render_template("guide.html")
 
+# seat_reservation画面
+@app.route('/seat_reservation')
+def seat_reservation():
+    return render_template("seat_reservation.html")
 
-
-
-
-
+# 画面
+@app.route('/member_login')
+def member_login():
+    return render_template("member_login.html")
 
 
 

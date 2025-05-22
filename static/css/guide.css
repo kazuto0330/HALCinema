@@ -162,6 +162,11 @@ body {
       font-size: 16px;
       line-height: 1.6;
     }
+    .container2 .description a {
+      font-size: 16px;
+      color: #0077ff;
+      line-height: 1.6;
+    } 
   /*  */
   .container3 {
     display: flex;
