@@ -12,7 +12,7 @@ def conn_db():
         host="127.0.0.1",
         user="root",
         password="root",
-        db="halchinemadb",
+        db="halcinemadb",
         charset="utf8"
     )
     return conn
@@ -48,18 +48,40 @@ def fetch_movies(status='now_playing', limit=None):
 
         if status == 'now_playing':
             query = """
-                SELECT id, title, release_date, end_date, running_time, viewers, synopsis, image_url
-                FROM movies
-                WHERE end_date >= %s AND release_date <= %s
-                ORDER BY viewers DESC
-            """
+                    SELECT
+                        moviesId,
+                        movieTitle,
+                        movieReleaseDate,
+                        movieEndDate,
+                        movieRunningTime,
+                        movieAudienceCount,
+                        movieSynopsis,
+                        movieImage
+                    FROM
+                        t_movies  
+                    WHERE
+                        movieEndDate >= %s AND movieReleaseDate <= %s
+                    ORDER BY
+                        movieAudienceCount DESC
+                    """
             params = (today, today)
         elif status == 'coming_soon':
             query = """
-                SELECT id, title, release_date, end_date, running_time, viewers, synopsis, image_url
-                FROM movies
-                WHERE release_date > %s
-                ORDER BY release_date ASC
+                SELECT
+                    moviesId,
+                    movieTitle,
+                    movieReleaseDate,
+                    movieEndDate,
+                    movieRunningTime,
+                    movieAudienceCount,
+                    movieSynopsis,
+                    movieImage
+                FROM
+                    t_movies  
+                WHERE
+                    movieReleaseDate > %s
+                ORDER BY
+                    movieReleaseDate ASC
             """
             params = (today,)
         else:
