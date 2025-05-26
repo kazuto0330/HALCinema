@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支払い完了</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pay_comp.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="check-icon"></div>
+        <h1 class="title">支払いが完了しました</h1>
+        <p class="subtitle">
+            お支払いが正常に処理されました。<br>
+            ありがとうございました。
+        </p>
+        <button class="complete-button" id="completeButton">完了</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/pay_comp.js') }}"></script>
+</body>
+</html>
