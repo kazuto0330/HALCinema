@@ -9,39 +9,7 @@
 </head>
 
 <body>
-  <header>
-    <div class="headerContainer">
-      <a href="">
-        <img src="image/logosiro.png" alt="ロゴ" width="130px">
-      </a>
-      <!-- <div class="siteName">HALシネマ</div> -->
-      <nav class="nav">
-        <ul>
-          <li>
-            <a href="#">
-              上映中<br />
-              <span class="subtext">Now playing</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              公開予定
-              <span class="subtext">Coming Soon</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              劇場を探す
-              <span class="subtext">Theater LIst</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <div class="userIcon">
-        <img src="image/genta.jpg" alt="ユーザーアイコン" />
-      </div>
-    </div>
-  </header>
+ {% include '_header.html' %}
   <main>
     <section class="movieCard">
       <img src="image/conan.png" alt="映画ポスター" class="moviePoster" />
@@ -360,12 +328,7 @@
 
   </main>
 
-  <footer>
-    <a href="">
-      <img src="image/logosiro.png" alt="ロゴ" width="100px">
-    </a>
-    <p> &copy; 2025 HALシネマ. All rights reserved.</p>
-  </footer>
+  {% include '_footer.html' %}
 </body>
 
 <script src="{{ url_for('static', filename='js/movie_information.js') }}"></script>
