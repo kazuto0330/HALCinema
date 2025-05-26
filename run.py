@@ -129,16 +129,33 @@ def guide():
 def seat_reservation():
     return render_template("seat_reservation.html")
 
-# 画面
+# member_login画面
 @app.route('/member_login')
 def member_login():
     return render_template("member_login.html")
 
+# login画面
+@app.route('/login')
+def login():
+    return render_template("login.html")
 
 
+# register画面
+@app.route('/register')
+def register():
+    return render_template("register.html")
 
 
+# pay画面
+@app.route('/pay')
+def pay():
+    return render_template("pay.html")
 
+
+# pay_comp画面
+@app.route('/paypay_comp')
+def pay():
+    return render_template("paypay_comp.html")
 
 
 
