@@ -10,7 +10,7 @@ def conn_db():
     conn = mysql.connector.connect(
         host="127.0.0.1",
         user="root",
-        password="ngr256256",
+        password="root",
         db="2024py23db",
         charset="utf8"
     )
@@ -26,6 +26,7 @@ def conn_db():
 @app.route('/')
 def index():
     return render_template("top.html")
+
 
 
 
