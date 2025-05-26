@@ -1,6 +1,6 @@
 #Footer{
     margin-top: 100px;
-    padding: 20px 0;
+    padding: 10px 0;
     background-color: #1a1a1a;
     color: white;
 }
@@ -10,10 +10,11 @@
     margin: 0 auto;
 }
 #FooterLogoImg{
-    width: 150px;
+    width: 100px;
     margin: 0 auto;
 }
 #Copyright{
-    margin: 30px 0 0 0;
+    margin: 20px 0 0 0;
     text-align: center;
+    color: #ccc;
 }
