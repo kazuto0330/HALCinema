@@ -104,6 +104,61 @@ def fetch_movies(status='now_playing', limit=None):
             cursor.close()
         if conn and conn.is_connected():
             conn.close()
+            
+            
+            
+def fetch_events(limit: int = 10):
+    """
+    イベントテーブルから、今日以前に開始し、今日以降に終了するイベントを
+    指定された件数だけ取得する関数
+    """
+    conn = None
+    cursor = None
+    events = []
+    today = date.today() # 今日の日付を取得
+
+    try:
+        conn = conn_db()
+        cursor = conn.cursor(dictionary=True)
+        today = date.today()
+
+        # cursor(dictionary=True) を使うと、結果を辞書形式で取得でき、カラム名でアクセスしやすくなります
+        cursor = conn.cursor(dictionary=True)
+
+        sql = """
+        SELECT
+            eventInfoId,
+            eventTitle,
+            eventStartDate,
+            eventEndDate,
+            eventDescription,
+            eventImage,
+            eventUrl
+        FROM
+            t_event
+        WHERE
+            eventStartDate <= %s AND eventEndDate >= %s
+        ORDER BY
+            eventStartDate ASC, eventInfoId ASC -- 開始日でソート、次にIDでソート
+        LIMIT %s
+        """
+        
+        # SQLクエリを実行。パラメータはタプルで渡します。
+        # `%s` プレースホルダはSQLインジェクション攻撃を防ぐために重要です。
+        cursor.execute(sql, (today, today, limit))
+        
+        events = cursor.fetchall()
+
+    except mysql.connector.Error as err:
+        print(f"クエリ実行エラー: {err}")
+    finally:
+        # 接続とカーソルを必ず閉じる
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+    
+    return events
 
 
 
@@ -119,9 +174,11 @@ def index():
         # トップページで映画データを表示する
         now_playing_movies = fetch_movies(status='now_playing', limit=10)
         coming_soon_movies = fetch_movies(status='coming_soon', limit=10)
+        event = fetch_events(limit=10)
         print(f"now_playing_movies: {now_playing_movies}")
         print(f"Coming Soon Movies: {coming_soon_movies}")
-        return render_template("top.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies)
+        print(f"Event : {event}")
+        return render_template("top.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
 
 # EVENT画面
 @app.route('/event')
