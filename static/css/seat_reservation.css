@@ -69,7 +69,12 @@ footer {
   color: #999;
 }
   
-
+.container2{
+  display: none;
+}
+.container3{
+  display: none;
+}
 
 
 

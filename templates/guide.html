@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>施設案内</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/guide.css') }}">
+</head>
+<body>
+  <header>
+    <div class="headerContainer">
+      <a href="">
+        <img src="{{ url_for('static', filename='images/logosiro.png') }}" alt="ロゴ" width="130px">
+      </a>
+      <!-- <div class="siteName">HALシネマ</div> -->
+      <nav class="nav">
+        <ul>
+          <li>
+            <a href="#">
+              上映中<br/>
+              <span class="subtext">Now playing</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              公開予定
+              <span class="subtext">Coming Soon</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              劇場を探す
+              <span class="subtext">Theater LIst</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="userIcon">
+        <img src="{{ url_for('static', filename='images/kkrn_icon_user_3.png') }}" alt="ユーザーアイコン" />
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="container">
+        <h1 class="main-title">施設案内</h1>
+        <p class="subtitle">シアター名をクリックすると座席表がご覧頂けます。</p>
+
+        <div class="theater">
+            <a href="#" class="theater-name1">劇場の名</a>
+            <span class="seat-info">一般</span>
+            <span class="seat-info">エグゼクティブ</span>
+            <span class="seat-info">車椅子</span>
+            <span class="seat-info" style="margin-left: 7px;">計</span>
+            <hr>
+        </div>
+
+        <div class="theater">
+            <a href="seat_reservation" class="theater-name2">シアター1</a>
+            <span class="seat-info2" style="margin-left: -5px;">274</span>
+            <span class="seat-info2" style="margin-left: 120px;">20</span>
+            <span class="seat-info2" style="margin-left: 135px;">6</span>
+            <span class="seat-info2" style="margin-left: 85px;">300</span>
+            <hr>
+        </div>
+
+        <div class="theater">
+            <a href="seat_reservation" class="theater-name2">シアター2</a>
+            <span class="seat-info2" style="margin-left: -5px;">274</span>
+            <span class="seat-info2" style="margin-left: 120px;">20</span>
+            <span class="seat-info2" style="margin-left: 135px;">6</span>
+            <span class="seat-info2" style="margin-left: 85px;">300</span>
+            <hr>
+        </div>
+
+        <div class="theater">
+            <a href="seat_reservation" class="theater-name2">シアター3</a>
+            <span class="seat-info2" style="margin-left: -5px;">110</span>
+            <span class="seat-info2" style="margin-left: 125px;">8</span>
+            <span class="seat-info2" style="margin-left: 140px;">2</span>
+            <span class="seat-info2" style="margin-left: 85px;">120</span>
+            <hr>
+        </div>
+
+        <div class="theater">
+            <a href="seat_reservation" class="theater-name2">シアター4</a>
+            <span class="seat-info2" style="margin-left: -5px;">110</span>
+            <span class="seat-info2" style="margin-left: 125px;">8</span>
+            <span class="seat-info2" style="margin-left: 140px;">2</span>
+            <span class="seat-info2" style="margin-left: 85px;">120</span>
+            <hr>
+        </div>
+
+        <div class="theater">
+            <a href="seat_reservation" class="theater-name2">シアター5</a>
+            <span class="seat-info2" style="margin-left: 0px;">63</span>
+            <span class="seat-info2" style="margin-left: 128px;">5</span>
+            <span class="seat-info2" style="margin-left: 140px;">2</span>
+            <span class="seat-info2" style="margin-left: 93px;">70</span>
+            <hr>
+        </div>
+
+        <div class="theater">
+            <a href="seat_reservation" class="theater-name2">シアター6</a>
+            <span class="seat-info2" style="margin-left: 0px;">63</span>
+            <span class="seat-info2" style="margin-left: 128px;">5</span>
+            <span class="seat-info2" style="margin-left: 140px;">2</span>
+            <span class="seat-info2" style="margin-left: 93px;">70</span>
+            <hr>
+        </div>
+
+        <div class="theater">
+            <a href="" class="theater-name1" style="margin-left: 32px;">計</a>
+            <span class="seat-info2" style="margin-left: 20px;">894</span>
+            <span class="seat-info2" style="margin-left: 120px;">66</span>
+            <span class="seat-info2" style="margin-left: 132px;">20</span>
+            <span class="seat-info2" style="margin-left: 80px;">980</span>
+            <hr>
+        </div>
+
+        <div class="container2">
+            <div class="image">
+                <img src="{{ url_for('static', filename='images/annai1.jpg') }}" alt="" width="400px">
+            </div>
+            <div class="description">
+                <h2>エグゼクティブシート</h2>
+                <p>もっと贅沢に映画を楽しみたいという方に、エグゼクティブシートをご用意しました。<br>
+                   ゆったりとした座席幅。荷物置きにも使えるサイドテーブル。空間を贅沢に使ったエグゼクティブシートでいつもよりリッチな気分で映画をお楽しみいただけます。
+                   シネマポイント会員に入会すれば、いつでも通常価格でご利用いただけます。<br>
+                   会員のご入会は
+                <a href="{{ url_for('member_login') }}" target="_blank">こちら</a>
+                </p>
+            </div>
+        </div>
+        <div class="container3">
+          <div class="image">
+            <img src="{{ url_for('static', filename='images/annai2.jpg') }}" alt="" width="400px">
+        </div>
+          <div class="description">
+            <h2>ロッキングシート</h2>
+            <p>各シアター前方の列にロッキングシートをご用意しております。<br>
+              寄りかかると背もたれが傾くシートとなっており、どなたでもご利用いただけます。<br>
+              前方列ならではの映像や音響の迫力を快適にお楽しみいただけるロッキングシートは赤色の座席が目印です。是非ご利用ください。
+            </p>
+        </div>
+      </div>   
+    </div>
+  </main>
+
+
+  <footer>
+    <a href="">
+      <img src="{{ url_for('static', filename='images/logosiro.png') }}" alt="ロゴ" width="100px">
+    </a>
+    <p> &copy; 2025 HALシネマ. All rights reserved.</p>
+  </footer>
+</body>
+</html>
