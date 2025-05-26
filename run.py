@@ -154,7 +154,7 @@ def pay():
 
 # pay_comp画面
 @app.route('/paypay_comp')
-def pay():
+def paypay_comp():
     return render_template("paypay_comp.html")
 
 
