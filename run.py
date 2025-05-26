@@ -11,7 +11,7 @@ def conn_db():
         host="127.0.0.1",
         user="root",
         password="root",
-        db="2024py23db",
+        db="xxxDB",
         charset="utf8"
     )
     return conn
