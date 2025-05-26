@@ -9,32 +9,8 @@
 </head>
 
 <body>
-    <div id="Header">
-        <a href="">
-            <div id="HeaderRogo">HALシネマ（仮ロゴ）</div>
-        </a>
 
-        <a href="">
-            <div class="HeaderButton">
-                <div class="HeaderButtonText">上映中</div>
-                <div class="HeaderButtonEnText">Now Playing</div>
-            </div>
-        </a>
-        <a href="">
-            <div class="HeaderButton">
-                <div class="HeaderButtonText">公開予定</div>
-                <div class="HeaderButtonEnText">Coming Soon</div>
-            </div>
-        </a>
-        <a href="">
-            <div class="HeaderButton">
-                <div class="HeaderButtonText">劇場を探す</div>
-                <div class="HeaderButtonEnText">Theater List</div>
-            </div>
-        </a>
-
-        <a href="" id="HeaderIcon"><img src="{{ url_for('static', filename='images/kkrn_icon_user_3.png') }}" alt="Icon" class="icon"></a>
-    </div>
+    {% include '_header.html' %}
 
 
 
@@ -90,6 +66,7 @@
             </div>
         </div>
     </div>
+    {% include '_footer.html' %}
 </body>
 
 </html>
