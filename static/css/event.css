@@ -33,8 +33,11 @@ a{
 #SmallFeature{
     padding: 0 5px;
 }
-#SmallFeature a{
+#EventUrl{
     color: aqua;
+}
+#EventUrl:hover{
+    color: rgb(0, 174, 174);
 }
 #Date{
     margin: 10px 0 0 0;
@@ -60,28 +63,31 @@ a{
 
 
 #Right{
-    width: 30%;
-    margin-left: 3vw;
+    width: 35%;
+    margin-left: 2vw;
 }
 #RecommendedEvents h1{
     margin: 0;
     font-size: 2.2vw;
 }
 #EventsList{
-    margin: 20px 0 0 0;
+    margin: 10px 0 0 1vw;
 }
 .Event{
     display: flex;
-    margin-bottom: 20px;
+    padding: 10px 0 10px 5px;
+}
+.Event:hover{
+    background-color: #213150;
 }
 .EventImg{
     width: 40%;
 }
 .EventImg img{
     width: 100%;
+    border-radius: 5px;
 }
 .EventText{
-    width: 55%;
     margin-left: 5px;
     font-size: 1.3vw;
 }
