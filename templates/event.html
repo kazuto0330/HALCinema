@@ -17,20 +17,21 @@
 
     <div id="MainContent">
         <div id="Left">
-            <img src="{{ url_for('static', filename='images/ScreenX.png') }}" alt="「ScreenX」を3月7日(金)より１０９シネマズ名古屋に導入！" id="MainImg">
-            <div id="Title">３面ワイドビューシアター「ScreenX」最新スペック版を3月7日(金)より１０９シネマズ名古屋に導入！</div>
-            <div id="Date">2025年5月23日</div>
-            <div id="TagList">
-                <div class="Tag">名古屋</div>
-                <div class="Tag">ScreenX</div>
-                <div class="Tag">名古屋</div>
+            <img src="{{ url_for('static', filename='images/' + event.eventImage) }}" alt="{{event.eventTitle}}" id="MainImg">
+            <div id="MainEvent">
+                <div id="Title">{{event.eventTitle}}</div>
+                <div id="SmallFeature">
+                    <div id="Date">{{event. eventStartDate|strftime('%Y年%m月%d日')}}</div>
+                    <a href="{{event.eventUrl}}" id="EventUrl">{{event.eventUrl}}</a>
+                    <div id="TagList">
+                        <div class="Tag">名古屋</div>
+                        <div class="Tag">ScreenX</div>
+                        <div class="Tag">名古屋</div>
+                        <div class="Tag">まだ作ってない</div>
+                    </div>
+                </div>
+                <div id="MainText">{{event.eventDescription}}</div>
             </div>
-            <div id="MainText">3月7日(金)より１０９シネマズ名古屋に中部地方で初めて、視界270度のディープな映画体験が可能な3面ワイドビューシアター「ScreenX」の最新スペック版導入を決定しました。
-                「ScreenX」とは、正面のスクリーンに加え、左右の壁面にも映像が投影される3面ワイドビューシアターです。
-                270度の視界すべてで映画を鑑賞することができ、映画の世界に自分の感覚が没入していくような臨場感を体感することができます。
-                また、最新スペック版では、左右の壁面に正面と同様のスクリーン素材を施工し、また左右の映像を投影するプロジェクターもスペックアップすることで、3面スクリーンの映像が今まで以上に明るく一体化し、没入感がさらに増大します。
-                映画の可能性をさらに広げる「ScreenX」のプレミアムラージフォーマットを、ぜひ１０９シネマズ名古屋でご体感ください。
-                ※導入工事に伴い、１０９シネマズ名古屋のシアター5は1月21日(火)より休館させていただきます。</div>
         </div>
 
 
@@ -38,27 +39,15 @@
             <div id="RecommendedEvents">
                 <h1>おすすめのイベント</h1>
                 <div id="EventsList">
-                    <a href="#">
+                    {% for event in recommendation %}
+                    <a href="{{event.eventInfoId}}">
                         <div class="Event">
-                            <div class="EventImg"><img src="images/ScreenX.jpg" alt="「ScreenX」を3月7日(金)より１０９シネマズ名古屋に導入！">
+                            <div class="EventImg"><img src="{{ url_for('static', filename='images/' + event.eventImage) }}" alt="{{event.eventTitle}}">
                             </div>
-                            <div class="EventText">【12/4（水）より】109シネマズの新たな割引サービス「ペア割」について</div>
+                            <div class="EventText">{{event.eventTitle}}</div>
                         </div>
                     </a>
-                    <a href="#">
-                        <div class="Event">
-                            <div class="EventImg"><img src="images/ScreenX.jpg" alt="「ScreenX」を3月7日(金)より１０９シネマズ名古屋に導入！">
-                            </div>
-                            <div class="EventText">【12/4（水）より】109シネマズの新たな割引サービス「ペア割」について</div>
-                        </div>
-                    </a>
-                    <a href="#">
-                        <div class="Event">
-                            <div class="EventImg"><img src="images/ScreenX.jpg" alt="「ScreenX」を3月7日(金)より１０９シネマズ名古屋に導入！">
-                            </div>
-                            <div class="EventText">【12/4（水）より】109シネマズの新たな割引サービス「ペア割」について</div>
-                        </div>
-                    </a>
+                    {% endfor %}
 
 
 
@@ -67,6 +56,8 @@
         </div>
     </div>
     {% include '_footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/event.js') }}"></script>
 </body>
 
 </html>

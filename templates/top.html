@@ -11,6 +11,7 @@
 <body>
     {% include '_header.html' %}
 
+    <!-- スライドショー -->
     <div class="SlideshowContainer">
         <div class="SlidesWrapper">
             <div class="MySlides">
@@ -35,7 +36,7 @@
     </div>
 
 
-
+    <!-- メインコンテンツ -->
     <div class="ContentContainer">
         <div class="ContentBox">
             <div class="ContentText">人気の映画</div>
@@ -56,7 +57,7 @@
                 <div class="ImageWrapper">
                 {% if now_playing %}
                     {% for movie in now_playing %}
-                    <a href="/movie_information#{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"></a>
+                    <a href="/movie_information/{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"></a>
                     {% endfor %}
                 {% endif %}
                 </div>
@@ -68,8 +69,10 @@
                 </div>
             </div>
         </div>
-
     </div>
+
+
+
     <div class="ContentContainer">
         <div class="ContentBox">
             <div class="ContentText">イベント</div>
@@ -77,6 +80,7 @@
                 <div>もっとみる</div>
             </a>
         </div>
+
         <div class="Content">
             <div class="ScrollButton LeftButton EventButton">
                 <div>
@@ -88,16 +92,9 @@
                 <div class="ImageWrapper Event">
                 {% if events %}
                     {% for event in events %}
-                    <a href="/event#{{ event.eventInfoId }}"><img src="{{ url_for('static', filename='images/' + event.eventImage ) }}" alt=""></a>
+                    <a href="/event/{{ event.eventInfoId }}"><img src="{{ url_for('static', filename='images/' + event.eventImage ) }}" alt=""></a>
                     {% endfor %}
                 {% endif %}
-                    <!-- <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a>
-                    <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a>
-                    <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a>
-                    <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a>
-                    <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a>
-                    <a href=""><img src="{{ url_for('static', filename='images/ScreenX.jpg') }}" alt=""></a> -->
-
                 </div>
             </div>
             <div class="ScrollButton RightButton EventButton">
@@ -108,6 +105,9 @@
             </div>
         </div>
     </div>
+
+
+
     <div class="ContentContainer">
         <div class="ContentBox">
             <div class="ContentText">公開予定の映画</div>
@@ -115,6 +115,7 @@
                 <div>もっとみる</div>
             </a>
         </div>
+
         <div class="Content">
             <div class="ScrollButton LeftButton">
                 <div>
@@ -127,7 +128,7 @@
                 <div class="ImageWrapper">
                 {% if coming_soon %}
                     {% for movie in coming_soon %}
-                    <a href="/movie_information#{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"><div>{{ movie.movieEndDate|strftime('%Y年%m月%d日') }} 公開</div></a>
+                    <a href="/movie_information/{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"><div>{{ movie.movieEndDate|strftime('%Y年%m月%d日') }} 公開</div></a>
                     {% endfor %}
                 {% endif %}
 
@@ -152,5 +153,4 @@
 
 
 </body>
-
 </html>

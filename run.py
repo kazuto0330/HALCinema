@@ -24,11 +24,8 @@ def format_datetime(value, format='%Y年%m月%d日'):
     return value.strftime(format)
 
 app.jinja_env.filters['strftime'] = format_datetime
-
-
-
-
-
+    
+#映画情報を複数件取得する関数（status="now_playing" or "coming_soon" , limit="取得件数" or "None"）
 def fetch_movies(status='now_playing', limit=None):
     """条件に合致する映画データをデータベースから取得する関数
     Args:
@@ -105,12 +102,14 @@ def fetch_movies(status='now_playing', limit=None):
         if conn and conn.is_connected():
             conn.close()
             
-            
-            
-def fetch_events(limit: int = 10):
+#イベント情報を複数件取得する関数（limit="取得件数" or "None" , random_order="True" or "False"）
+def fetch_events(limit: int = 10, random_order: bool = False):
     """
     イベントテーブルから、今日以前に開始し、今日以降に終了するイベントを
     指定された件数だけ取得する関数
+    オプション:
+        limit (int): 取得するイベントの最大件数。デフォルトは10。
+        random_order (bool): Trueの場合、取得順序をランダムにする。デフォルトはFalse（固定順序）。
     """
     conn = None
     cursor = None
@@ -120,12 +119,9 @@ def fetch_events(limit: int = 10):
     try:
         conn = conn_db()
         cursor = conn.cursor(dictionary=True)
-        today = date.today()
 
-        # cursor(dictionary=True) を使うと、結果を辞書形式で取得でき、カラム名でアクセスしやすくなります
-        cursor = conn.cursor(dictionary=True)
-
-        sql = """
+        # SQLクエリの基本部分
+        sql_base = """
         SELECT
             eventInfoId,
             eventTitle,
@@ -138,10 +134,19 @@ def fetch_events(limit: int = 10):
             t_event
         WHERE
             eventStartDate <= %s AND eventEndDate >= %s
-        ORDER BY
-            eventStartDate ASC, eventInfoId ASC -- 開始日でソート、次にIDでソート
-        LIMIT %s
         """
+        
+        # ORDER BY 句を動的に変更
+        if random_order:
+            order_by_clause = "ORDER BY RAND()"
+        else:
+            order_by_clause = "ORDER BY eventStartDate ASC, eventInfoId ASC"
+            
+        # LIMIT 句
+        limit_clause = "LIMIT %s"
+
+        # 完全なSQLクエリを構築
+        sql = f"{sql_base} {order_by_clause} {limit_clause}"
         
         # SQLクエリを実行。パラメータはタプルで渡します。
         # `%s` プレースホルダはSQLインジェクション攻撃を防ぐために重要です。
@@ -160,6 +165,46 @@ def fetch_events(limit: int = 10):
     
     return events
 
+#指定したIDのイベントの詳細情報を取得する関数（）
+def fetch_event_data(event_id):
+    """指定したIDのイベントの詳細情報を取得する関数"""
+    conn = None
+    cursor = None
+    events = []
+
+    try:
+        conn = conn_db()
+        cursor = conn.cursor(dictionary=True)
+
+        sql = """
+            SELECT
+                eventInfoId,
+                eventTitle,
+                eventStartDate,
+                eventEndDate,
+                eventDescription,
+                eventImage,
+                eventUrl
+            FROM
+                t_event
+            WHERE
+                eventInfoId = %s
+        """
+        
+        cursor.execute(sql, (event_id,))
+        
+        events = cursor.fetchone()
+
+    except mysql.connector.Error as err:
+        print(f"クエリ実行エラー: {err}")
+    finally:
+        # 接続とカーソルを必ず閉じる
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+    
+    return events
 
 
 
@@ -175,15 +220,18 @@ def index():
         now_playing_movies = fetch_movies(status='now_playing', limit=10)
         coming_soon_movies = fetch_movies(status='coming_soon', limit=10)
         event = fetch_events(limit=10)
-        print(f"now_playing_movies: {now_playing_movies}")
-        print(f"Coming Soon Movies: {coming_soon_movies}")
-        print(f"Event : {event}")
         return render_template("top.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
 
 # EVENT画面
-@app.route('/event')
-def event():
-    return render_template("event.html")
+@app.route('/event/<int:event_id>')
+def event(event_id):
+    event = fetch_event_data(event_id)
+    event_recommendation = fetch_events(limit=5,random_order=True)
+    
+    print(event_id)
+    print(event)
+    
+    return render_template("event.html", event=event, recommendation=event_recommendation) 
 
 # PROFILE画面
 @app.route('/profile')
