@@ -222,6 +222,11 @@ def index():
         event = fetch_events(limit=10)
         return render_template("top.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
 
+# MOVIELIST(映画一覧)画面
+@app.route('/movie_list')
+def movie_list():
+    return render_template("movie_list.html")
+
 # EVENT画面
 @app.route('/event/<int:event_id>')
 def event(event_id):

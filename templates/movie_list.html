@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/movie_list.css') }}">
+    <title>HALシネマ 映画一覧画面</title>
+</head>
+<body>
+    {% include '_header.html' %}
+
+
+    <div id="MainContainer">
+        <div id="TabSelect">
+            <div id="NowBtn" class="TabButton">上映中</div>
+            <div id="ComingBtn" class="TabButton">公開予定</div>
+            <div id="TabUnderline"></div> <!-- これを追加！ -->
+        </div>
+
+        <div id="MovieContainer">
+            <div id="NowTab" class="Tab">
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
+            </div>
+
+            <div id="ComingTab" class="Tab">
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
+                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
+            </div>
+        </div>
+    </div>
+
+
+    {% include '_footer.html' %}
+
+
+    <script src="{{ url_for('static', filename='js/movie_list.js') }}"></script>
+</body>
+</html>
