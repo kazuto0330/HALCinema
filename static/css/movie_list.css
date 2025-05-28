@@ -1,0 +1,79 @@
+body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #000918;
+    color: white;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+#MainContainer {
+    padding: 1.5vw;
+}
+#TabSelect{
+    display: flex;
+    margin: 0 0 10px 20px;
+    position: relative; /* 下線要素を絶対配置するため */
+    padding-bottom: 3px; /* 下線が表示されるスペースを確保 */
+}
+.TabButton{
+    padding: 7px 10px;
+    margin-right: 5px;
+    font-size: 1.1rem;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.3s ease; /* 文字色のみアニメーション */
+}
+
+/* アクティブなタブボタンの文字色 */
+.TabButton.active {
+    color: white; 
+}
+
+/* 独立した下線要素のスタイル */
+#TabUnderline {
+    position: absolute;
+    bottom: 0; 
+    height: 3px;
+    background-color: white;
+    transition: left 0.3s ease, width 0.3s ease;
+}
+
+
+#MovieContainer{
+    width: 100%;
+    display: flex; 
+    overflow-x: hidden; /* 横方向のスクロールバーを非表示にする */
+}
+.Tab{
+    display: flex;
+    flex-wrap: wrap;
+    margin: 20px 0 0 0;
+    width: 100%;
+    flex-shrink: 0; /* タブが縮まないようにする */
+}
+.MovieImg{
+    margin: 0 15px 40px 15px;
+}
+.MovieImg img{
+    width: 13vw;
+    min-width: 120px;
+    max-width: 160px;
+    border-radius: 5px;
+}
+.MovieImg img:hover{
+    transform: scale(1.1)translateY(-5px);
+}
+.MovieImg div{
+    margin-top: 5px;
+    text-align: center;
+    font-size: 0.75rem;
+}
+
+
+
+/* @media (max-width: 520px) {} */
