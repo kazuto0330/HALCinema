@@ -65,12 +65,14 @@ a {
     max-width: 160px;
     border-radius: 5px;
 }
+.MovieImg img:hover{
+    transform: scale(1.1)translateY(-5px);
+}
 .MovieImg div{
     margin-top: 5px;
     text-align: center;
     font-size: 0.75rem;
 }
-
 
 
 

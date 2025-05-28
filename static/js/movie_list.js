@@ -26,7 +26,15 @@ function setActiveTab(button, targetScrollLeft) {
 
 // 初期状態を設定
 window.addEventListener('load', () => {
-    setActiveTab(nowBtn, 0); // 「上映中」タブをアクティブにし、コンテンツを初期位置に
+    const urlParams = new URLSearchParams(window.location.search);
+    const names = urlParams.get('set');
+    console.log('set:', names);
+
+    if (names == "comingsoon"){
+        setActiveTab(comingBtn, movieContainer.clientWidth);
+    }else{
+        setActiveTab(nowBtn, 0); // 「上映中」タブをアクティブにし、コンテンツを初期位置に
+    }
 });
 
 // 上映中ボタンがクリックされた時の処理

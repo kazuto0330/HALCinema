@@ -216,16 +216,17 @@ def fetch_event_data(event_id):
 # TOPページ
 @app.route('/')
 def index():
-        # トップページで映画データを表示する
-        now_playing_movies = fetch_movies(status='now_playing', limit=10)
-        coming_soon_movies = fetch_movies(status='coming_soon', limit=10)
-        event = fetch_events(limit=10)
-        return render_template("top.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
+    now_playing_movies = fetch_movies(status='now_playing', limit=10)
+    coming_soon_movies = fetch_movies(status='coming_soon', limit=10)
+    event = fetch_events(limit=10)
+    return render_template("top.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
 
 # MOVIELIST(映画一覧)画面
 @app.route('/movie_list')
 def movie_list():
-    return render_template("movie_list.html")
+    now_playing_movies = fetch_movies(status='now_playing')
+    coming_soon_movies = fetch_movies(status='coming_soon')
+    return render_template("movie_list.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies)
 
 # EVENT画面
 @app.route('/event/<int:event_id>')
@@ -246,8 +247,8 @@ def profile():
 
 
 # movie_information画面
-@app.route('/movie_information')
-def movie_information():
+@app.route('/movie_information/<int:event_id>')
+def movie_information(event_id):
     return render_template("movie_information.html")
 
 

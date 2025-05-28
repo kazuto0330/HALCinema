@@ -15,32 +15,25 @@
         <div id="TabSelect">
             <div id="NowBtn" class="TabButton">上映中</div>
             <div id="ComingBtn" class="TabButton">公開予定</div>
-            <div id="TabUnderline"></div> <!-- これを追加！ -->
+            <div id="TabUnderline"></div>
         </div>
 
         <div id="MovieContainer">
             <div id="NowTab" class="Tab">
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""></a>
+            {% if now_playing %}
+                {% for movie in now_playing %}
+                <a class="MovieImg" href="/movie_information/{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"></a>
+                {% endfor %}
+            {% endif %}
             </div>
 
+
             <div id="ComingTab" class="Tab">
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
-                <a class="MovieImg" href=""><img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt=""><div>2025年12月31日 公開</div></a>
+                {% if coming_soon %}
+                    {% for movie in coming_soon %}
+                    <a class="MovieImg" href="/movie_information/{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"><div>{{ movie.movieEndDate|strftime('%Y年%m月%d日') }} 公開</div></a>
+                    {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>
