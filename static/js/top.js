@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rightButton = contentContainer.querySelector('.RightButton');
 
         if (scrollContainer && leftButton && rightButton) {
-            const scrollAmount = scrollContainer.clientWidth;
+            const scrollAmount = scrollContainer.clientWidth-15;
 
             rightButton.addEventListener('click', () => {
                 scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
