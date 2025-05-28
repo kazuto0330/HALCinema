@@ -158,6 +158,12 @@ def pay_comp():
     return render_template("pay_comp.html")
 
 
+# member画面
+@app.route('/member')
+def member():
+    return render_template("member.html")
+
+
 
 
 #実行制御
