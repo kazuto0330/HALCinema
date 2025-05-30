@@ -1,0 +1,5 @@
+データエクスポート
+mysqldump -u root -p halcinemadb > halcinemadb.sql
+
+インポート
+mysqldump -u root -p halcinemadb < halcinemadb.sql
