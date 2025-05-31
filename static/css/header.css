@@ -52,6 +52,7 @@ header {
     border-radius: 50%;
     object-fit: cover;
     opacity: 0.8;
+    transition: all 0.5s ease; 
 }
 .userIcon img:hover{
     opacity: 1;
