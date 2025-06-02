@@ -286,16 +286,16 @@ header {
 
 
 
-.reserveBtn {
-    width: 100px; /* 横幅を広めに設定 */
-    height: 50px;
-    font-size: 22px;
-    background-color: hsl(0, 0%, 85%);
-    color: #111;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
+/*.reserveBtn {*/
+/*    width: 100px; !* 横幅を広めに設定 *!*/
+/*    height: 50px;*/
+/*    font-size: 22px;*/
+/*    background-color: hsl(0, 0%, 85%);*/
+/*    color: #111;*/
+/*    border: none;*/
+/*    border-radius: 8px;*/
+/*    cursor: pointer;*/
+/*}*/
 
 .eiga{
     color: #9d9d9d;
