@@ -7,25 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pay.css') }}">
 </head>
 <body>
-    <header>
-        <div class="headerContainer">
-            <div class="siteName">サイト名</div>
-            <nav class="nav">
-                <ul>
-                    <li><a href="#">ホーム</a></li>
-                    <li><a href="#">商品一覧</a></li>
-                    <li><a href="#">カート</a></li>
-                    <li><a href="#">
-                        マイページ
-                        <span class="subtext">会員情報</span>
-                    </a></li>
-                </ul>
-            </nav>
-            <div class="userIcon">
-                <img src="{{ url_for('static', filename='images/genta.jpg') }}" alt="ユーザーアイコン" class="userIcon">
-            </div>
-        </div>
-    </header>
+    {% include '_header.html' %}
 
     <main>
         <h1>支払い方法を選択してください</h1>
@@ -86,6 +68,8 @@
             <button type="button" class="submit-btn" onclick="location.href='/pay_comp'">支払いを確定する</button>
         </form>
     </main>
+
+    {% include '_footer.html' %}
 
     <script src="{{ url_for('static', filename='js/pay.js') }}"></script>
 </body>
