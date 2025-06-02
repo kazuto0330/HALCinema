@@ -27,12 +27,12 @@
                 <a href=""><img src="{{ url_for('static', filename='images/Paddington3_109conce_W1920xH960.jpg') }}" alt="パディントン3"></a>
             </div>
             <div class="MySlides">
-                <a href=""><img src="{{ url_for('static', filename='images/nagoyaScreenX.jpg') }}" alt="名古屋ScreenX"></a>
+                <a href=""><img src="{{ url_for('static', filename='images/eventimage5.jpg') }}" alt="名古屋ScreenX"></a>
             </div>
         </div>
 
-        <a class="Prev" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="Next" onclick="plusSlides(1)">&#10095;</a>
+        <a class="Arrow Prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="Arrow Next" onclick="plusSlides(1)">&#10095;</a>
     </div>
 
 
@@ -46,28 +46,18 @@
         </div>
 
         <div class="Content">
-            <div class="ScrollButton LeftButton">
-                <div>
-                    <div class="ArrowLine Top"></div>
-                    <div class="ArrowLine Bottom"></div>
-                </div>
-            </div>
+            <div class="ScrollButton LeftButton"><div class="Arrow LeftArrow">&#10094</div></div>
 
             <div class="ScrollContainer CssOnly JsScroll">
                 <div class="ImageWrapper">
                 {% if now_playing %}
                     {% for movie in now_playing %}
-                    <a href="/movie_information/{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"></a>
+                    <a href="/movie_information/{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg"></a>
                     {% endfor %}
                 {% endif %}
                 </div>
             </div>
-            <div class="ScrollButton RightButton">
-                <div>
-                    <div class="ArrowLine Top1"></div>
-                    <div class="ArrowLine Bottom1"></div>
-                </div>
-            </div>
+            <div class="ScrollButton RightButton"><div class="Arrow RightArrow">&#10095;</div></div>
         </div>
     </div>
 
@@ -82,27 +72,17 @@
         </div>
 
         <div class="Content">
-            <div class="ScrollButton LeftButton EventButton">
-                <div>
-                    <div class="ArrowLine Top"></div>
-                    <div class="ArrowLine Bottom"></div>
-                </div>
-            </div>
+            <div class="ScrollButton LeftButton"><div class="Arrow LeftArrow">&#10094</div></div>
             <div class="ScrollContainer CssOnly JsScroll">
                 <div class="ImageWrapper Event">
                 {% if events %}
                     {% for event in events %}
-                    <a href="/event/{{ event.eventInfoId }}"><img src="{{ url_for('static', filename='images/' + event.eventImage ) }}" alt=""></a>
+                    <a href="/event/{{ event.eventInfoId }}"><img src="{{ url_for('static', filename='images/' + event.eventImage ) }}" alt="{{ event.eventTitle }}" class="ContentImg"></a>
                     {% endfor %}
                 {% endif %}
                 </div>
             </div>
-            <div class="ScrollButton RightButton EventButton">
-                <div>
-                    <div class="ArrowLine Top1"></div>
-                    <div class="ArrowLine Bottom1"></div>
-                </div>
-            </div>
+            <div class="ScrollButton RightButton"><div class="Arrow RightArrow">&#10095;</div></div>
         </div>
     </div>
 
@@ -117,29 +97,19 @@
         </div>
 
         <div class="Content">
-            <div class="ScrollButton LeftButton">
-                <div>
-                    <div class="ArrowLine Top"></div>
-                    <div class="ArrowLine Bottom"></div>
-                </div>
-            </div>
+            <div class="ScrollButton LeftButton"><div class="Arrow LeftArrow">&#10094</div></div>
 
             <div class="ScrollContainer CssOnly JsScroll">
                 <div class="ImageWrapper">
                 {% if coming_soon %}
                     {% for movie in coming_soon %}
-                    <a href="/movie_information/{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"><div>{{ movie.movieEndDate|strftime('%Y年%m月%d日') }} 公開</div></a>
+                    <a href="/movie_information/{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg"><div>{{ movie.movieEndDate|strftime('%Y年%m月%d日') }} 公開</div></a>
                     {% endfor %}
                 {% endif %}
 
                 </div>
             </div>
-            <div class="ScrollButton RightButton">
-                <div>
-                    <div class="ArrowLine Top1"></div>
-                    <div class="ArrowLine Bottom1"></div>
-                </div>
-            </div>
+            <div class="ScrollButton RightButton"><div class="Arrow RightArrow">&#10095;</div></div>
         </div>
     </div>
 

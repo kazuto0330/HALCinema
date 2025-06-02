@@ -12,10 +12,8 @@ a{
 
 #MainContent{
     display: flex;
-    width: 80%;
-    max-width: 1650px;
-    min-width: 900px;
-    margin: 3px auto 0 auto;
+    width: clamp(900px, 80vw, 1600px);
+    margin: 10px auto 250px auto;
 }
 #Left{
     width: 70%;
@@ -23,6 +21,7 @@ a{
 #MainImg{
     margin-top: 5px;
     width: 100%;
+    border-radius: 5px;
 }
 #MainEvent{
     padding: 5px;
@@ -69,19 +68,23 @@ a{
 #RecommendedEvents h1{
     margin: 0;
     font-size: 2.2vw;
+    font-size: clamp(21px, 2.2vw, 33px);
 }
 #EventsList{
     margin: 10px 0 0 1vw;
 }
 .Event{
     display: flex;
-    padding: 10px 0 10px 5px;
+    padding: 10px 5px 10px 8px;
+    margin: 0 0 10px 0;
+    border-radius: 5px;
 }
 .Event:hover{
     background-color: #213150;
 }
 .EventImg{
     width: 40%;
+    min-width: 40%;
 }
 .EventImg img{
     width: 100%;
@@ -89,7 +92,7 @@ a{
 }
 .EventText{
     margin-left: 5px;
-    font-size: 1.3vw;
+    font-size:clamp(13px, 1.3vw, 18.5px);
 }
 
 @media (max-width: 1000px){

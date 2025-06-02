@@ -102,28 +102,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // ボタンのホバー表示/非表示
+// 定数：ビューポートのはみ出し判定の閾値（左右の余白）
+const OUT_OF_BOUNDS_THRESHOLD = 30;
+
 document.addEventListener('DOMContentLoaded', () => {
     const contentContainers = document.querySelectorAll('.ContentContainer');
 
     contentContainers.forEach(container => {
-        const scrollButtons = container.querySelectorAll('.ScrollButton');
 
-        // 初期非表示
-        scrollButtons.forEach(button => {
-            button.style.visibility = 'hidden';
-        });
+        const scrollImgs = container.querySelectorAll('.ContentImg'); // 命名をscrollImgs（複数形）に修正
 
-        // ホバーで表示
+        // ホバーで実行
         container.addEventListener('mouseenter', () => {
-            scrollButtons.forEach(button => {
-                button.style.visibility = 'visible';
+            scrollImgs.forEach(img => {
+                const rect = img.getBoundingClientRect(); // 要素のビューポートに対する位置とサイズを取得
+                const viewportWidth = window.innerWidth;
+
+                // はみ出し判定
+                const isOutOfBounds =
+                    rect.left < OUT_OF_BOUNDS_THRESHOLD ||             // 左にはみ出し
+                    rect.right > viewportWidth - OUT_OF_BOUNDS_THRESHOLD; // 右にはみ出し
+
+                // はみ出している場合のみ 'darken' クラスを追加し、CSSでフィルターを適用
+                img.classList.toggle('darken', isOutOfBounds);
             });
         });
 
-        // ホバー解除で非表示
+        // ホバー解除で実行
         container.addEventListener('mouseleave', () => {
-            scrollButtons.forEach(button => {
-                button.style.visibility = 'hidden';
+            scrollImgs.forEach(img => {
+                // ホバー解除時は常に 'darken' クラスを削除し、フィルターをリセット
+                img.classList.remove('darken');
             });
         });
     });
