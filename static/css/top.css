@@ -48,6 +48,29 @@ a {
     object-fit: cover;
 }
 
+.Arrow{
+    color: white;
+    font-size: 21px;
+    font-weight: bold;
+    user-select: none;
+    z-index: 100;
+    transition: all 0.1s ease; 
+}
+.Arrow:hover{
+    font-size: 28px;;
+}
+.LeftArrow{
+    left: 0;
+}
+.RightArrow{
+    right: 0;
+}
+.LeftArrow,
+.RightArrow{
+    padding: 20px;
+}
+
+
 /* 前後のボタンのスタイル */
 .Prev,
 .Next {
@@ -56,28 +79,18 @@ a {
     top: 50%;
     transform: translateY(-50%);
     width: auto;
-    padding: 60px 26px;
-    color: white;
-    font-weight: bold;
-    font-size: 18px;
-    transition: 0.6s ease;
-    user-select: none;
     z-index: 10;
     border-radius: 3px;
     text-decoration: none;
+    padding: 20px;
 }
 
 .Prev {
-    left: 10px;
+    left: 0px;
 }
 
 .Next {
-    right: 10px;
-}
-
-.Prev:hover,
-.Next:hover {
-    background-color: rgba(0, 0, 0, 0.3);
+    right: 0px;
 }
 
 @media (max-width: 620px) {
@@ -126,11 +139,11 @@ a {
 }
 
 .ScrollContainer {
-    margin: 10px 0 0 0;
+    /* margin: 10px 0 0 0; */
     overflow-y: hidden; /* スクロール非表示 */
     white-space: nowrap;
     -webkit-overflow-scrolling: touch; /* iOSでのスクロールをスムーズに */
-    padding: 10px 0;
+    padding: 20px 0 10px 0;
 }
 
 .ImageWrapper {
@@ -174,27 +187,12 @@ a {
 /* スクロールボタンのスタイル */
 .ScrollButton {
     display: flex;
-    align-items: center;
-    justify-content: center;
     position: absolute;
-    width: 50px;
-    height: 15vw;
-    transform: translateY(20px);
-    font-size: 1.1em;
-    cursor: pointer;
-    flex-shrink: 0; /* ボタンが縮小されないように */
-    background-color: transparent;
-    border: transparent;
-    color: white;
-    z-index: 100;
+    top: 0;
+    bottom: 0;
+    align-items: center;
 }
 
-.ScrollButton:hover {
-    .ArrowLine {
-        width: 18px;
-        background-color: white;
-    }
-}
 
 .ScrollButton.EventButton {
     height: 10vw;
@@ -204,41 +202,6 @@ a {
     position: relative;
 }
 
-.ArrowLine {
-    position: absolute;
-    width: 15px; /* 線の長さ */
-    height: 2px; /* 線の太さ */
-    background-color: #aaa;
-    transform-origin: left center;
-}
-
-/* 左側 */
-.ArrowLine.Top {
-    top: 50%; /* コンテナの中央に配置 */
-    left: 0;
-    transform: translateY(-50%) rotate(45deg); /* 上側の線: 垂直方向中央に移動後、45度回転 */
-}
-
-.ArrowLine.Bottom {
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%) rotate(-45deg);
-}
-
-/* 右側 */
-.ArrowLine.Top1 {
-    top: 50%;
-    left: 12px;
-    transform: translateY(50%) rotate(-135deg);
-}
-
-.ArrowLine.Bottom1 {
-    top: 50%;
-    left: 12px;
-    transform: translateY(-50%) rotate(135deg);
-}
-
-
 .LeftButton {
     left: 0;
 }
@@ -247,13 +210,6 @@ a {
     right: 0;
 }
 
-.ScrollButton:hover {
-    background-color: #00050ed2;
-}
-
-.ScrollButton:active {
-    background-color: #1f1f1fb2;
-}
 
 
 /* ======== スクロールバーのカスタマイズ例 (任意) ======== */
@@ -317,4 +273,27 @@ a {
     .ScrollButton {
         display: none;
     }
+}
+
+
+
+/* ボタンのホバー表示/非表示 */
+.ContentContainer .ScrollButton {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s; /* opacityは0.3秒で変化、visibilityは非表示になる際に遅延 */
+}
+
+.ContentContainer:hover .ScrollButton {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+.ContentImg {
+    filter: brightness(100%);
+    transition: filter 0.3s ease;
+}
+
+.ContentImg.darken {
+    filter: brightness(50%);
 }
