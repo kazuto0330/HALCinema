@@ -1,10 +1,19 @@
-from flask import Flask , render_template , request
+from flask import Flask , render_template , request, session, redirect, url_for
 from datetime import date
 import mysql.connector
+import json
+import os
 
 
 
 app = Flask(__name__)
+
+
+#セッションの暗号化
+app.secret_key = 'secret_key'
+#ユーザーデータの場所(とりあえず、次dbに)
+USER_FILE = 'users.json'
+
 
 # db接続用関数
 def conn_db():
@@ -210,6 +219,18 @@ def fetch_event_data(event_id):
     return events
 
 
+#ユーザーデータを読み込む
+def load_users():
+    if not os.path.exists(USER_FILE):
+        return {}
+    with open(USER_FILE, 'r') as f:
+        return json.load(f)
+#ユーザーデータを保存する
+def save_users(users):
+    with open(USER_FILE, 'w') as f:
+        json.dump(users, f)
+
+
 
 ############################################################################
 ### パスの定義
@@ -274,16 +295,37 @@ def member_login():
     return render_template("member_login.html")
 
 
-# login画面
-@app.route('/login')
-def login():
-    return render_template("login.html")
 
 
 # register画面
-@app.route('/register')
+
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    return render_template("register.html")
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        users = load_users()
+        if username in users:
+            return 'ユーザー名は既に存在します'
+        users[username] = password 
+        save_users(users)
+        return redirect(url_for('login'))
+    return render_template('register.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        users = load_users()
+        if users.get(username) == password:
+            session['username'] = username
+            return render_template('top.html')
+        return 'ユーザー名またはパスワードが間違っています'
+    return render_template('login.html')
+
+
+
 
 
 # pay画面
