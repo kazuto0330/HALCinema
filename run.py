@@ -251,8 +251,8 @@ def profile():
 
 
 # movie_information画面
-@app.route('/movie_information/<int:event_id>')
-def movie_information(event_id):
+@app.route('/movie_information/<int:movie_id>')
+def movie_information(movie_id):
     return render_template("movie_information.html")
 
 
