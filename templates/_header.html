@@ -2,7 +2,7 @@
 <header>
   <div class="headerContainer">
     <a href="/">
-      <img src="{{ url_for('static', filename='images/logosiro.png') }}" alt="HALシネマロゴ" id="rogo">
+      <img src="{{ url_for('static', filename='images/logosiro.png') }}" alt="HALシネマロゴ" id="rogo" data-tippy-content="トップに戻る">
     </a>
     <div class="Nav">
       <a href="/movie_list" class="NavButton">
@@ -20,7 +20,7 @@
 
     </div>
     <a href="/profile"><div class="userIcon">
-      <img src="{{ url_for('static', filename='images/genta.jpg') }}" alt="ユーザーアイコン" />
+      <img src="{{ url_for('static', filename='images/genta.jpg') }}" alt="ユーザーアイコン" data-tippy-content="プロフィール"/>
     </div></a>
   </div>
 </header>
