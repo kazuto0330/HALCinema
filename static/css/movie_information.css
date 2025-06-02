@@ -256,16 +256,35 @@ header {
     align-items: center;
 }
 
-.reserveBtn {
-    width: 100px; /* 横幅を広めに設定 */
-    height: 50px;
-    font-size: 22px;
-    background-color: hsl(0, 0%, 85%);
-    color: #111;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
+
+
+
+ /* スタイル3: グラスモーフィズム */
+        .submit-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 16px 32px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .submit-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+
+
+
 
 .eiga{
     color: #9d9d9d;
