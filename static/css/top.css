@@ -139,7 +139,6 @@ a {
 }
 
 .ScrollContainer {
-    /* margin: 10px 0 0 0; */
     overflow-y: hidden; /* スクロール非表示 */
     white-space: nowrap;
     -webkit-overflow-scrolling: touch; /* iOSでのスクロールをスムーズに */
