@@ -21,13 +21,8 @@
                     <h2 class="profile-name" id="profile-name">田中 太郎</h2>
                     <button class="edit-profile-btn" onclick="toggleEditMode()">プロフィール編集</button>
                 </div>
-                <!-- <div class="points-card">
-                    <div class="points-info">
-                        <h4>現在のポイント</h4>
-                        <span class="points-value">1,250ポイント</span>
-                    </div>
-                </div> -->
             </div>
+
 
             <div class="profile-content">
                 <div class="profile-section">
@@ -68,6 +63,32 @@
                     </div>
                 </div>
 
+
+                <div class="profile-section">
+                    <h3 class="section-title">ポイント・特典</h3>
+                    <div class="points-section">
+                        <div class="points-card">
+                            <div class="points-info">
+                                <h4>現在のポイント</h4>
+                                <span class="points-value">1,250ポイント</span>
+                            </div>
+                            <div class="points-actions">
+                                <button class="use-points-btn">ポイント使用</button>
+                            </div>
+                        </div>
+                        <div class="benefits">
+                            <h4>会員特典</h4>
+                            <ul>
+                                <li>毎月1回無料鑑賞券</li>
+                                <li>ポップコーン・ドリンク10%オフ</li>
+                                <li>先行予約受付</li>
+                                <li>誕生日月特別割引</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
                 <div class="profile-section">
                     <h3 class="section-title">視聴履歴</h3>
                     <div class="movie-history">
@@ -98,34 +119,14 @@
                     </div>
                 </div>
 
-                <div class="profile-section">
-                    <h3 class="section-title">ポイント・特典</h3>
-                    <div class="points-section">
-                        <div class="points-card">
-                            <div class="points-info">
-                                <h4>現在のポイント</h4>
-                                <span class="points-value">1,250ポイント</span>
-                            </div>
-                            <div class="points-actions">
-                                <button class="use-points-btn">ポイント使用</button>
-                            </div>
-                        </div>
-                        <div class="benefits">
-                            <h4>会員特典</h4>
-                            <ul>
-                                <li>毎月1回無料鑑賞券</li>
-                                <li>ポップコーン・ドリンク10%オフ</li>
-                                <li>先行予約受付</li>
-                                <li>誕生日月特別割引</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
     </main>
 
 
     {% include '_footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 </body>
 </html>
