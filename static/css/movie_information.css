@@ -261,7 +261,7 @@ header {
 
  /* スタイル3: グラスモーフィズム */
         .submit-btn {
-            background: rgba(175, 238, 238, 0.75);
+            background: rgba(175, 238, 238, 0.6);
             backdrop-filter: blur(10px);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.3);
