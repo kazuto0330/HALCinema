@@ -103,35 +103,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ボタンのホバー表示/非表示
 // 定数：ビューポートのはみ出し判定の閾値（左右の余白）
-const OUT_OF_BOUNDS_THRESHOLD = 30;
+const OUT_OF_BOUNDS_THRESHOLD = 25;
+
+/**
+ * 指定された画像要素のビューポート内での位置に基づき、
+ * 'darken' クラスを適用または削除する関数。
+ * はみ出している場合に 'darken' を適用し、はみ出していない場合に削除します。
+ * @param {HTMLElement} img - 処理対象の画像要素（.ContentImg）
+ */
+function updateImageDarkenState(img) {
+    const rect = img.getBoundingClientRect(); // 要素のビューポートに対する位置とサイズを取得
+    const viewportWidth = window.innerWidth;
+
+    // はみ出し判定
+    const isOutOfBounds =
+        rect.left < OUT_OF_BOUNDS_THRESHOLD ||             // 左にはみ出し
+        rect.right > viewportWidth - OUT_OF_BOUNDS_THRESHOLD; // 右にはみ出し
+
+    // はみ出している場合のみ 'darken' クラスを追加し、CSSでフィルターを適用。
+    // はみ出していない場合は 'darken' クラスを削除します (toggleの第二引数がfalseの場合)。
+    img.classList.toggle('darken', isOutOfBounds);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    const contentContainers = document.querySelectorAll('.ContentContainer');
+    // --- クラス名ScrollContainerの要素にスクロールイベントを追加 ---
+    // すべてのScrollContainer要素を取得
+    const scrollContainers = document.querySelectorAll('.ScrollContainer');
 
-    contentContainers.forEach(container => {
-
-        const scrollImgs = container.querySelectorAll('.ContentImg'); // 命名をscrollImgs（複数形）に修正
-
-        // ホバーで実行
-        container.addEventListener('mouseenter', () => {
-            scrollImgs.forEach(img => {
-                const rect = img.getBoundingClientRect(); // 要素のビューポートに対する位置とサイズを取得
-                const viewportWidth = window.innerWidth;
-
-                // はみ出し判定
-                const isOutOfBounds =
-                    rect.left < OUT_OF_BOUNDS_THRESHOLD ||             // 左にはみ出し
-                    rect.right > viewportWidth - OUT_OF_BOUNDS_THRESHOLD; // 右にはみ出し
-
-                // はみ出している場合のみ 'darken' クラスを追加し、CSSでフィルターを適用
-                img.classList.toggle('darken', isOutOfBounds);
+    if (scrollContainers.length > 0) { // ScrollContainerが存在する場合のみ処理
+        scrollContainers.forEach(container => {
+            // 各ScrollContainerにスクロールイベントリスナーを追加
+            container.addEventListener('scroll', () => {
+                // スクロールするたびに、ページ内のすべての.ContentImg要素をチェックし、状態を更新
+                const allContentImgs = document.querySelectorAll('.ContentImg');
+                allContentImgs.forEach(img => {
+                    updateImageDarkenState(img);
+                });
             });
         });
 
-        // ホバー解除で実行
+        // ページがロードされた初期状態でも一度実行し、画像の状態を正しく反映させる
+        // (例: ページリロード時に既にスクロールされている場合など)
+        const allContentImgs = document.querySelectorAll('.ContentImg');
+        allContentImgs.forEach(img => {
+            updateImageDarkenState(img);
+        });
+    }
+
+    // --- 既存のホバーイベント処理の調整 ---
+    const contentContainers = document.querySelectorAll('.ContentContainer');
+
+    contentContainers.forEach(container => {
+        const scrollImgs = container.querySelectorAll('.ContentImg');
+
+        // ホバーで実行（マウスが乗った時）
+        container.addEventListener('mouseenter', () => {
+            scrollImgs.forEach(img => {
+                // ホバーしたコンテナ内の画像に対して、はみ出し判定とクラス適用を行う
+                updateImageDarkenState(img);
+            });
+        });
+
+        // ホバー解除で実行（マウスが離れた時）
         container.addEventListener('mouseleave', () => {
             scrollImgs.forEach(img => {
                 // ホバー解除時は常に 'darken' クラスを削除し、フィルターをリセット
+                // これにより、マウスが離れたら必ずホバーによる効果が消える
                 img.classList.remove('darken');
             });
         });

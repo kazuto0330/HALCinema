@@ -50,17 +50,30 @@ a {
     overflow-x: hidden; /* 横方向のスクロールバーを非表示にする */
 }
 .Tab{
-    display: flex;
-    flex-wrap: wrap;
-    margin: 20px 0 0 0;
-    width: 100%;
-    flex-shrink: 0; /* タブが縮まないようにする */
+    display: grid;
+    /* コンテナの幅に応じて自動でカラムを生成 (最小120px, 最大1fr) */
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    /* アイテム間の行と列のギャップ */
+    gap: 40px 30px;
+
+    /* コンテナ全体を中央揃えにする */
+    margin: 20px auto 0 auto;
+    width: 100%; /* 親要素の幅いっぱい */
+    max-width: 1200px; /* オプション: コンテンツの最大幅 */
+
+    /* 新規追加: コンテナの内側に左右20pxの余白を追加 */
+    padding: 10px 20px;
+    /* width/max-widthにpaddingを含めるようにする */
+    box-sizing: border-box;
+    
+    
 }
 .MovieImg{
-    margin: 0 15px 40px 15px;
+    /* グリッドセル内で画像を中央揃えに配置 */
+    justify-self: center;
 }
 .MovieImg img{
-    width: 13vw;
+    width: 100%; /* 親要素(MovieImg)の幅に合わせて調整 */
     min-width: 120px;
     max-width: 160px;
     border-radius: 5px;
