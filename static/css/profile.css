@@ -138,10 +138,10 @@ body {
     background: #3498db;
     color: white;
     border: none;
-    padding: 0.8rem 1.5rem;
+    padding: 0.3rem 1rem;
     border-radius: 25px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
 }
 
@@ -325,13 +325,14 @@ body {
 
 .points-card {
     background: linear-gradient(135deg, #3498db, #2980b9);
-    padding: 2rem;
+    padding: 1rem;
+    margin: 0 0 0 auto;
     border-radius: 15px;
     text-align: center;
 }
 
 .points-value {
-    font-size: 2rem;
+    font-size: 1.4rem;
     font-weight: bold;
     display: block;
     margin-top: 0.5rem;
