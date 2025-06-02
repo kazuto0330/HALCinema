@@ -150,7 +150,7 @@ a {
 }
 
 .ImageWrapper a img:hover {
-    transform: scale(1.1);
+    transform: scale(1.1)translateY(-5px);
 }
 
 .ImageWrapper.Event a img {

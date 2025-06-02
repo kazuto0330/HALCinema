@@ -8,18 +8,7 @@ body {
   
   /*--------------------*/
   /* ヘッダー */
-  header {
-      background-color: #111;
-      padding: 10px 20px;
-  }
-   
-  .headerContainer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      max-width: 1100px;
-      margin: 0 auto;
-  }
+
    
   /* サイト名 */
   .siteName {

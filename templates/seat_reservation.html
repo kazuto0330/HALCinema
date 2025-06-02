@@ -1,404 +1,425 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/seat_reservation.css') }}">
-  <title>座席状況</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/seat_reservation.css') }}">
+    <title>HALシネマ プロフィール画面</title>
 </head>
-
 <body>
+    {% include '_header.html' %}
 
-  {% include '_header.html' %}
+    <!DOCTYPE html>
+    <html lang="zh">
+    <head>
+      <meta charset="UTF-8">
+      <title>座席状況</title>
+      <style>
+        .hall {
+          display: none;
+        }
+        .hall.active {
+          display: block;
+        }
+        .seat {
+          display: inline-block;
+          width: 30px;
+          height: 30px;
+          margin: 5px;
+          background-color: #ccc;
+          text-align: center;
+          line-height: 30px;
+          cursor: pointer;
+        }
+      </style>
+    </head>
+    <body>
+    
+      <h2>シアターを選ぶ：</h2>
+      <select id="hallSelector">
+        <option value="1">シアター1·2</option>
+        <option value="2">シアター3·4</option>
+        <option value="3">シアター5·6</option>
+      </select>
+    
+      <div id="hall1" class="hall active">
+            <!-- A行 -->
+        <div class="row">
+            <button class="seat lock"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">A</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">A</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+        </div>
+    
+        <!-- B行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">B</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">B</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+        </div>
+    
+        <!-- C行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">C</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">C</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+        </div>
+    
+        <div class="row"></div>
+        <div class="row"></div>
+    
+        <!-- D行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">D</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">D</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+        </div>
+    
+        <!-- E行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">E</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">E</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+        </div>
+    
+        <!-- F行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">F</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">F</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+        </div>
+    
+        <!-- G行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">G</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">G</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+        </div>
+    
+        <!-- H行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">H</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">H</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+        </div>
+    
+        <!-- I行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">I</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">I</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+        </div>
+    
+        <!-- J行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">J</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">J</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+        </div>
+  
+      </div>
+    
+      <div id="hall2" class="hall">
+        <!-- A行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">A</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">A</div>
+            <button class="seat"></button><button class="seat"></button>
+        </div>
+    
+        <!-- B行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">B</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">B</div>
+            <button class="seat"></button><button class="seat"></button>
+        </div>
+    
+        <!-- C行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">C</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">C</div>
+            <button class="seat"></button><button class="seat"></button>
+        </div>
+    
+        <div class="row"></div>
+        <div class="row"></div>
+    
+        <!-- D行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">D</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">D</div>
+            <button class="seat"></button><button class="seat"></button>
+        </div>
+    
+        <!-- E行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">E</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">E</div>
+            <button class="seat"></button><button class="seat"></button>
+        </div>
+    
+        <!-- F行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">F</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">F</div>
+            <button class="seat"></button><button class="seat"></button>
+        </div>
+    
+        <!-- G行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">G</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">G</div>
+            <button class="seat"></button><button class="seat"></button>
+        </div>
+    
+        <!-- H行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">H</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">H</div>
+            <button class="seat"></button><button class="seat"></button>
+        </div>
+    
+        <!-- I行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">I</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">I</div>
+            <button class="seat"></button><button class="seat"></button>
+        </div>
+    
+        <!-- J行 -->
+        <div class="row">
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">J</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <div class="label">J</div>
+            <button class="seat"></button><button class="seat"></button>
+        </div>
+      </div>
+    
+      <div id="hall3" class="hall">
+        <!-- A行 -->
+        <div class="row">
+            <div class="label">A</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">A</div>
+        </div>
+    
+        <!-- B行 -->
+        <div class="row">
+            <div class="label">B</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">B</div>
+        </div>
+    
+    
+        <div class="row"></div>
+        <div class="row"></div>
+    
+        <!-- C行 -->
+        <div class="row">
+            <div class="label">C</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">C</div>
+        </div>
+    
+        <!-- D行 -->
+        <div class="row">
+            <div class="label">D</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">D</div>
+        </div>
+    
+        <!-- E行 -->
+        <div class="row">
+            <div class="label">E</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">E</div>
+        </div>
+    
+        <!-- F行 -->
+        <div class="row">
+            <div class="label">F</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">F</div>
+        </div>
+    
+        <!-- G行 -->
+        <div class="row">
+            <div class="label">G</div>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
+            class="seat"></button>
+            <button class="seat"></button><button class="seat"></button>
+            <div class="label">G</div>
+        </div>
+      </div>
+    
+    <br /><br /><br />
 
 
-  <br /><br /><br />
+    <button class="reservation">予約</button>
+      
+      
+      
+    <script>
+    const selector = document.getElementById('hallSelector');
+    const halls = document.querySelectorAll('.hall');
 
+    selector.addEventListener('change', function () {
+        halls.forEach(hall => hall.classList.remove('active'));
+        document.getElementById('hall' + this.value).classList.add('active');
+    });
+    </script>
+    
+    </body>
+    </html>
+    
 
-  <div class="container1">
+    {% include '_footer.html' %}
 
-    <div class="screen">シアター1,2 </div>
-
-    <!-- A行 -->
-    <div class="row">
-      <button class="seat lock"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">A</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">A</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-    </div>
-
-    <!-- B行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">B</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">B</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-    </div>
-
-    <!-- C行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">C</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">C</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-    </div>
-
-    <div class="row"></div>
-    <div class="row"></div>
-
-    <!-- D行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">D</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">D</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-    </div>
-
-    <!-- E行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">E</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">E</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-    </div>
-
-    <!-- F行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">F</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">F</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-    </div>
-
-    <!-- G行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">G</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">G</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-    </div>
-
-    <!-- H行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">H</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">H</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-    </div>
-
-    <!-- I行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">I</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">I</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-    </div>
-
-    <!-- J行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">J</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">J</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-    </div>
-
-  </div>
-
-
-
-  <div class="container2">
-
-    <div class="screen">シアター3,4 </div>
-
-    <!-- A行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">A</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">A</div>
-      <button class="seat"></button><button class="seat"></button>
-    </div>
-
-    <!-- B行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">B</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">B</div>
-      <button class="seat"></button><button class="seat"></button>
-    </div>
-
-    <!-- C行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">C</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">C</div>
-      <button class="seat"></button><button class="seat"></button>
-    </div>
-
-    <div class="row"></div>
-    <div class="row"></div>
-
-    <!-- D行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">D</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">D</div>
-      <button class="seat"></button><button class="seat"></button>
-    </div>
-
-    <!-- E行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">E</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">E</div>
-      <button class="seat"></button><button class="seat"></button>
-    </div>
-
-    <!-- F行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">F</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">F</div>
-      <button class="seat"></button><button class="seat"></button>
-    </div>
-
-    <!-- G行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">G</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">G</div>
-      <button class="seat"></button><button class="seat"></button>
-    </div>
-
-    <!-- H行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">H</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">H</div>
-      <button class="seat"></button><button class="seat"></button>
-    </div>
-
-    <!-- I行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">I</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">I</div>
-      <button class="seat"></button><button class="seat"></button>
-    </div>
-
-    <!-- J行 -->
-    <div class="row">
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">J</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <div class="label">J</div>
-      <button class="seat"></button><button class="seat"></button>
-    </div>
-
-  </div>
-
-
-
-  <div class="container3">
-
-    <div class="screen">シアター5,6</div>
-
-    <!-- A行 -->
-    <div class="row">
-      <div class="label">A</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">A</div>
-    </div>
-
-    <!-- B行 -->
-    <div class="row">
-      <div class="label">B</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">B</div>
-    </div>
-
-
-    <div class="row"></div>
-    <div class="row"></div>
-
-    <!-- C行 -->
-    <div class="row">
-      <div class="label">C</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">C</div>
-    </div>
-
-    <!-- D行 -->
-    <div class="row">
-      <div class="label">D</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">D</div>
-    </div>
-
-    <!-- E行 -->
-    <div class="row">
-      <div class="label">E</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">E</div>
-    </div>
-
-    <!-- F行 -->
-    <div class="row">
-      <div class="label">F</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">F</div>
-    </div>
-
-    <!-- G行 -->
-    <div class="row">
-      <div class="label">G</div>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button><button class="seat"></button><button
-        class="seat"></button>
-      <button class="seat"></button><button class="seat"></button>
-      <div class="label">G</div>
-    </div>
-
-  </div>
-
-
-  <br /><br /><br />
-
-
-  <a class="reservation" href="/">予約</a>
-
-
-
-
-  {% include '_footer.html' %}
-
-  <script src="{{ url_for('static', filename='js/seat_reservation.js') }}"></script>
-
+    <script src="{{ url_for('static', filename='js/seat_reservation.js') }}"></script>
 
 </body>
-
 </html>
