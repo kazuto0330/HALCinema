@@ -25,6 +25,7 @@ def format_datetime(value, format='%Y年%m月%d日'):
 
 app.jinja_env.filters['strftime'] = format_datetime
     
+    
 #映画情報を複数件取得する関数（status="now_playing" or "coming_soon" , limit="取得件数" or "None"）
 def fetch_movies(status='now_playing', limit=None):
     """条件に合致する映画データをデータベースから取得する関数
@@ -102,6 +103,7 @@ def fetch_movies(status='now_playing', limit=None):
         if conn and conn.is_connected():
             conn.close()
             
+            
 #イベント情報を複数件取得する関数（limit="取得件数" or "None" , random_order="True" or "False"）
 def fetch_events(limit: int = 10, random_order: bool = False):
     """
@@ -165,6 +167,7 @@ def fetch_events(limit: int = 10, random_order: bool = False):
     
     return events
 
+
 #指定したIDのイベントの詳細情報を取得する関数（）
 def fetch_event_data(event_id):
     """指定したIDのイベントの詳細情報を取得する関数"""
@@ -208,7 +211,6 @@ def fetch_event_data(event_id):
 
 
 
-
 ############################################################################
 ### パスの定義
 ############################################################################
@@ -221,12 +223,14 @@ def index():
     event = fetch_events(limit=10)
     return render_template("top.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
 
+
 # MOVIELIST(映画一覧)画面
 @app.route('/movie_list')
 def movie_list():
     now_playing_movies = fetch_movies(status='now_playing')
     coming_soon_movies = fetch_movies(status='coming_soon')
     return render_template("movie_list.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies)
+
 
 # EVENT画面
 @app.route('/event/<int:event_id>')
@@ -239,11 +243,11 @@ def event(event_id):
     
     return render_template("event.html", event=event, recommendation=event_recommendation) 
 
+
 # PROFILE画面
 @app.route('/profile')
 def profile():
     return render_template("profile.html")
-
 
 
 # movie_information画面
@@ -257,15 +261,18 @@ def movie_information(event_id):
 def guide():
     return render_template("guide.html")
 
+
 # seat_reservation画面
 @app.route('/seat_reservation')
 def seat_reservation():
     return render_template("seat_reservation.html")
 
+
 # member_login画面
 @app.route('/member_login')
 def member_login():
     return render_template("member_login.html")
+
 
 # login画面
 @app.route('/login')
