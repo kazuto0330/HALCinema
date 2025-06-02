@@ -7,14 +7,14 @@
 #FooterLogo{
     display: flex;
     justify-content: center;
-    margin: 0 auto;
+    margin: 5px auto 0 auto;
 }
 #FooterLogoImg{
     width: 100px;
     margin: 0 auto;
 }
 #Copyright{
-    margin: 20px 0 0 0;
+    margin: 9px 0 0 0;
     text-align: center;
     color: #ccc;
 }
