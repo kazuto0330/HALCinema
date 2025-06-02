@@ -265,7 +265,7 @@ header {
             backdrop-filter: blur(10px);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 16px 32px;
+            /*padding: 16px 32px;*/
             border-radius: 15px;
             font-size: 1.1rem;
             font-weight: bold;
@@ -273,7 +273,7 @@ header {
             transition: all 0.3s ease;
             width: 100px;
             height: 50px;
-            margin-bottom: 1rem;
+            /*margin-bottom: 1rem;*/
         }
 
         .submit-btn:hover {
