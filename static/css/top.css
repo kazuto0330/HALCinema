@@ -108,7 +108,7 @@ a {
 
 /* ----------------------------------------------------------------メインコンテンツ------------------------------------------------------------------------- */
 .ContentContainer {
-    margin: 40px 0;
+    margin: 20px 0;
 }
 
 .ContentBox {
@@ -148,35 +148,36 @@ a {
     padding-left: 50px;
 }
 
-.ImageWrapper a img {
-    height: 15vw;
+.ContentImg {
+    width: 11.25vw;
     margin-right: 3.5vw;
     margin-right: 20px;
     object-fit: cover; /* 要素に合わせて画像を拡大縮小し、アスペクト比を維持（はみ出しは切り取る） */
     border-radius: 5px;
     box-shadow: 3px 5px 10px rgba(255, 255, 255, 0.1);
+    filter: brightness(100%);
+    transition: filter 0.3s ease;
 }
 
-.ImageWrapper a img:hover {
+.ContentImg:hover {
     transform: scale(1.1)translateY(-5px);
 }
 
 .ImageWrapper.Event a img {
-    height: 10vw;
+    width: 22vw;
+}
+
+.ContentImg.darken {
+    filter: brightness(50%);
 }
 
 .ImageWrapper a div {
-    margin-right: 20px;
     text-align: center;
+    margin: 5px 20px 0 0;
     font-size: 0.8rem;
 }
 
 
-.GalleryWithButtons .ScrollContainer.JsScroll {
-    width: calc(100% - 80px); /* 全体幅から左右のボタン幅を引く（ボタン幅に合わせて調整） */
-    margin: 0 10px;
-    padding: 10px 0;
-}
 
 
 /* スクロールボタンのスタイル */
@@ -221,7 +222,7 @@ a {
         font-size: 0.9rem;
     }
 
-    .ImageWrapper a img {
+    .ContentImg {
         height: 25vw;
     }
 
@@ -255,7 +256,7 @@ a {
         font-size: 0.85rem;
     }
 
-    .ImageWrapper a img {
+    .ContentImg {
         height: 30vw;
     }
 
@@ -281,12 +282,4 @@ a {
     visibility: visible;
     opacity: 1;
     transition: opacity 0.3s ease, visibility 0s linear 0s;
-}
-.ContentImg {
-    filter: brightness(100%);
-    transition: filter 0.3s ease;
-}
-
-.ContentImg.darken {
-    filter: brightness(50%);
 }
