@@ -31,7 +31,7 @@
             <div id="ComingTab" class="Tab">
                 {% if coming_soon %}
                     {% for movie in coming_soon %}
-                    <a class="MovieImg" href="/movie_information/{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"><div>{{ movie.movieEndDate|strftime('%Y年%m月%d日') }} 公開</div></a>
+                    <a class="MovieImg" href="/movie_information/{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"><div>{{ movie.movieReleaseDate|strftime('%Y年%m月%d日') }} 公開</div></a>
                     {% endfor %}
                 {% endif %}
             </div>
