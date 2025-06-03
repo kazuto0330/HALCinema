@@ -53,7 +53,7 @@
                 <div class="ImageWrapper">
                 {% if now_playing %}
                     {% for movie in now_playing %}
-                    <a href="/movie_information/{{ movie.moviesId }}">
+                    <a href="/movie_information/{{ movie.moviesId }}" data-tippy-content="{{ movie.movieTitle }}">
                         <img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg">
                     </a>
                     {% endfor %}
@@ -80,7 +80,7 @@
                 <div class="ImageWrapper Event">
                 {% if events %}
                     {% for event in events %}
-                    <a href="/event/{{ event.eventInfoId }}">
+                    <a href="/event/{{ event.eventInfoId }}" data-tippy-content="{{ event.eventTitle }}">
                         <img src="{{ url_for('static', filename='images/' + event.eventImage ) }}" alt="{{ event.eventTitle }}" class="ContentImg">
                     </a>
                     {% endfor %}
@@ -108,7 +108,7 @@
                 <div class="ImageWrapper">
                 {% if coming_soon %}
                     {% for movie in coming_soon %}
-                    <a href="/movie_information/{{ movie.moviesId }}">
+                    <a href="/movie_information/{{ movie.moviesId }}" data-tippy-content="{{ movie.movieTitle }}">
                         <img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg">
                         <div>{{ movie.movieEndDate|strftime('%Y年%m月%d日') }} 公開</div>
                     </a>
