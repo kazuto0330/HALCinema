@@ -219,6 +219,18 @@ def fetch_event_data(event_id):
     return events
 
 
+#ユーザーデータを読み込む
+def load_users():
+    if not os.path.exists(USER_FILE):
+        return {}
+    with open(USER_FILE, 'r') as f:
+        return json.load(f)
+#ユーザーデータを保存する
+def save_users(users):
+    with open(USER_FILE, 'w') as f:
+        json.dump(users, f)
+
+
 
 ############################################################################
 ### パスの定義
