@@ -54,20 +54,17 @@ a {
     font-weight: bold;
     user-select: none;
     z-index: 100;
+    padding: 20px;
     transition: all 0.1s ease; 
 }
 .Arrow:hover{
-    font-size: 28px;;
+    font-size: 28px;
 }
 .LeftArrow{
     left: 0;
 }
 .RightArrow{
     right: 0;
-}
-.LeftArrow,
-.RightArrow{
-    padding: 20px;
 }
 
 
@@ -134,7 +131,6 @@ a {
 }
 
 .Content {
-    display: flex;
     position: relative;
 }
 
@@ -186,16 +182,14 @@ a {
 /* スクロールボタンのスタイル */
 .ScrollButton {
     display: flex;
-    position: absolute;
-    top: 0;
-    bottom: 0;
     align-items: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    user-select: none;
+    cursor: pointer;
 }
 
-
-.ScrollButton.EventButton {
-    height: 10vw;
-}
 
 .ScrollButton div {
     position: relative;
