@@ -1,4 +1,4 @@
-from flask import Flask , render_template , request, session, redirect, url_for
+from flask import Flask , render_template , request, session, redirect, url_for, jsonify
 from datetime import date
 import mysql.connector
 import json
@@ -7,6 +7,9 @@ import os
 
 
 app = Flask(__name__)
+
+
+app.secret_key ="himitukagi"
 
 
 
@@ -220,12 +223,57 @@ def fetch_event_data(event_id):
     return events
 
 
+#ユーザーデータを取得する関数（user_id）
+def getUserData(user_id):
+    """指定したIDのイベントの詳細情報を取得する関数"""
+    conn = None
+    cursor = None
+    events = []
+
+    try:
+        conn = conn_db()
+        cursor = conn.cursor(dictionary=True)
+
+        sql = """
+                SELECT
+                    accountId,
+                    accountName,
+                    emailAddress,
+                    password,
+                    accountIcon,
+                    realName,
+                    phoneNumber,
+                    birthDate
+                FROM
+                    t_account
+                WHERE
+                    accountId = %s;
+        """
+        
+        cursor.execute(sql, (user_id,))
+        
+        events = cursor.fetchone()
+
+    except mysql.connector.Error as err:
+        print(f"クエリ実行エラー: {err}")
+    finally:
+        # 接続とカーソルを必ず閉じる
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+    
+    return events
+
+
 #ユーザーデータを読み込む
 def load_users():
     if not os.path.exists(USER_FILE):
         return {}
     with open(USER_FILE, 'r') as f:
         return json.load(f)
+
+
 #ユーザーデータを保存する
 def save_users(users):
     with open(USER_FILE, 'w') as f:
@@ -258,18 +306,108 @@ def movie_list():
 @app.route('/event/<int:event_id>')
 def event(event_id):
     event = fetch_event_data(event_id)
-    event_recommendation = fetch_events(limit=5,random_order=True)
-    
-    print(event_id)
-    print(event)
-    
+    event_recommendation = fetch_events(limit=5,random_order=True) 
     return render_template("event.html", event=event, recommendation=event_recommendation) 
 
 
 # PROFILE画面
 @app.route('/profile')
 def profile():
-    return render_template("profile.html")
+    user_id = 2
+    userData = getUserData(user_id)
+    print(userData)
+    return render_template("profile.html", userData=userData)
+
+
+# PROFILEのアップロード処理 (既存アカウントの更新)
+@app.route('/add_account', methods=['POST'])
+def update_profile():
+    session['user_id'] = 2
+    
+    account_id = session.get('user_id') # セッションからユーザーIDを取得
+
+    # ユーザーがログインしていない、またはセッションにIDがない場合
+    if not account_id:
+        return jsonify({'success': False, 'message': 'ログインが必要です。'}), 401
+
+
+    data = request.get_json()
+
+    # データが提供されていない場合
+    if not data:
+        return jsonify({'success': False, 'message': 'データが提供されていません。'}), 400
+
+
+    # 必須項目の確認
+    required_fields = ['realName', 'emailAddress', 'phoneNumber', 'birthDate']
+    for field in required_fields:
+        if field not in data or not data[field]:
+            return jsonify({'success': False, 'message': f'{field} は必須です。'}), 400
+
+    # ------------------------------------------------------
+    # 各データの取得と設定
+    # ------------------------------------------------------
+    real_name = data['realName']
+    email_address = data['emailAddress']
+    phone_number = data['phoneNumber']
+
+    # `birthDate` の型変換
+    try:
+        birth_date = date.fromisoformat(data['birthDate']) # JSから 'YYYY-MM-DD' 形式を想定
+    except ValueError:
+        return jsonify({'success': False, 'message': 'birthDate の形式が正しくありません。 (YYYY-MM-DD) 例: 1990-01-01'}), 400
+
+    conn = None
+    cursor = None
+    try:
+        # データベースに接続
+        conn = conn_db()
+        cursor = conn.cursor(dictionary=True) # dictionary=True で辞書形式で結果が返る
+
+        sql = """
+        UPDATE `t_account`
+        SET
+            `emailAddress` = %s,
+            `realName` = %s,
+            `phoneNumber` = %s,
+            `birthDate` = %s
+        WHERE
+            `accountId` = %s
+        """
+        values = (
+            email_address,
+            real_name,
+            phone_number,
+            birth_date,
+            account_id
+        )
+
+        # SQLを実行
+        cursor.execute(sql, values)
+        conn.commit() # 変更をコミット
+
+        # 更新された行数をチェック
+        if cursor.rowcount == 0:
+            # 指定されたaccountIdのアカウントが存在しない、または更新する変更がなかった場合
+            return jsonify({'success': False, 'message': 'プロフィールが見つからないか、更新する変更がありませんでした。'}), 404
+
+        return jsonify({'success': True, 'message': 'プロフィールが正常に更新されました。'}), 200
+
+    except mysql.connector.Error as err:
+        # データベースエラーが発生した場合
+        print(f"データベースエラー: {err}")
+        if conn:
+            conn.rollback() # エラー時はロールバック
+        return jsonify({'success': False, 'message': f'データベースエラーが発生しました: {err}'}), 500
+    except Exception as e:
+        # その他の予期せぬエラーが発生した場合
+        print(f"予期せぬエラー: {e}")
+        return jsonify({'success': False, 'message': f'サーバーエラーが発生しました: {e}'}), 500
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 # movie_information画面

@@ -228,13 +228,6 @@ a {
         font-size: 0.9rem;
     }
 
-    .ContentImg {
-        /* width: 11.25vw; */
-    }
-
-    .ImageWrapper.Event a img {
-        /* height: 15vw; */
-    }
 
     .ScrollButton {
         height: 25vw;
@@ -260,14 +253,6 @@ a {
 
     .ContentTextMore {
         font-size: 0.85rem;
-    }
-
-    .ContentImg {
-        /* height: 30vw; */
-    }
-
-    .ImageWrapper.Event a img {
-        /* height: 20vw; */
     }
 
     .ScrollButton {

@@ -40,25 +40,68 @@ function saveProfile() {
     const phone = document.getElementById('edit-phone').value;
     const birth = document.getElementById('edit-birth').value;
 
-    // 表示を更新
-    document.getElementById('display-name').textContent = name;
-    document.getElementById('display-email').textContent = email;
-    document.getElementById('display-phone').textContent = phone;
-    
-    // 生年月日をフォーマット
-    const birthDate = new Date(birth);
-    const formattedBirth = `${birthDate.getFullYear()}年${birthDate.getMonth() + 1}月${birthDate.getDate()}日`;
-    document.getElementById('display-birth').textContent = formattedBirth;
-    
-    // プロフィール名も更新
-    document.getElementById('profile-name').textContent = name;
+    // ★変更: accountId はJavaScriptから送る必要がなくなりました。
+    // Flask側でセッションから取得するため、この部分のコードは不要です。
 
-    // 編集モードを終了
-    toggleEditMode();
-    
-    // 保存完了メッセージ
-    showNotification('プロフィールを更新しました', 'success');
+    // データをFlaskエンドポイントにPOST
+    fetch('/add_account', { // Flaskのルート名はそのまま
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            // accountId はここから削除
+            realName: name,       // JSのnameをrealNameとして送信
+            emailAddress: email,
+            phoneNumber: phone,
+            birthDate: birth,
+        })
+    })
+    .then(response => {
+        // HTTPステータスコードをチェックし、エラーの場合はJSON解析前に処理
+        if (!response.ok) {
+            // エラーレスポンスのJSONを解析して、具体的なエラーメッセージを表示
+            return response.json().then(errorData => {
+                throw new Error(errorData.message || `HTTPエラー: ${response.status}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // 成功時の処理 (前回のJSと同じ)
+            // 表示を更新
+            document.getElementById('display-name').textContent = name;
+            document.getElementById('display-email').textContent = email;
+            document.getElementById('display-phone').textContent = phone;
+
+            // 生年月日をフォーマット
+            const birthDate = new Date(birth);
+            // new Date() が不正な日付文字列を受け取ると Invalid Date になる可能性があるのでチェック
+            const formattedBirth = (isNaN(birthDate.getTime())) ? '' : `${birthDate.getFullYear()}年${birthDate.getMonth() + 1}月${birthDate.getDate()}日`;
+            document.getElementById('display-birth').textContent = formattedBirth;
+
+            // プロフィール名も更新
+            document.getElementById('profile-name').textContent = name;
+
+            // 編集モードを終了
+            toggleEditMode();
+
+            // 保存完了メッセージ
+            showNotification('プロフィールを更新しました', 'success');
+
+        } else {
+            alert('エラーが発生しました: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('通信またはサーバーエラー:', error);
+        alert('プロフィールの更新中にエラーが発生しました: ' + error.message);
+    });
 }
+
+
+
 
 function cancelEdit() {
     // 元のデータに戻す
@@ -114,13 +157,6 @@ function showNotification(message, type = 'info') {
         setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
-
-// ジャンルタグのクリックイベント
-document.querySelectorAll('.genre-tag').forEach(tag => {
-    tag.addEventListener('click', function() {
-        this.classList.toggle('active');
-    });
-});
 
 // CSS アニメーション
 const style = document.createElement('style');

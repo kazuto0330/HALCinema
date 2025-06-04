@@ -15,45 +15,47 @@
         <div class="container">
             <div class="profile-header">
                 <div class="profile-avatar">
-                    <img src="{{ url_for('static', filename='images/genta.jpg') }}" alt="プロフィール画像" id="avatar-img">
+                    <img src="{{ url_for('static', filename='images/usericon/' + userData.accountIcon ) }}" alt="プロフィール画像" id="avatar-img">
                 </div>
                 <div class="profile-info">
-                    <h2 class="profile-name" id="profile-name">小嶋 元太</h2>
-                    <button class="edit-profile-btn" onclick="toggleEditMode()">プロフィール編集</button>
+                    <h2 class="profile-name" id="profile-name">{{ userData.accountName }}</h2>
                 </div>
             </div>
 
 
             <div class="profile-content">
                 <div class="profile-section">
-                    <h3 class="section-title">基本情報</h3>
+                    <div class="titleContainer">
+                        <h3 class="section-title">基本情報</h3>
+                        <div class="infoChangeButton" onclick="toggleEditMode()"><img src="{{ url_for('static', filename='images/pencil.png' ) }}" alt="鉛筆の画像"></div>
+                    </div>
                     <div class="info-grid">
                         <div class="info-item">
                             <label>お名前</label>
                             <div class="info-display">
-                                <span id="display-name">小嶋 元太</span>
-                                <input type="text" id="edit-name" value="田中 太郎" style="display: none;">
+                                <span id="display-name">{{ userData.realName }}</span>
+                                <input type="text" id="edit-name" value="{{ userData.realName }}" style="display: none;">
                             </div>
                         </div>
                         <div class="info-item">
                             <label>メールアドレス</label>
                             <div class="info-display">
-                                <span id="display-email">genta@example.com</span>
-                                <input type="email" id="edit-email" value="tanaka@example.com" style="display: none;">
+                                <span id="display-email">{{ userData.emailAddress }}</span>
+                                <input type="email" id="edit-email" value="{{ userData.emailAddress }}" style="display: none;">
                             </div>
                         </div>
                         <div class="info-item">
                             <label>電話番号</label>
                             <div class="info-display">
-                                <span id="display-phone">090-1234-5678</span>
-                                <input type="tel" id="edit-phone" value="090-1234-5678" style="display: none;">
+                                <span id="display-phone">{{ userData.phoneNumber }}</span>
+                                <input type="tel" id="edit-phone" value="{{ userData.phoneNumber }}" style="display: none;">
                             </div>
                         </div>
                         <div class="info-item">
                             <label>生年月日</label>
                             <div class="info-display">
-                                <span id="display-birth">1989年5月4日</span>
-                                <input type="date" id="edit-birth" value="1990-05-15" style="display: none;">
+                                <span id="display-birth">{{ userData.birthDate|strftime('%Y年%m月%d日') }}</span>
+                                <input type="date" id="edit-birth" value="{{ userData.birthDate|strftime('%Y年%m月%d日') }}" style="display: none;">
                             </div>
                         </div>
                     </div>
