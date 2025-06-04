@@ -28,6 +28,9 @@ CREATE TABLE `t_account` (
   `emailAddress` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `accountIcon` varchar(255) DEFAULT NULL,
+  `realName` varchar(127) DEFAULT NULL,
+  `phoneNumber` varchar(20) DEFAULT NULL,
+  `birthDate` date DEFAULT NULL,
   PRIMARY KEY (`accountId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -217,4 +220,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-30 23:31:37
+-- Dump completed on 2025-06-04 14:44:50

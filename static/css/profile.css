@@ -5,7 +5,7 @@
 }
 
 body {
-    background: linear-gradient(135deg, #121220 0%, #111a31 50%, #0b2748 100%);
+    background-color: #000918;
     color: #fff;
     min-height: 100vh;
     line-height: 1.6;
@@ -20,8 +20,8 @@ body {
 
 .profile-header {
     display: flex;
-    align-items: center;
-    gap: 2rem;
+    align-items: start;
+    gap: 1rem;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     padding: 2rem;
@@ -115,12 +115,24 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.titleContainer{
+    position: relative;
+}
+
 .section-title {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
     color: #fff;
     border-bottom: 2px solid rgba(255, 255, 255, 0.2);
     padding-bottom: 0.5rem;
+}
+.infoChangeButton{
+    position: absolute;
+    top: 0;
+    right: 5px;
+}
+.infoChangeButton img{
+    width: 35px;
 }
 
 .info-grid {
