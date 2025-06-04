@@ -108,7 +108,7 @@ a {
 
 /* ----------------------------------------------------------------メインコンテンツ------------------------------------------------------------------------- */
 .ContentContainer {
-    margin: 20px 0;
+    margin: 4vw 0;
 }
 
 .ContentBox {
@@ -150,6 +150,8 @@ a {
 
 .ContentImg {
     width: 11.25vw;
+    min-width: 110px;
+    max-width: 165px;
     margin-right: 3.5vw;
     margin-right: 20px;
     object-fit: cover; /* 要素に合わせて画像を拡大縮小し、アスペクト比を維持（はみ出しは切り取る） */
@@ -157,6 +159,10 @@ a {
     box-shadow: 3px 5px 10px rgba(255, 255, 255, 0.1);
     filter: brightness(100%);
     transition: filter 0.3s ease;
+}
+.EventImg{
+    min-width: 185px;
+    max-width: 350px;
 }
 
 .ContentImg:hover {
@@ -223,11 +229,11 @@ a {
     }
 
     .ContentImg {
-        height: 25vw;
+        /* width: 11.25vw; */
     }
 
     .ImageWrapper.Event a img {
-        height: 15vw;
+        /* height: 15vw; */
     }
 
     .ScrollButton {
@@ -257,11 +263,11 @@ a {
     }
 
     .ContentImg {
-        height: 30vw;
+        /* height: 30vw; */
     }
 
     .ImageWrapper.Event a img {
-        height: 20vw;
+        /* height: 20vw; */
     }
 
     .ScrollButton {

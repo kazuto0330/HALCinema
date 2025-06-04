@@ -81,7 +81,7 @@
                 {% if events %}
                     {% for event in events %}
                     <a href="/event/{{ event.eventInfoId }}" data-tippy-content="{{ event.eventTitle }}">
-                        <img src="{{ url_for('static', filename='images/' + event.eventImage ) }}" alt="{{ event.eventTitle }}" class="ContentImg">
+                        <img src="{{ url_for('static', filename='images/' + event.eventImage ) }}" alt="{{ event.eventTitle }}" class="ContentImg EventImg">
                     </a>
                     {% endfor %}
                 {% endif %}
