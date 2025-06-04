@@ -27,9 +27,16 @@
                 <div class="profile-section">
                     <div class="titleContainer">
                         <h3 class="section-title">基本情報</h3>
-                        <div class="infoChangeButton" onclick="toggleEditMode()"><img src="{{ url_for('static', filename='images/pencil.png' ) }}" alt="鉛筆の画像"></div>
+                        <div id="infoChangeButton" class="infoChangeButton" onclick="toggleEditMode()" data-tippy-content="プロフィールを編集"><img src="{{ url_for('static', filename='images/pencil.png' ) }}" alt="鉛筆の画像"></div>
                     </div>
                     <div class="info-grid">
+                        <div class="info-item">
+                            <label>ニックネーム</label>
+                            <div class="info-display">
+                                <span id="display-nick">{{ userData.accountName }}</span>
+                                <input type="text" id="edit-nick" value="{{ userData.accountName }}" style="display: none;">
+                            </div>
+                        </div>
                         <div class="info-item">
                             <label>お名前</label>
                             <div class="info-display">
@@ -55,7 +62,7 @@
                             <label>生年月日</label>
                             <div class="info-display">
                                 <span id="display-birth">{{ userData.birthDate|strftime('%Y年%m月%d日') }}</span>
-                                <input type="date" id="edit-birth" value="{{ userData.birthDate|strftime('%Y年%m月%d日') }}" style="display: none;">
+                                <input type="date" id="edit-birth" value="{{ userData.birthDate|strftime('%Y-%m-%d') }}" style="display: none;">
                             </div>
                         </div>
                     </div>

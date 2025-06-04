@@ -339,7 +339,7 @@ def update_profile():
 
 
     # 必須項目の確認
-    required_fields = ['realName', 'emailAddress', 'phoneNumber', 'birthDate']
+    required_fields = ['accountName','realName', 'emailAddress', 'phoneNumber', 'birthDate']
     for field in required_fields:
         if field not in data or not data[field]:
             return jsonify({'success': False, 'message': f'{field} は必須です。'}), 400
@@ -347,6 +347,7 @@ def update_profile():
     # ------------------------------------------------------
     # 各データの取得と設定
     # ------------------------------------------------------
+    account_Name = data['accountName']
     real_name = data['realName']
     email_address = data['emailAddress']
     phone_number = data['phoneNumber']
@@ -367,6 +368,7 @@ def update_profile():
         sql = """
         UPDATE `t_account`
         SET
+            `accountName` = %s,
             `emailAddress` = %s,
             `realName` = %s,
             `phoneNumber` = %s,
@@ -375,6 +377,7 @@ def update_profile():
             `accountId` = %s
         """
         values = (
+            account_Name,
             email_address,
             real_name,
             phone_number,

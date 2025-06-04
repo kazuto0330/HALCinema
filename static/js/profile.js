@@ -1,40 +1,39 @@
 let isEditMode = false;
-let originalData = {};
+
+let origName,origemail,origphone,origbirth;
+
+origNick = document.getElementById('edit-nick').value;
+origName = document.getElementById('edit-name').value;
+origemail = document.getElementById('edit-email').value;
+origphone = document.getElementById('edit-phone').value;
+origbirth = document.getElementById('edit-birth').value;
+
+
+
 
 function toggleEditMode() {
     isEditMode = !isEditMode;
     const displays = document.querySelectorAll('.info-display span');
     const inputs = document.querySelectorAll('.info-display input');
     const editActions = document.querySelector('.edit-actions');
-    const editBtn = document.querySelector('.edit-profile-btn');
 
     if (isEditMode) {
         // 編集モードに切り替え
         displays.forEach(span => span.style.display = 'none');
         inputs.forEach(input => input.style.display = 'block');
         editActions.style.display = 'flex';
-        editBtn.textContent = '編集をキャンセル';
-        editBtn.style.background = '#e74c3c';
-        
-        // 元のデータを保存
-        originalData = {
-            name: document.getElementById('edit-name').value,
-            email: document.getElementById('edit-email').value,
-            phone: document.getElementById('edit-phone').value,
-            birth: document.getElementById('edit-birth').value
-        };
+    
     } else {
         // 表示モードに切り替え
         displays.forEach(span => span.style.display = 'inline');
         inputs.forEach(input => input.style.display = 'none');
         editActions.style.display = 'none';
-        editBtn.textContent = 'プロフィール編集';
-        editBtn.style.background = '#3498db';
     }
 }
 
 function saveProfile() {
     // 入力値を取得
+    const nick = document.getElementById('edit-nick').value;
     const name = document.getElementById('edit-name').value;
     const email = document.getElementById('edit-email').value;
     const phone = document.getElementById('edit-phone').value;
@@ -50,7 +49,7 @@ function saveProfile() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            // accountId はここから削除
+            accountName: nick,
             realName: name,       // JSのnameをrealNameとして送信
             emailAddress: email,
             phoneNumber: phone,
@@ -71,6 +70,7 @@ function saveProfile() {
         if (data.success) {
             // 成功時の処理 (前回のJSと同じ)
             // 表示を更新
+            document.getElementById('display-nick').textContent = nick;
             document.getElementById('display-name').textContent = name;
             document.getElementById('display-email').textContent = email;
             document.getElementById('display-phone').textContent = phone;
@@ -82,7 +82,7 @@ function saveProfile() {
             document.getElementById('display-birth').textContent = formattedBirth;
 
             // プロフィール名も更新
-            document.getElementById('profile-name').textContent = name;
+            document.getElementById('profile-name').textContent = nick;
 
             // 編集モードを終了
             toggleEditMode();
@@ -105,10 +105,10 @@ function saveProfile() {
 
 function cancelEdit() {
     // 元のデータに戻す
-    document.getElementById('edit-name').value = originalData.name;
-    document.getElementById('edit-email').value = originalData.email;
-    document.getElementById('edit-phone').value = originalData.phone;
-    document.getElementById('edit-birth').value = originalData.birth;
+    document.getElementById('edit-name').value = origName;
+    document.getElementById('edit-email').value = origemail;
+    document.getElementById('edit-phone').value = origphone;
+    document.getElementById('edit-birth').value = origbirth;
     
     // 編集モードを終了
     toggleEditMode();
