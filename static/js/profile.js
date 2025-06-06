@@ -171,3 +171,19 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // id="avatar-plus-button" を持つ要素を取得
+    const plusButton = document.getElementById('avatar-plus-button');
+
+    // 要素が取得できた場合のみ、処理を続ける
+    if (plusButton) {
+        // plusButtonがクリックされたら、中の処理を実行する
+        plusButton.addEventListener('click', () => {
+            // 開発者ツールのコンソールにメッセージを出力
+            console.log('＋マークがクリックされました！');
+        });
+    }
+});

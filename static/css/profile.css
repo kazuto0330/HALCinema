@@ -42,6 +42,51 @@ body {
     object-fit: cover;
 }
 
+
+/* ホバー時に表示する「+」マークのオーバーレイ */
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    /* 既存のimgスタイルに合わせてサイズと形状を指定 */
+    width: 120px;
+    height: 120px;
+    border-radius: 50%; 
+
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒い背景 */
+    color: white;                         /* +マークの色 */
+
+    /* +マークを中央に配置するための設定 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 50px;      /* +マークの大きさ */
+    font-weight: bold;
+    
+    /* 初期状態では透明にして見えなくする */
+    opacity: 0;
+    /* 透明度の変化を0.3秒かけて滑らかにする */
+    transition: opacity 0.3s ease;
+    
+    cursor: pointer; /* クリックできることを示すカーソル */
+}
+
+/* 画像自体の明るさの変化も滑らかにする */
+.profile-avatar img {
+    transition: filter 0.3s ease;
+}
+
+/* 親要素(.profile-avatar)にホバーした時のエフェクト */
+.profile-avatar:hover .avatar-overlay {
+    opacity: 1; /* オーバーレイを表示する */
+}
+
+.profile-avatar:hover img {
+    filter: brightness(0.7); /* 背景の画像を少し暗くして、+マークを見やすくする */
+}
+
 .avatar-edit-btn {
     position: absolute;
     bottom: 0;
@@ -132,7 +177,7 @@ body {
     right: 5px;
 }
 .infoChangeButton img{
-    width: 35px;
+    width: 3vw;
 }
 
 .info-grid {

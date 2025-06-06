@@ -9,10 +9,6 @@ import os
 app = Flask(__name__)
 
 
-app.secret_key ="himitukagi"
-
-
-
 #セッションの暗号化
 app.secret_key = 'secret_key'
 #ユーザーデータの場所(とりあえず、次dbに)

@@ -14,8 +14,11 @@
     <main class="main">
         <div class="container">
             <div class="profile-header">
-                <div class="profile-avatar">
-                    <img src="{{ url_for('static', filename='images/usericon/' + userData.accountIcon ) }}" alt="プロフィール画像" id="avatar-img">
+                <div class="profile-avatar" data-tippy-content="アイコンの変更">
+                    <img src="{{ url_for('static', filename='images/usericon/' + userData.accountIcon + '.jpg') }}" alt="プロフィール画像" id="avatar-img">
+                    <div class="avatar-overlay" id="avatar-plus-button">
+                        <span>+</span>
+                    </div>
                 </div>
                 <div class="profile-info">
                     <h2 class="profile-name" id="profile-name">{{ userData.accountName }}</h2>
