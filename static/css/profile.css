@@ -247,6 +247,8 @@ body {
 }
 .infoChangeButton img{
     width: 3vw;
+    min-width: 27px;
+    max-width: 35px;
 }
 
 .info-grid {

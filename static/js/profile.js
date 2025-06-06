@@ -249,9 +249,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 if (data.status === 'success') {
                     // 成功したら、ページの画像を新しいURLに差し替える
-                    location.reload();
-                    // const avatarImg = document.getElementById('avatar-img');
-                    // avatarImg.src = data.new_icon_url + '?t=' + new Date().getTime(); // キャッシュ対策
+                    const avatarImg = document.getElementById('avatar-img');
+                    avatarImg.src = data.new_icon_url + '?t=' + new Date().getTime(); // キャッシュ対策
                     closeModal();
                 } else {
                     alert('エラーが発生しました: ' + data.message);

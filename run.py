@@ -324,7 +324,6 @@ def profile():
 def update_profile_img():
     
     session['user_id'] = 2
-
     account_id = session.get('user_id') # セッションからユーザーIDを取得
 
     # ユーザーがログインしていない、またはセッションにIDがない場合
@@ -352,33 +351,46 @@ def update_profile_img():
             # 3. Pillowで画像を開く
             img = Image.open(file.stream)
 
-            # 4. ユニークなファイル名を生成 (拡張子は.jpg)
-            # DBにはこのベースファイル名を保存する
-            img_txt = str(uuid.uuid4())
-            base_filename = img_txt + '.jpg'
+            # 4. ユニークなファイル名を生成
+            base_filename = str(uuid.uuid4()) + '.jpg'
 
-            # 5. 古い画像があれば削除（任意だが推奨）
-            # if current_user.accountIcon and current_user.accountIcon != 'default.jpg':
-            #     old_path_400 = os.path.join(path_400, current_user.accountIcon)
-            #     old_path_80 = os.path.join(path_80, current_user.accountIcon)
-            #     if os.path.exists(old_path_400):
-            #         os.remove(old_path_400)
-            #     if os.path.exists(old_path_80):
-            #         os.remove(old_path_80)
+            # 5. 古い画像があれば削除
+            userData = getUserData(account_id)
+            oldImg = userData['accountIcon']
+            if oldImg:
+                old_full_filename = oldImg + '.jpg'
+                old_filepath_400 = os.path.join(path_400, old_full_filename)
+                old_filepath_80 = os.path.join(path_80, old_full_filename)
+                
+                
+                if os.path.exists(old_filepath_400):# 400x400 ディレクトリ内の古い画像を削除
+                    try:
+                        os.remove(old_filepath_400)
+                        print(f"古い画像 {old_filepath_400} を削除しました。")
+                    except OSError as e:
+                        print(f"エラー: 古い画像 {old_filepath_400} の削除中に問題が発生しました: {e}")
+                else:
+                    print(f"古い画像 {old_filepath_400} は存在しませんでした。")
+
+                if os.path.exists(old_filepath_80):# 80x80 ディレクトリ内の古い画像を削除
+                    try:
+                        os.remove(old_filepath_80)
+                        print(f"古い画像 {old_filepath_80} を削除しました。")
+                    except OSError as e:
+                        print(f"エラー: 古い画像 {old_filepath_80} の削除中に問題が発生しました: {e}")
+                else:
+                    print(f"古い画像 {old_filepath_80} は存在しませんでした。")
+
 
             # 6. 画像をリサイズして保存
-            # 400x400
             img_400 = img.resize((400, 400), Image.Resampling.LANCZOS)
-            # JPEGで保存（RGBに変換しないとエラーになることがある）
-            img_400.convert('RGB').save(os.path.join(path_400, base_filename), 'JPEG', quality=95)
-
-            # 80x80
             img_80 = img.resize((80, 80), Image.Resampling.LANCZOS)
+            
+            img_400.convert('RGB').save(os.path.join(path_400, base_filename), 'JPEG', quality=95)
             img_80.convert('RGB').save(os.path.join(path_80, base_filename), 'JPEG', quality=95)
 
             # 7. データベースのユーザー情報を更新
-            conn = None
-            cursor = None
+            conn,cursor = None
             try:
                 # データベースに接続
                 conn = conn_db()
@@ -386,25 +398,19 @@ def update_profile_img():
 
                 sql = """
                 UPDATE `t_account`
-                SET
-                    `accountIcon` = %s
-                WHERE
-                    `accountId` = %s
+                SET`accountIcon` = %s
+                WHERE`accountId` = %s
                 """
-                values = (
-                    img_txt,
-                    account_id
-                )
+                values = (base_filename, account_id)
 
                 # SQLを実行
                 cursor.execute(sql, values)
                 conn.commit() # 変更をコミット
             
             except mysql.connector.Error as err:
-                # データベースエラーが発生した場合
                 print(f"データベースエラー: {err}")
                 if conn:
-                    conn.rollback() # エラー時はロールバック
+                    conn.rollback() # ロールバック
                 return jsonify({'success': False, 'message': f'データベースエラーが発生しました: {err}'}), 500
             except Exception as e:
                 # その他の予期せぬエラーが発生した場合
@@ -416,12 +422,10 @@ def update_profile_img():
                     cursor.close()
                 if conn:
                     conn.close()
-            
-            # セッション内のユーザー情報も更新
-            # current_user.accountIcon = base_filename
 
-            # 8. フロントエンドに返す新しい画像のURLを生成 (80x80の方)
-            new_icon_url = url_for('static', filename=f'images/usericon/80x80/{base_filename}')
+
+            # 8. フロントエンドに返す新しい画像のURLを生成
+            new_icon_url = url_for('static', filename=f'images/usericon/400x400/{base_filename}')
             
             return jsonify({'status': 'success', 'new_icon_url': new_icon_url})
 
@@ -436,7 +440,6 @@ def update_profile_img():
 @app.route('/add_account', methods=['POST'])
 def update_profile():
     session['user_id'] = 2
-    
     account_id = session.get('user_id') # セッションからユーザーIDを取得
 
     # ユーザーがログインしていない、またはセッションにIDがない場合
