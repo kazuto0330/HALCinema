@@ -5,17 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/reset.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <title>HALシネマ プロフィール画面</title>
 </head>
 <body>
     {% include '_header.html' %}
 
+    <!-- 画像トリミング用のモーダルウィンドウ -->
+    <div id="cropper-modal" class="modal-container" style="display: none;">
+        <div class="modal-content">
+            <h2>画像をトリミング</h2>
+            <div class="cropper-img-container">
+                <!-- Cropper.jsがこのimg要素を操作します -->
+                <img id="image-to-crop">
+            </div>
+            <div class="modal-buttons">
+                <button type="button" id="cancel-crop-btn" class="btn-secondary">キャンセル</button>
+                <button type="button" id="upload-crop-btn" class="btn-primary">アップロード</button>
+            </div>
+        </div>
+    </div>
 
     <main class="main">
         <div class="container">
             <div class="profile-header">
                 <div class="profile-avatar" data-tippy-content="アイコンの変更">
-                    <img src="{{ url_for('static', filename='images/usericon/' + userData.accountIcon + '.jpg') }}" alt="プロフィール画像" id="avatar-img">
+                    <img src="{{ url_for('static', filename='images/usericon/400x400/' + userData.accountIcon + '.jpg') }}" alt="プロフィール画像" id="avatar-img">
                     <div class="avatar-overlay" id="avatar-plus-button">
                         <span>+</span>
                     </div>
@@ -24,6 +39,11 @@
                     <h2 class="profile-name" id="profile-name">{{ userData.accountName }}</h2>
                 </div>
             </div>
+
+
+            <!-- 画像ファイルを選択するための隠しinput要素 -->
+            <input type="file" id="image-input" accept="image/png, image/jpeg" style="display: none;">
+
 
 
             <div class="profile-content">
@@ -138,7 +158,11 @@
 
 
     {% include '_footer.html' %}
-
+    
+    <!-- Cropper.jsのJavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+    <!-- 自分のJavaScriptファイル or <script>タグ -->
     <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 </body>
 </html>

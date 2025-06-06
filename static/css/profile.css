@@ -87,6 +87,75 @@ body {
     filter: brightness(0.7); /* 背景の画像を少し暗くして、+マークを見やすくする */
 }
 
+
+/* --- モーダル用のスタイル --- */
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* 他の要素より手前に表示 */
+}
+
+.modal-content {
+    background-color: #fff;
+    color: #333;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.cropper-img-container {
+    max-width: 60vw;
+    max-height: 60vh;
+    margin-bottom: 1.5rem;
+}
+
+/* このimgはCropper.jsによって置換されます */
+#image-to-crop {
+    display: block;
+    max-width: 100%;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+/* ボタンのスタイル例（適宜調整してください） */
+.btn-primary, .btn-secondary {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
 .avatar-edit-btn {
     position: absolute;
     bottom: 0;

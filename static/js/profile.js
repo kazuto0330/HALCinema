@@ -174,16 +174,103 @@ document.head.appendChild(style);
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // id="avatar-plus-button" を持つ要素を取得
+    // HTML要素の取得
     const plusButton = document.getElementById('avatar-plus-button');
+    const imageInput = document.getElementById('image-input');
+    const modal = document.getElementById('cropper-modal');
+    const imageToCrop = document.getElementById('image-to-crop');
+    const uploadBtn = document.getElementById('upload-crop-btn');
+    const cancelBtn = document.getElementById('cancel-crop-btn');
+    const avatarImg = document.getElementById('avatar-img');
 
-    // 要素が取得できた場合のみ、処理を続ける
-    if (plusButton) {
-        // plusButtonがクリックされたら、中の処理を実行する
-        plusButton.addEventListener('click', () => {
-            // 開発者ツールのコンソールにメッセージを出力
-            console.log('＋マークがクリックされました！');
+    let cropper = null;
+
+    // 1. 「+」ボタンクリックで、隠しファイル入力をクリック
+    plusButton.addEventListener('click', () => {
+        imageInput.click();
+    });
+
+    // 2. ファイルが選択されたら、モーダルを表示してCropperを初期化
+    imageInput.addEventListener('change', (e) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                imageToCrop.src = reader.result;
+                modal.style.display = 'flex'; // モーダル表示
+
+                // Cropperインスタンスが既にあれば破棄
+                if (cropper) {
+                    cropper.destroy();
+                }
+                
+                // Cropper.jsの初期化
+                cropper = new Cropper(imageToCrop, {
+                    aspectRatio: 1 / 1, // アスペクト比を1:1 (正方形)に
+                    viewMode: 1,        // 切り抜きボックスを画像範囲内に制限
+                    dragMode: 'move',   // ドラッグで画像を移動
+                    background: false,  // グリッド背景を非表示
+                    autoCropArea: 0.8,  // 自動切り抜きエリアのサイズ
+                });
+            };
+            reader.readAsDataURL(files[0]);
+        }
+        // valueをリセットして同じファイルを選択してもchangeイベントが発火するようにする
+        e.target.value = '';
+    });
+
+    // 3. 「アップロード」ボタンがクリックされたら、画像をFlaskに送信
+    uploadBtn.addEventListener('click', () => {
+        if (!cropper) return;
+
+        const canvas = cropper.getCroppedCanvas({
+            width: 400,  // 高解像度でCanvasを生成（後でサーバー側でリサイズする元画像）
+            height: 400,
         });
-    }
+
+        // ▼▼▼ ここから変更 ▼▼▼
+        // CanvasをJPEG形式のBlobオブジェクトに変換 (品質90%)
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                console.error('Blobの生成に失敗しました。');
+                return;
+            }
+            
+            const formData = new FormData();
+            // ファイル名も .jpg にする
+            formData.append('croppedImage', blob, 'profile-image.jpg');
+
+            // Fetch APIでFlaskにPOSTリクエスト (この部分は変更なし)
+            fetch('/add_account_img', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // 成功したら、ページの画像を新しいURLに差し替える
+                    location.reload();
+                    // const avatarImg = document.getElementById('avatar-img');
+                    // avatarImg.src = data.new_icon_url + '?t=' + new Date().getTime(); // キャッシュ対策
+                    closeModal();
+                } else {
+                    alert('エラーが発生しました: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Upload Error:', error);
+                alert('画像のアップロードに失敗しました。');
+            });
+        }, 'image/jpeg', 0.9); // MIMEタイプを 'image/jpeg' に、品質を0.9に指定
+        // ▲▲▲ ここまで変更 ▲▲▲
+    });
+    // キャンセルボタンとモーダルを閉じる処理
+    const closeModal = () => {
+        modal.style.display = 'none';
+        if (cropper) {
+            cropper.destroy();
+            cropper = null;
+        }
+    };
+    cancelBtn.addEventListener('click', closeModal);
 });

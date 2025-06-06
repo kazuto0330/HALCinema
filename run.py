@@ -3,7 +3,8 @@ from datetime import date
 import mysql.connector
 import json
 import os
-
+import uuid
+from PIL import Image
 
 
 app = Flask(__name__)
@@ -13,6 +14,8 @@ app = Flask(__name__)
 app.secret_key = 'secret_key'
 #ユーザーデータの場所(とりあえず、次dbに)
 USER_FILE = 'users.json'
+
+app.config['USER_ICON_UPLOAD_FOLDER'] = 'static/images/usericon'
 
 
 # db接続用関数
@@ -313,6 +316,120 @@ def profile():
     userData = getUserData(user_id)
     print(userData)
     return render_template("profile.html", userData=userData)
+
+
+# PROFILE画像のアップロード処理 (既存アカウントの更新)
+@app.route('/add_account_img', methods=['POST'])
+
+def update_profile_img():
+    
+    session['user_id'] = 2
+
+    account_id = session.get('user_id') # セッションからユーザーIDを取得
+
+    # ユーザーがログインしていない、またはセッションにIDがない場合
+    if not account_id:
+        return jsonify({'success': False, 'message': 'ログインが必要です。'}), 401
+    
+    if 'croppedImage' not in request.files:
+        return jsonify({'status': 'error', 'message': 'ファイルがありません'}), 400
+
+    file = request.files['croppedImage']
+    if file.filename == '':
+        return jsonify({'status': 'error', 'message': 'ファイルが選択されていません'}), 400
+
+    if file:
+        try:
+            # 1. 保存先のディレクトリパスを準備
+            base_upload_path = app.config['USER_ICON_UPLOAD_FOLDER']
+            path_400 = os.path.join(base_upload_path, '400x400')
+            path_80 = os.path.join(base_upload_path, '80x80')
+
+            # 2. ディレクトリが存在しなければ作成
+            os.makedirs(path_400, exist_ok=True)
+            os.makedirs(path_80, exist_ok=True)
+
+            # 3. Pillowで画像を開く
+            img = Image.open(file.stream)
+
+            # 4. ユニークなファイル名を生成 (拡張子は.jpg)
+            # DBにはこのベースファイル名を保存する
+            img_txt = str(uuid.uuid4())
+            base_filename = img_txt + '.jpg'
+
+            # 5. 古い画像があれば削除（任意だが推奨）
+            # if current_user.accountIcon and current_user.accountIcon != 'default.jpg':
+            #     old_path_400 = os.path.join(path_400, current_user.accountIcon)
+            #     old_path_80 = os.path.join(path_80, current_user.accountIcon)
+            #     if os.path.exists(old_path_400):
+            #         os.remove(old_path_400)
+            #     if os.path.exists(old_path_80):
+            #         os.remove(old_path_80)
+
+            # 6. 画像をリサイズして保存
+            # 400x400
+            img_400 = img.resize((400, 400), Image.Resampling.LANCZOS)
+            # JPEGで保存（RGBに変換しないとエラーになることがある）
+            img_400.convert('RGB').save(os.path.join(path_400, base_filename), 'JPEG', quality=95)
+
+            # 80x80
+            img_80 = img.resize((80, 80), Image.Resampling.LANCZOS)
+            img_80.convert('RGB').save(os.path.join(path_80, base_filename), 'JPEG', quality=95)
+
+            # 7. データベースのユーザー情報を更新
+            conn = None
+            cursor = None
+            try:
+                # データベースに接続
+                conn = conn_db()
+                cursor = conn.cursor(dictionary=True) # dictionary=True で辞書形式で結果が返る
+
+                sql = """
+                UPDATE `t_account`
+                SET
+                    `accountIcon` = %s
+                WHERE
+                    `accountId` = %s
+                """
+                values = (
+                    img_txt,
+                    account_id
+                )
+
+                # SQLを実行
+                cursor.execute(sql, values)
+                conn.commit() # 変更をコミット
+            
+            except mysql.connector.Error as err:
+                # データベースエラーが発生した場合
+                print(f"データベースエラー: {err}")
+                if conn:
+                    conn.rollback() # エラー時はロールバック
+                return jsonify({'success': False, 'message': f'データベースエラーが発生しました: {err}'}), 500
+            except Exception as e:
+                # その他の予期せぬエラーが発生した場合
+                print(f"予期せぬエラー: {e}")
+                return jsonify({'success': False, 'message': f'サーバーエラーが発生しました: {e}'}), 500
+                
+            finally:
+                if cursor:
+                    cursor.close()
+                if conn:
+                    conn.close()
+            
+            # セッション内のユーザー情報も更新
+            # current_user.accountIcon = base_filename
+
+            # 8. フロントエンドに返す新しい画像のURLを生成 (80x80の方)
+            new_icon_url = url_for('static', filename=f'images/usericon/80x80/{base_filename}')
+            
+            return jsonify({'status': 'success', 'new_icon_url': new_icon_url})
+
+        except Exception as e:
+            print(f"Error during image processing: {e}")
+            return jsonify({'status': 'error', 'message': 'サーバーエラーが発生しました'}), 500
+            
+    return jsonify({'status': 'error', 'message': '不明なエラー'}), 500
 
 
 # PROFILEのアップロード処理 (既存アカウントの更新)
