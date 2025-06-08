@@ -17,6 +17,8 @@ USER_FILE = 'users.json'
 
 app.config['USER_ICON_UPLOAD_FOLDER'] = 'static/images/usericon'
 
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 86400
+
 
 # db接続用関数
 def conn_db():
@@ -227,7 +229,7 @@ def getUserData(user_id):
     """指定したIDのイベントの詳細情報を取得する関数"""
     conn = None
     cursor = None
-    events = []
+    userData = []
 
     try:
         conn = conn_db()
@@ -251,7 +253,7 @@ def getUserData(user_id):
         
         cursor.execute(sql, (user_id,))
         
-        events = cursor.fetchone()
+        userData = cursor.fetchone()
 
     except mysql.connector.Error as err:
         print(f"クエリ実行エラー: {err}")
@@ -262,7 +264,41 @@ def getUserData(user_id):
         if conn:
             conn.close()
     
-    return events
+    return userData
+
+
+#ユーザーアイコンを取得する関数（user_id）
+def getUserIcon(user_id):
+    """指定したIDのイベントの詳細情報を取得する関数"""
+    conn = None
+    cursor = None
+    userIcon = []
+    try:
+        conn = conn_db()
+        cursor = conn.cursor(dictionary=True)
+
+        sql = """
+                SELECT
+                    accountIcon
+                FROM
+                    t_account
+                WHERE
+                    accountId = %s;
+        """
+        
+        cursor.execute(sql, (user_id,))
+        
+        userIcon = cursor.fetchone()
+
+    except mysql.connector.Error as err:
+        print(f"クエリ実行エラー: {err}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+    
+    return userIcon
 
 
 #ユーザーデータを読み込む
@@ -283,6 +319,14 @@ def save_users(users):
 ############################################################################
 ### パスの定義
 ############################################################################
+
+#ユーザーアイコン取得API
+@app.route('/api/user_icon', methods=['GET'])
+def get_icon():
+    user_id = 2
+    Icon = getUserIcon(user_id)
+    
+    return Icon
 
 # TOPページ
 @app.route('/')
@@ -320,7 +364,6 @@ def profile():
 
 # PROFILE画像のアップロード処理 (既存アカウントの更新)
 @app.route('/add_account_img', methods=['POST'])
-
 def update_profile_img():
     
     session['user_id'] = 2
@@ -355,10 +398,10 @@ def update_profile_img():
             base_filename = str(uuid.uuid4()) + '.jpg'
 
             # 5. 古い画像があれば削除
-            userData = getUserData(account_id)
+            userData = getUserIcon(account_id)
             oldImg = userData['accountIcon']
             if oldImg:
-                old_full_filename = oldImg + '.jpg'
+                old_full_filename = oldImg
                 old_filepath_400 = os.path.join(path_400, old_full_filename)
                 old_filepath_80 = os.path.join(path_80, old_full_filename)
                 
@@ -390,7 +433,8 @@ def update_profile_img():
             img_80.convert('RGB').save(os.path.join(path_80, base_filename), 'JPEG', quality=95)
 
             # 7. データベースのユーザー情報を更新
-            conn,cursor = None
+            conn = None
+            cursor = None
             try:
                 # データベースに接続
                 conn = conn_db()

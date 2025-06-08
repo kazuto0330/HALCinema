@@ -181,11 +181,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageToCrop = document.getElementById('image-to-crop');
     const uploadBtn = document.getElementById('upload-crop-btn');
     const cancelBtn = document.getElementById('cancel-crop-btn');
-    const avatarImg = document.getElementById('avatar-img');
 
     let cropper = null;
 
-    // 1. 「+」ボタンクリックで、隠しファイル入力をクリック
+    // 1. アイコンクリックで、ファイル入力
     plusButton.addEventListener('click', () => {
         imageInput.click();
     });
@@ -228,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
             height: 400,
         });
 
-        // ▼▼▼ ここから変更 ▼▼▼
         // CanvasをJPEG形式のBlobオブジェクトに変換 (品質90%)
         canvas.toBlob((blob) => {
             if (!blob) {
@@ -240,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // ファイル名も .jpg にする
             formData.append('croppedImage', blob, 'profile-image.jpg');
 
-            // Fetch APIでFlaskにPOSTリクエスト (この部分は変更なし)
+            // Fetch APIでFlaskにPOSTリクエスト
             fetch('/add_account_img', {
                 method: 'POST',
                 body: formData,
@@ -261,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('画像のアップロードに失敗しました。');
             });
         }, 'image/jpeg', 0.9); // MIMEタイプを 'image/jpeg' に、品質を0.9に指定
-        // ▲▲▲ ここまで変更 ▲▲▲
     });
     // キャンセルボタンとモーダルを閉じる処理
     const closeModal = () => {
