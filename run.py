@@ -11,11 +11,12 @@ app = Flask(__name__)
 
 
 #セッションの暗号化
-app.secret_key = 'secret_key'
+app.secret_key = 'qawsedrftgyhujikolp'
 #ユーザーデータの場所(とりあえず、次dbに)
 USER_FILE = 'users.json'
 
 app.config['USER_ICON_UPLOAD_FOLDER'] = 'static/images/usericon'
+app.config['MOVIE_UPLOAD_FOLDER'] = 'static/images/movie'
 
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 86400
 
@@ -646,6 +647,152 @@ def pay_comp():
 @app.route('/member')
 def member():
     return render_template("member.html")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# add_movie画面
+@app.route('/add_movie')
+def add_movie():
+    return render_template("add_movie.html")
+
+# add_movie画面
+@app.route('/add_movieDB', methods=['POST'])
+def add_movieDB():
+    con = conn_db()
+    cur = con.cursor()
+
+    #ID作成
+    cur.execute("SELECT MAX(moviesId) FROM t_movies")
+    max_id = cur.fetchone()[0]
+    if max_id:
+        moviesId = f"{int(max_id) + 1:05}"
+    else:
+        moviesId = "00001"
+        
+
+    #入力画面から値の受け取り
+    movieTitle = request.form.get('movieTitle')
+    movieReleaseDate = request.form.get('movieReleaseDate')
+    movieEndDate = request.form.get('movieEndDate')
+    movieRunningTime = request.form.get('movieRunningTime')
+    movieSynopsis = request.form.get('movieSynopsis')
+
+
+    errors = {}
+    
+    
+    # 日付チェック
+    if movieReleaseDate > movieEndDate:
+        errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
+
+    
+    file = request.files.get('movieImage')
+    if not file or file.filename == '':
+        errors["movieImage"] = "画像が選択されていません。"
+
+
+    # エラーがある場合はテンプレート再表示
+    if errors:
+        return render_template('add_movie.html', errors=errors)
+    
+    
+    
+    if file:
+        try:
+            # ベースの保存先パス
+            base_upload_path = app.config['MOVIE_UPLOAD_FOLDER']
+            path_original = os.path.join(base_upload_path, 'original')
+            path_200h = os.path.join(base_upload_path, '200h')
+
+            # 各フォルダがなければ作成
+            os.makedirs(path_original, exist_ok=True)
+            os.makedirs(path_200h, exist_ok=True)
+
+            # ファイル名を生成
+            base_filename = str(uuid.uuid4()) + '.jpg'
+
+            # Pillowで画像を開く
+            img = Image.open(file.stream)
+
+            # オリジナル画像を保存
+            img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
+
+            # アスペクト比維持で縦200pxにリサイズ
+            original_width, original_height = img.size
+            target_height = 200
+            target_width = int((target_height / original_height) * original_width)
+
+            resized_img = img.resize((target_width, target_height), Image.Resampling.LANCZOS)
+
+            # リサイズ画像を保存
+            resized_img.convert('RGB').save(os.path.join(path_200h, base_filename), 'JPEG', quality=95)
+
+        finally:
+            pass
+    
+    
+    # データの挿入
+    sql = """
+        INSERT INTO t_movies (
+            moviesId,
+            movieTitle,
+            movieReleaseDate,
+            movieEndDate,
+            movieRunningTime,
+            movieAudienceCount,
+            movieSynopsis,
+            movieImage
+        ) VALUES (
+            %(moviesId)s,
+            %(movieTitle)s,
+            %(movieReleaseDate)s,
+            %(movieEndDate)s,
+            %(movieRunningTime)s,
+            %(movieAudienceCount)s,
+            %(movieSynopsis)s,
+            %(movieImage)s
+        )
+    """
+    data = {
+        'moviesId': moviesId,
+        'movieTitle': movieTitle,
+        'movieReleaseDate': movieReleaseDate,
+        'movieEndDate': movieEndDate,
+        'movieRunningTime': movieRunningTime,
+        'movieAudienceCount': 0,
+        'movieSynopsis': movieSynopsis,
+        'movieImage': base_filename
+    }
+    
+    cur.execute(sql, data)
+    
+    
+    con.commit()
+    con.close()
+    cur.close()
+    
+    return render_template("add_movie.html")
+
+
+
+
+
+
+
+
+
 
 
 
