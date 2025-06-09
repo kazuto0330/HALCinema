@@ -179,6 +179,7 @@ def fetch_events(limit: int = 10, random_order: bool = False):
             cursor.close()
         if conn:
             conn.close()
+    return events
 
 
 
@@ -539,6 +540,12 @@ def index():
     now_playing_movies = fetch_movies(status='now_playing', limit=10)
     coming_soon_movies = fetch_movies(status='coming_soon', limit=10)
     event = fetch_events(limit=10)
+    
+    print(now_playing_movies)
+    print(coming_soon_movies)
+    print(event)
+    
+    
     return render_template("top.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
 
 
