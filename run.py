@@ -964,10 +964,7 @@ def member():
     return render_template("member.html")
 
 
-# test画面
-@app.route('/test')
-def member():
-    return render_template("test.html")
+
 
 
 

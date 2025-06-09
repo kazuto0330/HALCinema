@@ -12,6 +12,10 @@
     <main>
         <h1>支払い方法を選択してください</h1>
 
+        <div class="payment-summary">
+            <h3>お支払い金額: ¥<span id="payment-amount">1,800</span></h3>
+        </div>
+
         <form id="payment-form" class="payment-container">
             <div class="payment-method">
                 <input type="radio" id="credit-card" name="payment-method" value="credit-card" checked>
@@ -22,22 +26,26 @@
                 </label>
                 <div class="method-details" id="credit-card-details">
                     <div class="form-group">
-                        <label for="card-number">カード番号</label>
-                        <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
+                        <label for="card-number">カード番号 *</label>
+                        <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+                        <div class="error-message" id="card-number-error"></div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="expiry-date">有効期限</label>
-                            <input type="text" id="expiry-date" placeholder="MM/YY" maxlength="5">
+                            <label for="expiry-date">有効期限 *</label>
+                            <input type="text" id="expiry-date" placeholder="MM/YY" maxlength="5" required>
+                            <div class="error-message" id="expiry-date-error"></div>
                         </div>
                         <div class="form-group">
-                            <label for="security-code">セキュリティコード</label>
-                            <input type="text" id="security-code" placeholder="123" maxlength="3">
+                            <label for="security-code">セキュリティコード *</label>
+                            <input type="text" id="security-code" placeholder="123" maxlength="3" required>
+                            <div class="error-message" id="security-code-error"></div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="card-name">カード名義</label>
-                        <input type="text" id="card-name" placeholder="TARO YAMADA">
+                        <label for="card-name">カード名義 *</label>
+                        <input type="text" id="card-name" placeholder="TARO YAMADA" required>
+                        <div class="error-message" id="card-name-error"></div>
                     </div>
                 </div>
             </div>
@@ -50,6 +58,12 @@
                 </label>
                 <div class="method-details" id="convenience-details">
                     <p>お支払い用の番号を発行します。コンビニエンスストアでお支払いください。</p>
+                    <div class="form-group">
+                        <label for="phone-number">電話番号（任意）</label>
+                        <input type="tel" id="phone-number" placeholder="090-1234-5678">
+                        <div class="error-message" id="phone-number-error"></div>
+                        <small>支払い完了通知を受け取りたい場合は入力してください</small>
+                    </div>
                 </div>
             </div>
 
@@ -60,13 +74,26 @@
                     PayPay
                 </label>
                 <div class="method-details" id="paypay-details">
-                    <p>PayPayアプリでQRコードを表示してください。</p>
+                    <p>PayPayアプリでQRコードをスキャンしてお支払いください。</p>
                 </div>
             </div>
 
+            <div class="error-messages" id="general-errors"></div>
 
-            <button type="button" class="submit-btn" onclick="location.href='/pay_comp'">支払いを確定する</button>
+            <button type="submit" class="submit-btn" id="submit-payment">
+                <span class="btn-text">支払いを確定する</span>
+                <span class="loading-spinner" style="display: none;">処理中...</span>
+            </button>
         </form>
+
+        <!-- 処理中のオーバーレイ -->
+        <div class="loading-overlay" id="loading-overlay" style="display: none;">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p>支払い処理中です...</p>
+                <p>しばらくお待ちください</p>
+            </div>
+        </div>
     </main>
 
     {% include '_footer.html' %}
