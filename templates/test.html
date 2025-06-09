@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>お支払い</title>
+    <link rel="stylesheet" href="style.css"> <!-- 元のCSS -->
+    <link rel="stylesheet" href="test.css">   <!-- 支払い用CSS（今回追加） -->
+</head>
+<body>
+    <header>
+        <div class="headerContainer">
+            <div class="siteName">MyShop</div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="#">ホーム<span class="subtext">Home</span></a></li>
+                    <li><a href="#">商品<span class="subtext">Products</span></a></li>
+                    <li><a href="#">カート<span class="subtext">Cart</span></a></li>
+                    <li><a href="#">支払い<span class="subtext">Payment</span></a></li>
+                </ul>
+            </nav>
+            <div class="userIcon">
+                <img src="user.jpg" alt="ユーザーアイコン">
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <h1>お支払い方法の選択</h1>
+        <div class="payment-container">
+            <div class="payment-method">
+                <label>
+                    <input type="radio" name="payment" value="credit">
+                    <img src="credit-card.png" alt="クレジットカード" class="method-icon">
+                    クレジットカード
+                </label>
+                <div class="method-details">
+                    クレジットカードでお支払いが可能です。Visa、Mastercard、JCBなどに対応。
+                </div>
+            </div>
+
+            <div class="payment-method">
+                <label>
+                    <input type="radio" name="payment" value="paypal">
+                    <img src="paypal.png" alt="PayPal" class="method-icon">
+                    PayPal
+                </label>
+                <div class="method-details">
+                    PayPalアカウントを使って安全に支払いが可能です。
+                </div>
+            </div>
+
+            <form class="card-form">
+                <div class="form-group">
+                    <label for="cardNumber">カード番号</label>
+                    <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expiry">有効期限</label>
+                        <input type="text" id="expiry" placeholder="MM/YY">
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" placeholder="123">
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">支払う</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>
