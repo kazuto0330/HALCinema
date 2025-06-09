@@ -1,7 +1,9 @@
+# run.pyの先頭部分に以下のインポートを追加
 import json
 import os
 import uuid
-from datetime import date
+import re  # 追加
+from datetime import date, datetime, timedelta  # datetime と timedelta を追加
 
 import mysql.connector
 from PIL import Image
