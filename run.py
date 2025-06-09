@@ -325,6 +325,7 @@ def save_users(users):
 def get_icon():
     user_id = 2
     Icon = getUserIcon(user_id)
+    print(Icon)
     
     return Icon
 
