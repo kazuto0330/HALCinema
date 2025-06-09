@@ -191,6 +191,25 @@ header {
     color: FFFFFF;
 }
 
+.Mon:hover {
+    background-color: #FF6B6E; /* 明るめの赤 */
+    cursor: pointer;
+}
+
+.Tue:hover {
+    background-color: #F2F56B; /* 明るめの黄 */
+    cursor: pointer;
+}
+
+.Wed:hover,
+.Thu:hover,
+.Fri:hover,
+.Sat:hover,
+.Sun:hover {
+    background-color: #8CFF70; /* 明るめの緑 */
+    cursor: pointer;
+}
+
 .weekdayBox {
     margin-top: 20px;
     width: 65px;
