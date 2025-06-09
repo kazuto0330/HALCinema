@@ -232,21 +232,29 @@ def getUserData(user_id):
         cursor = conn.cursor(dictionary=True)
 
         sql = """
-              SELECT accountId,
-                     accountName,
-                     emailAddress,
-                     password,
-                     accountIcon,
-                     realName,
-                     phoneNumber,
-                     birthDate
-              FROM t_account
-              WHERE accountId = %s; \
-              """
-
+                SELECT
+                    accountId,
+                    accountName,
+                    emailAddress,
+                    password,
+                    accountIcon,
+                    realName,
+                    phoneNumber,
+                    birthDate,
+                    points
+                FROM
+                    t_account
+                WHERE
+                    accountId = %s;
+        """
         cursor.execute(sql, (user_id,))
 
         userData = cursor.fetchone()
+        
+        if 'points' in userData:
+            if userData['points'] is None:
+                userData['points'] = 0
+        
 
     except mysql.connector.Error as err:
         print(f"クエリ実行エラー: {err}")
@@ -295,7 +303,59 @@ def getUserIcon(user_id):
             conn.close()
 
 
-# ユーザーデータを読み込む
+#視聴履歴を取得する関数（user_id）
+def watchHistory(user_id):
+    """指定したIDの視聴履歴を取得する関数"""
+    conn = None
+    cursor = None
+    history_data = [] # 視聴履歴のリストを格納する変数
+    try:
+        conn = conn_db()
+        if conn is None:
+            return [] # 接続失敗時は空リストを返す
+
+        cursor = conn.cursor(dictionary=True)
+
+        # 映画の画像パス (M.movieImage) とスクリーンID (SS.screenId) も取得するようにSQLを修正
+        sql = """
+                SELECT
+                    A.accountName AS accountName,
+                    M.movieTitle AS movieTitle,
+                    M.movieImage AS movieImage, -- 映画の画像ファイル名を追加
+                    SS.scheduledScreeningDate AS scheduledScreeningDate,
+                    SR.seatNumber AS seatNumber,
+                    SS.screenId AS screenId -- スクリーンIDを追加
+                FROM
+                    t_account AS A
+                JOIN
+                    t_seatreservation AS SR ON A.accountId = SR.accountId
+                JOIN
+                    t_scheduledshowing AS SS ON SR.scheduledShowingId = SS.scheduledShowingId
+                JOIN
+                    t_movies AS M ON SS.moviesId = M.moviesId
+                WHERE
+                    A.accountId = %s
+                ORDER BY
+                    SS.scheduledScreeningDate DESC, M.movieTitle ASC;
+        """
+        
+        cursor.execute(sql, (user_id,))
+        
+        # 複数行の結果を取得するため fetchall() を使用
+        history_data = cursor.fetchall()
+
+    except mysql.connector.Error as err:
+        print(f"クエリ実行エラー: {err}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+    
+    return history_data
+
+
+#ユーザーデータを読み込む
 def load_users():
     if not os.path.exists(USER_FILE):
         return {}
@@ -502,8 +562,10 @@ def event(event_id):
 def profile():
     user_id = 2
     userData = getUserData(user_id)
+    History = watchHistory(user_id)
     print(userData)
-    return render_template("profile.html", userData=userData)
+    print(History)
+    return render_template("profile.html", userData=userData, user_history=History)
 
 
 # PROFILE画像のアップロード処理 (既存アカウントの更新)
