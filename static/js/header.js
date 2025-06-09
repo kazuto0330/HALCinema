@@ -6,8 +6,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // キャッシュを保存するためのキーを定義
     const CACHE_KEY = 'user_icon_url';
 
+    
     // 1. sessionStorageからキャッシュを確認
     const cachedIconUrl = sessionStorage.getItem(CACHE_KEY);
+    console.log(cachedIconUrl);
 
     // 2. キャッシュがあれば、それを使って処理を終了
     if (cachedIconUrl) {
@@ -15,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         userIconElement.src = cachedIconUrl;
         return; // APIリクエストは不要なのでここで終了
     }
+    
 
     try {
         // APIにGETリクエストを送信

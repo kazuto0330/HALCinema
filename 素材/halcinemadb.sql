@@ -27,10 +27,11 @@ CREATE TABLE `t_account` (
   `accountName` varchar(63) DEFAULT NULL,
   `emailAddress` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
-  `accountIcon` varchar(255) DEFAULT NULL,
   `realName` varchar(127) DEFAULT NULL,
   `phoneNumber` varchar(20) DEFAULT NULL,
   `birthDate` date DEFAULT NULL,
+  `accountIcon` varchar(255) DEFAULT NULL,
+  `points` int DEFAULT NULL,
   PRIMARY KEY (`accountId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -41,7 +42,7 @@ CREATE TABLE `t_account` (
 
 LOCK TABLES `t_account` WRITE;
 /*!40000 ALTER TABLE `t_account` DISABLE KEYS */;
-INSERT INTO `t_account` VALUES (1,'alice_user','alice.test@example.com','password123','genta.jpg','アリス・テスト','090-1111-2222','1990-05-15'),(2,'bob_dev_desuo','bob.dev@example.ac.jp','password123','dec4cba8-e4ee-40ea-b31c-ea37520f91b2.jpg','ボブ・デベロップ・です男','080-3333-44444','2005-03-30'),(3,'charlie_admin','charlie.a@example.com','password123','genta.jpg','チャーリー・アドミン','070-5555-6666','1992-03-10'),(4,'david_guest','david.g@example.com','password123','genta.jpg','デイビッド・ゲスト','090-7777-8888','2000-01-01'),(5,'eve_tester','eve.t@example.com','password123','genta.jpg','イブ・テスター','080-9999-0000','1995-07-25');
+INSERT INTO `t_account` VALUES (1,'test_user_1','user1@example.com','pass123','山田 太郎','090-1111-2222','1985-04-15','genta',NULL),(2,'test_userだなも','user2@example.com','pass456','田中 花子','080-3333-4444','1990-07-20','1db7b703-801f-4a10-83eb-b1ff57b683c7.jpg',NULL),(3,'test_user_3','user3@example.com','pass789','佐藤 健太','070-5555-6666','1992-11-01','genta',NULL),(4,'test_user_4','user4@example.com','passabc','鈴木 美咲','090-7777-8888','1988-02-29','genta',NULL),(5,'test_user_5','user5@example.com','passxyz','高橋 雄大','080-9999-0000','1995-09-10','genta',NULL);
 /*!40000 ALTER TABLE `t_account` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -157,6 +158,7 @@ CREATE TABLE `t_scheduledshowing` (
 
 LOCK TABLES `t_scheduledshowing` WRITE;
 /*!40000 ALTER TABLE `t_scheduledshowing` DISABLE KEYS */;
+INSERT INTO `t_scheduledshowing` VALUES (1,10,1,'2025-08-25'),(2,25,1,'2025-08-20');
 /*!40000 ALTER TABLE `t_scheduledshowing` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -180,6 +182,7 @@ CREATE TABLE `t_screen` (
 
 LOCK TABLES `t_screen` WRITE;
 /*!40000 ALTER TABLE `t_screen` DISABLE KEYS */;
+INSERT INTO `t_screen` VALUES (1,1),(2,1),(3,2),(4,2),(5,3),(6,3);
 /*!40000 ALTER TABLE `t_screen` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -209,6 +212,7 @@ CREATE TABLE `t_seatreservation` (
 
 LOCK TABLES `t_seatreservation` WRITE;
 /*!40000 ALTER TABLE `t_seatreservation` DISABLE KEYS */;
+INSERT INTO `t_seatreservation` VALUES (1,1,2,'A-5'),(2,2,2,'B-10');
 /*!40000 ALTER TABLE `t_seatreservation` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -221,4 +225,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-08 19:44:02
+-- Dump completed on 2025-06-09 11:49:23
