@@ -23,15 +23,17 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 86400
 
 
 # db接続用関数
+
 def conn_db():
     conn = mysql.connector.connect(
         host="127.0.0.1",
         user="root",
         password="root",
-        db="halcinemadb",
+        database="halcinemadb",
         charset="utf8"
     )
     return conn
+
 
 
 def format_datetime(value, format='%Y年%m月%d日'):
@@ -45,6 +47,8 @@ app.jinja_env.filters['strftime'] = format_datetime
 
 # 映画情報を複数件取得する関数（status="now_playing" or "coming_soon" , limit="取得件数" or "None"）
 def fetch_movies(status='now_playing', limit=None):
+
+
     """条件に合致する映画データをデータベースから取得する関数
     Args:
         status (str): 'now_playing' なら現在公開中の映画、'coming_soon' なら今後公開予定の映画を取得。
@@ -55,8 +59,10 @@ def fetch_movies(status='now_playing', limit=None):
     conn = None
     cursor = None
     try:
+
         conn = conn_db()
         cursor = conn.cursor(dictionary=True)
+        print(status)
         today = date.today()
         query = ""
         params = ()  # パラメータの初期化を空のタプルにする
@@ -173,7 +179,6 @@ def fetch_events(limit: int = 10, random_order: bool = False):
         if conn:
             conn.close()
 
-    return events
 
 
 # 指定したIDのイベントの詳細情報を取得する関数（）
