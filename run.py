@@ -18,6 +18,7 @@ USER_FILE = 'users.json'
 
 app.config['USER_ICON_UPLOAD_FOLDER'] = 'static/images/usericon'
 app.config['MOVIE_UPLOAD_FOLDER'] = 'static/images/movie'
+app.config['EVENT_UPLOAD_FOLDER'] = 'static/images/event'
 
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 86400
 
@@ -1108,7 +1109,7 @@ def member():
 def add_movie():
     return render_template("add_movie.html")
 
-# add_movie画面
+# 映画情報登録処理
 @app.route('/add_movieDB', methods=['POST'])
 def add_movieDB():
     con = conn_db()
@@ -1225,6 +1226,128 @@ def add_movieDB():
     cur.close()
     
     return render_template("add_movie.html")
+
+
+
+# add_event画面
+@app.route('/add_event')
+def add_event():
+    return render_template("add_event.html")
+
+# イベント情報登録処理
+@app.route('/add_eventDB', methods=['POST'])
+def add_eventDB():
+    con = conn_db()
+    cur = con.cursor()
+
+    #ID作成
+    cur.execute("SELECT MAX(eventInfoId) FROM t_event")
+    max_id = cur.fetchone()[0]
+    if max_id:
+        eventInfoId = f"{int(max_id) + 1:05}"
+    else:
+        eventInfoId = "00001"
+        
+
+    #入力画面から値の受け取り
+    eventTitle = request.form.get('eventTitle')
+    eventStartDate = request.form.get('eventStartDate')
+    eventEndDate = request.form.get('eventEndDate')
+    eventDescription = request.form.get('eventDescription')
+    eventUrl = request.form.get('eventUrl')
+
+
+    errors = {}
+    
+    
+    # 日付チェック
+    if eventStartDate > eventEndDate:
+        errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
+
+    
+    file = request.files.get('eventImage')
+    if not file or file.filename == '':
+        errors["eventImage"] = "画像が選択されていません。"
+
+
+    # エラーがある場合はテンプレート再表示
+    if errors:
+        return render_template('add_event.html', errors=errors)
+    
+    
+    
+    if file:
+        try:
+            # ベースの保存先パス
+            base_upload_path = app.config['EVENT_UPLOAD_FOLDER']
+            path_original = os.path.join(base_upload_path, 'original')
+            path_200h = os.path.join(base_upload_path, '200h')
+
+            # 各フォルダがなければ作成
+            os.makedirs(path_original, exist_ok=True)
+            os.makedirs(path_200h, exist_ok=True)
+
+            # ファイル名を生成
+            base_filename = str(uuid.uuid4()) + '.jpg'
+
+            # Pillowで画像を開く
+            img = Image.open(file.stream)
+
+            # オリジナル画像を保存
+            img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
+
+            # アスペクト比維持で縦200pxにリサイズ
+            original_width, original_height = img.size
+            target_height = 200
+            target_width = int((target_height / original_height) * original_width)
+
+            resized_img = img.resize((target_width, target_height), Image.Resampling.LANCZOS)
+
+            # リサイズ画像を保存
+            resized_img.convert('RGB').save(os.path.join(path_200h, base_filename), 'JPEG', quality=95)
+
+        finally:
+            pass
+    
+    
+    # データの挿入
+    sql = """
+        INSERT INTO t_event (
+            eventInfoId,
+            eventTitle,
+            eventStartDate,
+            eventEndDate,
+            eventDescription,
+            eventImage,
+            eventUrl
+        ) VALUES (
+            %(eventInfoId)s,
+            %(eventTitle)s,
+            %(eventStartDate)s,
+            %(eventEndDate)s,
+            %(eventDescription)s,
+            %(eventImage)s,
+            %(eventUrl)s
+        )
+    """
+    data = {
+        'eventInfoId': eventInfoId,
+        'eventTitle': eventTitle,
+        'eventStartDate': eventStartDate,
+        'eventEndDate': eventEndDate,
+        'eventDescription': eventDescription,
+        'eventImage': base_filename,
+        'eventUrl': eventUrl
+    }
+    
+    cur.execute(sql, data)
+    
+    
+    con.commit()
+    con.close()
+    cur.close()
+    
+    return render_template("add_event.html")
 
 
 
