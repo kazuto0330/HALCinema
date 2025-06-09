@@ -253,12 +253,13 @@ def getUserData(user_id):
     return userData
 
 
-# ユーザーアイコンを取得する関数（user_id）
+# ユーザーアイコンを取得する関数（user_id）（修正版）
 def getUserIcon(user_id):
-    """指定したIDのイベントの詳細情報を取得する関数"""
+    """指定したIDのユーザーアイコンを取得する関数"""
     conn = None
     cursor = None
-    userIcon = []
+    userIcon = None
+
     try:
         conn = conn_db()
         cursor = conn.cursor(dictionary=True)
@@ -266,22 +267,25 @@ def getUserIcon(user_id):
         sql = """
               SELECT accountIcon
               FROM t_account
-              WHERE accountId = %s; \
+              WHERE accountId = %s
               """
 
         cursor.execute(sql, (user_id,))
-
         userIcon = cursor.fetchone()
 
+        return userIcon
+
     except mysql.connector.Error as err:
-        print(f"クエリ実行エラー: {err}")
+        print(f"Database error in getUserIcon: {err}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error in getUserIcon: {e}")
+        return None
     finally:
         if cursor:
             cursor.close()
-        if conn:
+        if conn and conn.is_connected():
             conn.close()
-
-    return userIcon
 
 
 # ユーザーデータを読み込む
@@ -358,7 +362,7 @@ def generate_paypay_qr():
     return f"paypay://pay/{str(uuid.uuid4())[:8]}"
 
 
-# 支払い情報をデータベースに保存する関数
+# 支払い情報をデータベースに保存する関数（修正版）
 def save_payment_info(user_id, payment_method, payment_data, amount):
     """支払い情報をデータベースに保存"""
     conn = None
@@ -367,13 +371,34 @@ def save_payment_info(user_id, payment_method, payment_data, amount):
         conn = conn_db()
         cursor = conn.cursor()
 
+        # テーブルが存在するかチェック
+        cursor.execute("SHOW TABLES LIKE 't_payment'")
+        table_exists = cursor.fetchone()
+
+        if not table_exists:
+            # テーブルが存在しない場合は作成
+            create_table_sql = """
+                               CREATE TABLE t_payment \
+                               ( \
+                                   paymentId     INT AUTO_INCREMENT PRIMARY KEY, \
+                                   accountId     INT            NOT NULL, \
+                                   paymentMethod VARCHAR(50)    NOT NULL, \
+                                   paymentData   TEXT, \
+                                   amount        DECIMAL(10, 2) NOT NULL, \
+                                   paymentStatus VARCHAR(20)    NOT NULL DEFAULT 'pending', \
+                                   createdAt     TIMESTAMP               DEFAULT CURRENT_TIMESTAMP
+                               ) \
+                               """
+            cursor.execute(create_table_sql)
+            print("t_payment テーブルを作成しました")
+
         sql = """
-              INSERT INTO t_payment (accountId, 
-                                     paymentMethod, 
-                                     paymentData, 
-                                     amount, 
-                                     paymentStatus, 
-                                     createdAt) 
+              INSERT INTO t_payment (accountId,
+                                     paymentMethod,
+                                     paymentData,
+                                     amount,
+                                     paymentStatus,
+                                     createdAt)
               VALUES (%s, %s, %s, %s, %s, %s)
               """
 
@@ -396,10 +421,15 @@ def save_payment_info(user_id, payment_method, payment_data, amount):
         if conn:
             conn.rollback()
         return None
+    except Exception as e:
+        print(f"Unexpected error in save_payment_info: {e}")
+        if conn:
+            conn.rollback()
+        return None
     finally:
         if cursor:
             cursor.close()
-        if conn:
+        if conn and conn.is_connected():
             conn.close()
 
 
@@ -407,13 +437,32 @@ def save_payment_info(user_id, payment_method, payment_data, amount):
 ### パスの定義
 ############################################################################
 
-# ユーザーアイコン取得API
+# ユーザーアイコン取得API（修正版）
 @app.route('/api/user_icon', methods=['GET'])
 def get_icon():
-    user_id = 2
-    Icon = getUserIcon(user_id)
+    try:
+        user_id = 2
+        Icon = getUserIcon(user_id)
 
-    return Icon
+        if Icon is None:
+            return jsonify({
+                'success': False,
+                'message': 'ユーザーが見つかりません',
+                'accountIcon': None
+            }), 404
+
+        return jsonify({
+            'success': True,
+            'accountIcon': Icon.get('accountIcon', None)
+        })
+
+    except Exception as e:
+        print(f"User icon error: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'サーバーエラーが発生しました',
+            'accountIcon': None
+        }), 500
 
 
 # TOPページ
@@ -713,7 +762,7 @@ def pay():
     return render_template("pay.html")
 
 
-# 支払い処理のメインルート
+# 支払い処理のメインルート（修正版）
 @app.route('/process_payment', methods=['POST'])
 def process_payment():
     try:
@@ -735,7 +784,7 @@ def process_payment():
             }), 400
 
         payment_method = data.get('payment_method')
-        amount = data.get('amount', 1000)  # デフォルト金額
+        amount = data.get('amount', 1800)  # デフォルト金額
 
         if not payment_method:
             return jsonify({
@@ -745,6 +794,8 @@ def process_payment():
 
         payment_data = {}
         errors = []
+        payment_status = 'pending'
+        message = ''
 
         # 支払い方法別の処理
         if payment_method == 'credit-card':
@@ -759,7 +810,7 @@ def process_payment():
             if not errors:
                 # クレジットカード情報を保存（実際のカード番号は保存しない）
                 payment_data = {
-                    'card_last4': card_number.replace(' ', '')[-4:],
+                    'card_last4': card_number.replace(' ', '')[-4:] if len(card_number.replace(' ', '')) >= 4 else '',
                     'card_name': card_name,
                     'expiry_date': expiry_date
                 }
@@ -783,7 +834,7 @@ def process_payment():
                 payment_number = generate_payment_number()
                 payment_data = {
                     'payment_number': payment_number,
-                    'phone_number': phone_number[-4:] if phone_number else '',  # 下4桁のみ保存
+                    'phone_number': phone_number[-4:] if len(phone_number) >= 4 else '',  # 下4桁のみ保存
                     'expire_date': (datetime.now().replace(hour=23, minute=59, second=59) +
                                     timedelta(days=3)).isoformat()  # 3日後まで有効
                 }
@@ -828,7 +879,9 @@ def process_payment():
             'payment_id': payment_id,
             'payment_method': payment_method,
             'status': payment_status,
-            'data': payment_data
+            'data': payment_data,
+            'message': message,
+            'amount': amount
         }
 
         return jsonify({
