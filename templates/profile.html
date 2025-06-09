@@ -3,57 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/reset.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/reset.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <title>HALシネマ プロフィール画面</title>
 </head>
 <body>
     {% include '_header.html' %}
 
+    <!-- 画像トリミング用のモーダルウィンドウ -->
+    <div id="cropper-modal" class="modal-container" style="display: none;">
+        <div class="modal-content">
+            <h2>画像をトリミング</h2>
+            <div class="cropper-img-container">
+                <!-- Cropper.jsがこのimg要素を操作します -->
+                <img id="image-to-crop">
+            </div>
+            <div class="modal-buttons">
+                <button type="button" id="cancel-crop-btn" class="btn-secondary">キャンセル</button>
+                <button type="button" id="upload-crop-btn" class="btn-primary">アップロード</button>
+            </div>
+        </div>
+    </div>
 
     <main class="main">
         <div class="container">
             <div class="profile-header">
-                <div class="profile-avatar">
-                    <img src="{{ url_for('static', filename='images/genta.jpg') }}" alt="プロフィール画像" id="avatar-img">
+                <div class="profile-avatar" data-tippy-content="アイコンの変更">
+                    <img src="{{ url_for('static', filename='images/usericon/400x400/' + userData.accountIcon) }}" alt="プロフィール画像" id="avatar-img">
+                    <div class="avatar-overlay" id="avatar-plus-button">
+                        <span>+</span>
+                    </div>
                 </div>
                 <div class="profile-info">
-                    <h2 class="profile-name" id="profile-name">小嶋 元太</h2>
-                    <button class="edit-profile-btn" onclick="toggleEditMode()">プロフィール編集</button>
+                    <h2 class="profile-name" id="profile-name">{{ userData.accountName }}</h2>
                 </div>
             </div>
 
 
+            <!-- 画像ファイルを選択するための隠しinput要素 -->
+            <input type="file" id="image-input" accept="image/png, image/jpeg" style="display: none;">
+
+
+
             <div class="profile-content">
                 <div class="profile-section">
-                    <h3 class="section-title">基本情報</h3>
+                    <div class="titleContainer">
+                        <h3 class="section-title">基本情報</h3>
+                        <div id="infoChangeButton" class="infoChangeButton" onclick="toggleEditMode()" data-tippy-content="プロフィールを編集"><img src="{{ url_for('static', filename='images/pencil.png' ) }}" alt="鉛筆の画像"></div>
+                    </div>
                     <div class="info-grid">
+                        <div class="info-item">
+                            <label>ニックネーム</label>
+                            <div class="info-display">
+                                <span id="display-nick">{{ userData.accountName }}</span>
+                                <input type="text" id="edit-nick" value="{{ userData.accountName }}" style="display: none;">
+                            </div>
+                        </div>
                         <div class="info-item">
                             <label>お名前</label>
                             <div class="info-display">
-                                <span id="display-name">小嶋 元太</span>
-                                <input type="text" id="edit-name" value="田中 太郎" style="display: none;">
+                                <span id="display-name">{{ userData.realName }}</span>
+                                <input type="text" id="edit-name" value="{{ userData.realName }}" style="display: none;">
                             </div>
                         </div>
                         <div class="info-item">
                             <label>メールアドレス</label>
                             <div class="info-display">
-                                <span id="display-email">genta@example.com</span>
-                                <input type="email" id="edit-email" value="tanaka@example.com" style="display: none;">
+                                <span id="display-email">{{ userData.emailAddress }}</span>
+                                <input type="email" id="edit-email" value="{{ userData.emailAddress }}" style="display: none;">
                             </div>
                         </div>
                         <div class="info-item">
                             <label>電話番号</label>
                             <div class="info-display">
-                                <span id="display-phone">090-1234-5678</span>
-                                <input type="tel" id="edit-phone" value="090-1234-5678" style="display: none;">
+                                <span id="display-phone">{{ userData.phoneNumber }}</span>
+                                <input type="tel" id="edit-phone" value="{{ userData.phoneNumber }}" style="display: none;">
                             </div>
                         </div>
                         <div class="info-item">
                             <label>生年月日</label>
                             <div class="info-display">
-                                <span id="display-birth">1989年5月4日</span>
-                                <input type="date" id="edit-birth" value="1990-05-15" style="display: none;">
+                                <span id="display-birth">{{ userData.birthDate|strftime('%Y年%m月%d日') }}</span>
+                                <input type="date" id="edit-birth" value="{{ userData.birthDate|strftime('%Y-%m-%d') }}" style="display: none;">
                             </div>
                         </div>
                     </div>
@@ -126,7 +158,11 @@
 
 
     {% include '_footer.html' %}
-
+    
+    <!-- Cropper.jsのJavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    
+    <!-- 自分のJavaScriptファイル or <script>タグ -->
     <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 </body>
 </html>

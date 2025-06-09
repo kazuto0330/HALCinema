@@ -54,20 +54,17 @@ a {
     font-weight: bold;
     user-select: none;
     z-index: 100;
+    padding: 20px;
     transition: all 0.1s ease; 
 }
 .Arrow:hover{
-    font-size: 28px;;
+    font-size: 28px;
 }
 .LeftArrow{
     left: 0;
 }
 .RightArrow{
     right: 0;
-}
-.LeftArrow,
-.RightArrow{
-    padding: 20px;
 }
 
 
@@ -111,7 +108,7 @@ a {
 
 /* ----------------------------------------------------------------メインコンテンツ------------------------------------------------------------------------- */
 .ContentContainer {
-    margin: 40px 0;
+    margin: 4vw 0;
 }
 
 .ContentBox {
@@ -134,12 +131,10 @@ a {
 }
 
 .Content {
-    display: flex;
     position: relative;
 }
 
 .ScrollContainer {
-    /* margin: 10px 0 0 0; */
     overflow-y: hidden; /* スクロール非表示 */
     white-space: nowrap;
     -webkit-overflow-scrolling: touch; /* iOSでのスクロールをスムーズに */
@@ -153,50 +148,55 @@ a {
     padding-left: 50px;
 }
 
-.ImageWrapper a img {
-    height: 15vw;
+.ContentImg {
+    width: 11.25vw;
+    min-width: 110px;
+    max-width: 165px;
     margin-right: 3.5vw;
     margin-right: 20px;
     object-fit: cover; /* 要素に合わせて画像を拡大縮小し、アスペクト比を維持（はみ出しは切り取る） */
     border-radius: 5px;
     box-shadow: 3px 5px 10px rgba(255, 255, 255, 0.1);
+    filter: brightness(100%);
+    transition: filter 0.3s ease;
+}
+.EventImg{
+    min-width: 185px;
+    max-width: 350px;
 }
 
-.ImageWrapper a img:hover {
+.ContentImg:hover {
     transform: scale(1.1)translateY(-5px);
 }
 
 .ImageWrapper.Event a img {
-    height: 10vw;
+    width: 22vw;
+}
+
+.ContentImg.darken {
+    filter: brightness(50%);
 }
 
 .ImageWrapper a div {
-    margin-right: 20px;
     text-align: center;
+    margin: 5px 20px 0 0;
     font-size: 0.8rem;
 }
 
 
-.GalleryWithButtons .ScrollContainer.JsScroll {
-    width: calc(100% - 80px); /* 全体幅から左右のボタン幅を引く（ボタン幅に合わせて調整） */
-    margin: 0 10px;
-    padding: 10px 0;
-}
 
 
 /* スクロールボタンのスタイル */
 .ScrollButton {
     display: flex;
-    position: absolute;
-    top: 0;
-    bottom: 0;
     align-items: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    user-select: none;
+    cursor: pointer;
 }
 
-
-.ScrollButton.EventButton {
-    height: 10vw;
-}
 
 .ScrollButton div {
     position: relative;
@@ -228,13 +228,6 @@ a {
         font-size: 0.9rem;
     }
 
-    .ImageWrapper a img {
-        height: 25vw;
-    }
-
-    .ImageWrapper.Event a img {
-        height: 15vw;
-    }
 
     .ScrollButton {
         height: 25vw;
@@ -262,14 +255,6 @@ a {
         font-size: 0.85rem;
     }
 
-    .ImageWrapper a img {
-        height: 30vw;
-    }
-
-    .ImageWrapper.Event a img {
-        height: 20vw;
-    }
-
     .ScrollButton {
         display: none;
     }
@@ -288,12 +273,4 @@ a {
     visibility: visible;
     opacity: 1;
     transition: opacity 0.3s ease, visibility 0s linear 0s;
-}
-.ContentImg {
-    filter: brightness(100%);
-    transition: filter 0.3s ease;
-}
-
-.ContentImg.darken {
-    filter: brightness(50%);
 }
