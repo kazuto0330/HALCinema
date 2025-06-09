@@ -59,13 +59,11 @@ a {
     /* コンテナ全体を中央揃えにする */
     margin: 20px auto 0 auto;
     width: 100%; /* 親要素の幅いっぱい */
-    max-width: 1200px; /* オプション: コンテンツの最大幅 */
 
-    /* 新規追加: コンテナの内側に左右20pxの余白を追加 */
     padding: 10px 20px;
     /* width/max-widthにpaddingを含めるようにする */
     box-sizing: border-box;
-    
+    flex-shrink: 0;
     
 }
 .MovieImg{

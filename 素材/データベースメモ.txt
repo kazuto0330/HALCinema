@@ -3,3 +3,9 @@ mysqldump -u root -p halcinemadb > halcinemadb.sql
 
 インポート
 mysql -u root -p halcinemadb < halcinemadb.sql
+
+差分１
+ALTER TABLE t_account
+ADD COLUMN realName VARCHAR(127),
+ADD COLUMN phoneNumber VARCHAR(20),
+ADD COLUMN birthDate DATE;

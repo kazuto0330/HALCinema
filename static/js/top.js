@@ -114,6 +114,9 @@ const OUT_OF_BOUNDS_THRESHOLD = 25;
 function updateImageDarkenState(img) {
     const rect = img.getBoundingClientRect(); // 要素のビューポートに対する位置とサイズを取得
     const viewportWidth = window.innerWidth;
+    if (viewportWidth<520){
+        return;
+    }
 
     // はみ出し判定
     const isOutOfBounds =

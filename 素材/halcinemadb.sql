@@ -28,6 +28,9 @@ CREATE TABLE `t_account` (
   `emailAddress` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `accountIcon` varchar(255) DEFAULT NULL,
+  `realName` varchar(127) DEFAULT NULL,
+  `phoneNumber` varchar(20) DEFAULT NULL,
+  `birthDate` date DEFAULT NULL,
   PRIMARY KEY (`accountId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -38,6 +41,7 @@ CREATE TABLE `t_account` (
 
 LOCK TABLES `t_account` WRITE;
 /*!40000 ALTER TABLE `t_account` DISABLE KEYS */;
+INSERT INTO `t_account` VALUES (1,'alice_user','alice.test@example.com','password123','genta.jpg','アリス・テスト','090-1111-2222','1990-05-15'),(2,'bob_dev_desuo','bob.dev@example.ac.jp','password123','dec4cba8-e4ee-40ea-b31c-ea37520f91b2.jpg','ボブ・デベロップ・です男','080-3333-44444','2005-03-30'),(3,'charlie_admin','charlie.a@example.com','password123','genta.jpg','チャーリー・アドミン','070-5555-6666','1992-03-10'),(4,'david_guest','david.g@example.com','password123','genta.jpg','デイビッド・ゲスト','090-7777-8888','2000-01-01'),(5,'eve_tester','eve.t@example.com','password123','genta.jpg','イブ・テスター','080-9999-0000','1995-07-25');
 /*!40000 ALTER TABLE `t_account` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -217,4 +221,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-30 23:31:37
+-- Dump completed on 2025-06-08 19:44:02

@@ -5,7 +5,7 @@
 }
 
 body {
-    background: linear-gradient(135deg, #121220 0%, #111a31 50%, #0b2748 100%);
+    background-color: #000918;
     color: #fff;
     min-height: 100vh;
     line-height: 1.6;
@@ -20,8 +20,8 @@ body {
 
 .profile-header {
     display: flex;
-    align-items: center;
-    gap: 2rem;
+    align-items: start;
+    gap: 1rem;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     padding: 2rem;
@@ -40,6 +40,120 @@ body {
     border-radius: 50%;
     border: 4px solid rgba(255, 255, 255, 0.3);
     object-fit: cover;
+}
+
+
+/* ホバー時に表示する「+」マークのオーバーレイ */
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    /* 既存のimgスタイルに合わせてサイズと形状を指定 */
+    width: 120px;
+    height: 120px;
+    border-radius: 50%; 
+
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒い背景 */
+    color: white;                         /* +マークの色 */
+
+    /* +マークを中央に配置するための設定 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 50px;      /* +マークの大きさ */
+    font-weight: bold;
+    
+    /* 初期状態では透明にして見えなくする */
+    opacity: 0;
+    /* 透明度の変化を0.3秒かけて滑らかにする */
+    transition: opacity 0.3s ease;
+    
+    cursor: pointer; /* クリックできることを示すカーソル */
+}
+
+/* 画像自体の明るさの変化も滑らかにする */
+.profile-avatar img {
+    transition: filter 0.3s ease;
+}
+
+/* 親要素(.profile-avatar)にホバーした時のエフェクト */
+.profile-avatar:hover .avatar-overlay {
+    opacity: 1; /* オーバーレイを表示する */
+}
+
+.profile-avatar:hover img {
+    filter: brightness(0.7); /* 背景の画像を少し暗くして、+マークを見やすくする */
+}
+
+
+/* --- モーダル用のスタイル --- */
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* 他の要素より手前に表示 */
+}
+
+.modal-content {
+    background-color: #fff;
+    color: #333;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.cropper-img-container {
+    max-width: 60vw;
+    max-height: 60vh;
+    margin-bottom: 1.5rem;
+}
+
+/* このimgはCropper.jsによって置換されます */
+#image-to-crop {
+    display: block;
+    max-width: 100%;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+/* ボタンのスタイル例（適宜調整してください） */
+.btn-primary, .btn-secondary {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
 }
 
 .avatar-edit-btn {
@@ -115,12 +229,26 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.titleContainer{
+    position: relative;
+}
+
 .section-title {
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
     color: #fff;
     border-bottom: 2px solid rgba(255, 255, 255, 0.2);
     padding-bottom: 0.5rem;
+}
+.infoChangeButton{
+    position: absolute;
+    top: 0;
+    right: 5px;
+}
+.infoChangeButton img{
+    width: 3vw;
+    min-width: 27px;
+    max-width: 35px;
 }
 
 .info-grid {

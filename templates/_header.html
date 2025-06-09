@@ -1,3 +1,4 @@
+<script src="{{ url_for('static', filename='js/header.js') }}" defer></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
 <header>
   <div class="headerContainer">
@@ -20,7 +21,7 @@
 
     </div>
     <a href="/profile"><div class="userIcon">
-      <img src="{{ url_for('static', filename='images/genta.jpg') }}" alt="ユーザーアイコン" data-tippy-content="プロフィール"/>
+      <img src="" alt="ユーザーアイコン" data-tippy-content="プロフィール" id="user-icon"/>
     </div></a>
   </div>
 </header>
