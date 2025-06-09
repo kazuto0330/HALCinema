@@ -1,9 +1,8 @@
-# run.pyの先頭部分に以下のインポートを追加
 import json
 import os
 import uuid
-import re  # 追加
-from datetime import date, datetime, timedelta  # datetime と timedelta を追加
+import re
+from datetime import date, datetime, timedelta
 
 import mysql.connector
 from PIL import Image
@@ -299,6 +298,111 @@ def save_users(users):
         json.dump(users, f)
 
 
+# 支払い処理用の関数
+def validate_credit_card(card_number, expiry_date, security_code, card_name):
+    """クレジットカード情報のバリデーション"""
+    errors = []
+
+    # カード番号のバリデーション（数字のみ、16桁）
+    card_number_clean = re.sub(r'\s+', '', card_number)
+    if not re.match(r'^\d{16}$', card_number_clean):
+        errors.append('カード番号は16桁の数字で入力してください')
+
+    # 有効期限のバリデーション（MM/YY形式）
+    if not re.match(r'^\d{2}/\d{2}$', expiry_date):
+        errors.append('有効期限はMM/YY形式で入力してください')
+    else:
+        try:
+            month, year = map(int, expiry_date.split('/'))
+            if month < 1 or month > 12:
+                errors.append('有効期限の月が正しくありません')
+
+            # 現在年と比較（20XX年として処理）
+            current_year = datetime.now().year % 100
+            if year < current_year:
+                errors.append('有効期限が過去の日付です')
+        except ValueError:
+            errors.append('有効期限の形式が正しくありません')
+
+    # セキュリティコードのバリデーション（3桁の数字）
+    if not re.match(r'^\d{3}$', security_code):
+        errors.append('セキュリティコードは3桁の数字で入力してください')
+
+    # カード名義のバリデーション
+    if len(card_name.strip()) < 1:
+        errors.append('カード名義を入力してください')
+    elif not re.match(r'^[A-Za-z\s]+$', card_name):
+        errors.append('カード名義は英字で入力してください')
+
+    return errors
+
+
+def validate_phone_number(phone_number):
+    """電話番号のバリデーション（コンビニ払い用）"""
+    # 日本の電話番号形式をチェック
+    phone_clean = re.sub(r'[-\s()]', '', phone_number)
+    if not re.match(r'^(0\d{9,10})$', phone_clean):
+        return ['正しい電話番号を入力してください']
+    return []
+
+
+def generate_payment_number():
+    """コンビニ払い用の支払い番号を生成"""
+    import random
+    return f"{random.randint(10000000, 99999999):08d}"
+
+
+def generate_paypay_qr():
+    """PayPay用のQRコード情報を生成（ダミー）"""
+    import uuid
+    return f"paypay://pay/{str(uuid.uuid4())[:8]}"
+
+
+# 支払い情報をデータベースに保存する関数
+def save_payment_info(user_id, payment_method, payment_data, amount):
+    """支払い情報をデータベースに保存"""
+    conn = None
+    cursor = None
+    try:
+        conn = conn_db()
+        cursor = conn.cursor()
+
+        sql = """
+              INSERT INTO t_payment (accountId, 
+                                     paymentMethod, 
+                                     paymentData, 
+                                     amount, 
+                                     paymentStatus, 
+                                     createdAt) 
+              VALUES (%s, %s, %s, %s, %s, %s)
+              """
+
+        values = (
+            user_id,
+            payment_method,
+            json.dumps(payment_data),  # JSON形式で保存
+            amount,
+            'pending',  # 支払い状況：pending, completed, failed
+            datetime.now()
+        )
+
+        cursor.execute(sql, values)
+        conn.commit()
+
+        return cursor.lastrowid  # 挿入されたレコードのIDを返す
+
+    except mysql.connector.Error as err:
+        print(f"Payment save error: {err}")
+        if conn:
+            conn.rollback()
+        return None
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
 ############################################################################
 ### パスの定義
 ############################################################################
@@ -511,7 +615,7 @@ def update_profile():
                   `realName`     = %s,
                   `phoneNumber`  = %s,
                   `birthDate`    = %s
-              WHERE `accountId` = %s \
+              WHERE `accountId` = %s
               """
         values = (
             account_Name,
@@ -576,7 +680,6 @@ def member_login():
 
 
 # register画面
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -606,109 +709,8 @@ def login():
 
 # pay画面
 @app.route('/pay')
-# 支払い処理用の関数
-def validate_credit_card(card_number, expiry_date, security_code, card_name):
-    """クレジットカード情報のバリデーション"""
-    errors = []
-
-    # カード番号のバリデーション（数字のみ、16桁）
-    card_number_clean = re.sub(r'\s+', '', card_number)
-    if not re.match(r'^\d{16}$', card_number_clean):
-        errors.append('カード番号は16桁の数字で入力してください')
-
-    # 有効期限のバリデーション（MM/YY形式）
-    if not re.match(r'^\d{2}/\d{2}$', expiry_date):
-        errors.append('有効期限はMM/YY形式で入力してください')
-    else:
-        try:
-            month, year = map(int, expiry_date.split('/'))
-            if month < 1 or month > 12:
-                errors.append('有効期限の月が正しくありません')
-
-            # 現在年と比較（20XX年として処理）
-            current_year = datetime.now().year % 100
-            if year < current_year:
-                errors.append('有効期限が過去の日付です')
-        except ValueError:
-            errors.append('有効期限の形式が正しくありません')
-
-    # セキュリティコードのバリデーション（3桁の数字）
-    if not re.match(r'^\d{3}$', security_code):
-        errors.append('セキュリティコードは3桁の数字で入力してください')
-
-    # カード名義のバリデーション
-    if len(card_name.strip()) < 1:
-        errors.append('カード名義を入力してください')
-    elif not re.match(r'^[A-Za-z\s]+$', card_name):
-        errors.append('カード名義は英字で入力してください')
-
-    return errors
-
-
-def validate_phone_number(phone_number):
-    """電話番号のバリデーション（コンビニ払い用）"""
-    # 日本の電話番号形式をチェック
-    phone_clean = re.sub(r'[-\s()]', '', phone_number)
-    if not re.match(r'^(0\d{9,10})$', phone_clean):
-        return ['正しい電話番号を入力してください']
-    return []
-
-
-def generate_payment_number():
-    """コンビニ払い用の支払い番号を生成"""
-    import random
-    return f"{random.randint(10000000, 99999999):08d}"
-
-
-def generate_paypay_qr():
-    """PayPay用のQRコード情報を生成（ダミー）"""
-    import uuid
-    return f"paypay://pay/{str(uuid.uuid4())[:8]}"
-
-
-# 支払い情報をデータベースに保存する関数
-def save_payment_info(user_id, payment_method, payment_data, amount):
-    """支払い情報をデータベースに保存"""
-    conn = None
-    cursor = None
-    try:
-        conn = conn_db()
-        cursor = conn.cursor()
-
-        sql = """
-              INSERT INTO t_payment (accountId, \
-                                     paymentMethod, \
-                                     paymentData, \
-                                     amount, \
-                                     paymentStatus, \
-                                     createdAt) \
-              VALUES (%s, %s, %s, %s, %s, %s) \
-              """
-
-        values = (
-            user_id,
-            payment_method,
-            json.dumps(payment_data),  # JSON形式で保存
-            amount,
-            'pending',  # 支払い状況：pending, completed, failed
-            datetime.now()
-        )
-
-        cursor.execute(sql, values)
-        conn.commit()
-
-        return cursor.lastrowid  # 挿入されたレコードのIDを返す
-
-    except mysql.connector.Error as err:
-        print(f"Payment save error: {err}")
-        if conn:
-            conn.rollback()
-        return None
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
+def pay():
+    return render_template("pay.html")
 
 
 # 支払い処理のメインルート
@@ -783,7 +785,7 @@ def process_payment():
                     'payment_number': payment_number,
                     'phone_number': phone_number[-4:] if phone_number else '',  # 下4桁のみ保存
                     'expire_date': (datetime.now().replace(hour=23, minute=59, second=59) +
-                                    datetime.timedelta(days=3)).isoformat()  # 3日後まで有効
+                                    timedelta(days=3)).isoformat()  # 3日後まで有効
                 }
                 payment_status = 'pending'
                 message = f'コンビニ支払い番号: {payment_number}'
@@ -792,7 +794,7 @@ def process_payment():
             qr_code = generate_paypay_qr()
             payment_data = {
                 'qr_code': qr_code,
-                'expire_time': (datetime.now() + datetime.timedelta(minutes=15)).isoformat()  # 15分後まで有効
+                'expire_time': (datetime.now() + timedelta(minutes=15)).isoformat()  # 15分後まで有効
             }
             payment_status = 'pending'
             message = 'PayPayで支払いを完了してください'
@@ -846,7 +848,7 @@ def process_payment():
         }), 500
 
 
-# 支払い完了ページの更新
+# 支払い完了ページ
 @app.route('/pay_comp')
 def pay_comp():
     # セッションから支払い情報を取得
@@ -867,13 +869,13 @@ def get_payment_status(payment_id):
         cursor = conn.cursor(dictionary=True)
 
         sql = """
-              SELECT paymentId, \
-                     paymentMethod, \
-                     paymentStatus, \
-                     amount, \
+              SELECT paymentId,
+                     paymentMethod,
+                     paymentStatus,
+                     amount,
                      createdAt
               FROM t_payment
-              WHERE paymentId = %s \
+              WHERE paymentId = %s
               """
 
         cursor.execute(sql, (payment_id,))
@@ -913,15 +915,15 @@ def get_payment_details(payment_id):
         cursor = conn.cursor(dictionary=True)
 
         sql = """
-              SELECT paymentId, \
-                     paymentMethod, \
-                     paymentData, \
-                     paymentStatus, \
-                     amount, \
+              SELECT paymentId,
+                     paymentMethod,
+                     paymentData,
+                     paymentStatus,
+                     amount,
                      createdAt
               FROM t_payment
-              WHERE paymentId = %s \
-                AND accountId = %s \
+              WHERE paymentId = %s
+                AND accountId = %s
               """
 
         cursor.execute(sql, (payment_id, user_id))
@@ -964,10 +966,6 @@ def get_payment_details(payment_id):
 @app.route('/member')
 def member():
     return render_template("member.html")
-
-
-
-
 
 
 # 実行制御
