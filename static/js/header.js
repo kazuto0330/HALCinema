@@ -31,14 +31,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         // レスポンスのJSONをパース
         const data = await response.json();
 
+        // データの構造を確認（新しいAPIレスポンス形式に対応）
+        const iconFileName = data.success ? data.accountIcon : (data.accountIcon || null);
+
         // データとaccountIconプロパティが存在することを確認
-        if (data && data.accountIcon) {
-            console.log(data.accountIcon);
-            const iconUrl = `/static/images/usericon/80x80/${data.accountIcon}`;
+        if (iconFileName) {
+            const iconUrl = `/static/images/usericon/80x80/${iconFileName}`;
 
             sessionStorage.setItem(CACHE_KEY, iconUrl);
             console.log('アイコンURLをキャッシュに保存しました。');
-            
+
             // <img>要素のsrc属性を更新して画像を表示
             userIconElement.src = iconUrl;
         } else {
@@ -49,5 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
         // ネットワークエラーやJSONパースエラーなどをキャッチ
         console.error('アイコンの取得に失敗しました:', error);
+        // エラー時もデフォルト画像を表示
+        userIconElement.src = '/static/images/usericon/80x80/default.jpg';
     }
 });

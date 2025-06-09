@@ -315,35 +315,35 @@ label {
     main {
         padding: 0 15px;
     }
-
+    
     .payment-container {
         padding: 20px;
     }
-
+    
     .form-row {
         flex-direction: column;
         gap: 0;
     }
-
+    
     .nav ul {
         gap: 20px;
         margin-right: 0;
     }
-
+    
     .headerContainer {
         flex-direction: column;
         gap: 20px;
     }
-
+    
     .method-details {
         margin-left: 0;
         margin-top: 15px;
     }
-
+    
     label {
         font-size: 16px;
     }
-
+    
     .method-icon {
         width: 30px;
         height: 30px;
@@ -355,12 +355,12 @@ label {
     .payment-summary h3 {
         font-size: 1.2em;
     }
-
+    
     .submit-btn {
         font-size: 16px;
         padding: 12px;
     }
-
+    
     .loading-content {
         padding: 30px 20px;
         margin: 20px;
