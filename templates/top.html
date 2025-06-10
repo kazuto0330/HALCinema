@@ -13,27 +13,29 @@
     {% include '_header.html' %}
 
     <!-- スライドショー -->
-    <div class="SlideshowContainer">
-        <div class="SlidesWrapper">
-            <div class="MySlides">
-                <a href=""><img src="{{ url_for('static', filename='images/kishiberohan_bnr1920_960.jpg') }}" alt="岸辺露伴"></a>
+    <div class="slideshow-container">
+        <div class="slideshow-wrapper">
+            <!-- ↓↓↓ aタグのhref="#"を各ページのURLに差し替えてください ↓↓↓ -->
+            <div class="slide-item">
+                <a href="event/6"><img src="{{ url_for('static', filename='images/eventimage1.jpg' ) }}" alt="画像1"></a>
             </div>
-            <div class="MySlides">
-                <a href=""><img src="{{ url_for('static', filename='images/MEGAMI_109_POP_W1920×H960_W_B.jpg') }}" alt="MEGAMI"></a>
+            <div class="slide-item">
+                <a href="event/7"><img src="{{ url_for('static', filename='images/eventimage2.jpg' ) }}" alt="画像2"></a>
             </div>
-            <div class="MySlides">
-                <a href=""><img src="{{ url_for('static', filename='images/missionimpossible2025_bnr1920_960.jpg') }}" alt="ミッション：インポッシブル"></a>
+            <div class="slide-item">
+                <a href="event/3"><img src="{{ url_for('static', filename='images/eventimage3.jpg' ) }}" alt="画像3"></a>
             </div>
-            <div class="MySlides">
-                <a href=""><img src="{{ url_for('static', filename='images/Paddington3_109conce_W1920xH960.jpg') }}" alt="パディントン3"></a>
+            <div class="slide-item">
+                <a href="event/9"><img src="{{ url_for('static', filename='images/eventimage4.jpg' ) }}" alt="画像4"></a>
             </div>
-            <div class="MySlides">
-                <a href=""><img src="{{ url_for('static', filename='images/eventimage5.jpg') }}" alt="名古屋ScreenX"></a>
+            <div class="slide-item">
+                <a href="event/5"><img src="{{ url_for('static', filename='images/eventimage5.jpg' ) }}" alt="画像5"></a>
             </div>
         </div>
 
-        <a class="Arrow Prev" onclick="plusSlides(-1)">&#10094;</a>
-        <a class="Arrow Next" onclick="plusSlides(1)">&#10095;</a>
+        <!-- 左右のナビゲーションボタン -->
+        <button class="slide-button prev-button"></button>
+        <button class="slide-button next-button"></button>
     </div>
 
 
