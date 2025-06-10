@@ -112,7 +112,7 @@
                     {% for movie in coming_soon %}
                     <a href="/movie_information/{{ movie.moviesId }}" data-tippy-content="{{ movie.movieTitle }}">
                         <img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg">
-                        <div>{{ movie.movieEndDate|strftime('%Y年%m月%d日') }} 公開</div>
+                        <div>{{ movie.movieReleaseDate|strftime('%Y年%m月%d日') }} 公開</div>
                     </a>
                     {% endfor %}
                 {% endif %}

@@ -111,11 +111,6 @@ def fetch_movies(status='now_playing', limit=None):
             query = """
                     SELECT moviesId,
                            movieTitle,
-                           movieReleaseDate,
-                           movieEndDate,
-                           movieRunningTime,
-                           movieAudienceCount,
-                           movieSynopsis,
                            movieImage
                     FROM t_movies
                     WHERE movieEndDate >= %s
@@ -128,10 +123,6 @@ def fetch_movies(status='now_playing', limit=None):
                     SELECT moviesId,
                            movieTitle,
                            movieReleaseDate,
-                           movieEndDate,
-                           movieRunningTime,
-                           movieAudienceCount,
-                           movieSynopsis,
                            movieImage
                     FROM t_movies
                     WHERE movieReleaseDate > %s
@@ -172,11 +163,7 @@ def fetch_events(limit: int = 10, random_order: bool = False):
     sql_base = """
                 SELECT eventInfoId,
                         eventTitle,
-                        eventStartDate,
-                        eventEndDate,
-                        eventDescription,
-                        eventImage,
-                        eventUrl
+                        eventImage
                 FROM t_event
                 WHERE eventStartDate <= %s
                     AND eventEndDate >= %s \
@@ -280,7 +267,7 @@ def getUserIcon(user_id):
             FROM t_account
             WHERE accountId = %s
             """
-    userIcon = None
+    userIcon = None 
     
     try:
         with get_db_cursor() as cursor:
@@ -288,10 +275,9 @@ def getUserIcon(user_id):
                 print("カーソルの取得に失敗しました。")
                 return []
 
-        cursor.execute(sql, (user_id,))
-        userIcon = cursor.fetchone()
-
-        return userIcon
+            cursor.execute(sql, (user_id,))
+            userIcon = cursor.fetchone()
+            return userIcon
 
     except mysql.connector.Error:
         return None
@@ -522,11 +508,6 @@ def index():
     now_playing_movies = fetch_movies(status='now_playing', limit=10)
     coming_soon_movies = fetch_movies(status='coming_soon', limit=10)
     event = fetch_events(limit=10)
-    
-    print(now_playing_movies)
-    print(coming_soon_movies)
-    print(event)
-    
     
     return render_template("top.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
 

@@ -18,3 +18,17 @@
     text-align: center;
     color: #ccc;
 }
+
+
+@media (max-width: 1440px) {}
+
+@media (max-width: 769px) {
+    #FooterLogoImg {
+        width: max(75px,15vw);
+    }
+    #Copyright {
+        font-size: max(10px,2vw);
+    }
+}
+
+@media (max-width: 480px) {}
