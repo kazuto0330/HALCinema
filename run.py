@@ -5,6 +5,7 @@ import re
 from datetime import date, datetime, timedelta
 
 import mysql.connector
+from contextlib import contextmanager
 from PIL import Image
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 
@@ -24,16 +25,62 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 86400
 
 
 # db接続用関数
-
 def conn_db():
-    conn = mysql.connector.connect(
-        host="127.0.0.1",
-        user="root",
-        password="root",
-        database="halcinemadb",
-        charset="utf8"
-    )
-    return conn
+    """データベースに接続し、コネクションオブジェクトを返す"""
+    try:
+        conn = mysql.connector.connect(
+            host="127.0.0.1",
+            user="root",
+            password="root",
+            database="halcinemadb",
+            charset="utf8"
+        )
+        return conn
+    except mysql.connector.Error as err:
+        print(f"データベース接続エラー: {err}")
+        return None
+    
+
+# ----------------------------------------------------------------
+#  DB接続とカーソル管理を行うコンテキストマネージャ
+# ----------------------------------------------------------------
+@contextmanager
+def get_db_cursor():
+    """
+    データベース接続とカーソルを管理するコンテキストマネージャ。
+    - with文と共に使用する。
+    - 正常終了時は自動でコミットし、例外発生時はロールバックする。
+    - 常にカーソルと接続をクローズする。
+    """
+    conn = None
+    cursor = None
+    try:
+        conn = conn_db()
+        if conn is None:
+            # 接続に失敗した場合はNoneをyieldし、呼び出し元で処理させる
+            yield None
+            return
+
+        cursor = conn.cursor(dictionary=True)
+        # withブロックにカーソルを渡す
+        yield cursor
+        # withブロックの処理が正常に終了したらコミット
+        conn.commit()
+
+    except mysql.connector.Error as err:
+        print(f"データベースエラー: {err}")
+        # エラーが発生したらロールバック
+        if conn:
+            conn.rollback()
+        # エラーを再度発生させ、呼び出し元に通知する
+        raise err
+
+    finally:
+        # 常にカーソルと接続を閉じる
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 
 
@@ -48,8 +95,6 @@ app.jinja_env.filters['strftime'] = format_datetime
 
 # 映画情報を複数件取得する関数（status="now_playing" or "coming_soon" , limit="取得件数" or "None"）
 def fetch_movies(status='now_playing', limit=None):
-
-
     """条件に合致する映画データをデータベースから取得する関数
     Args:
         status (str): 'now_playing' なら現在公開中の映画、'coming_soon' なら今後公開予定の映画を取得。
@@ -57,17 +102,11 @@ def fetch_movies(status='now_playing', limit=None):
     Returns:
         list: 映画データのリスト
     """
-    conn = None
-    cursor = None
     try:
-
-        conn = conn_db()
-        cursor = conn.cursor(dictionary=True)
-        print(status)
         today = date.today()
         query = ""
         params = ()  # パラメータの初期化を空のタプルにする
-
+        
         if status == 'now_playing':
             query = """
                     SELECT moviesId,
@@ -108,17 +147,17 @@ def fetch_movies(status='now_playing', limit=None):
         elif limit is not None:
             print("Warning: limit は正の整数である必要があります。")
 
-        cursor.execute(query, params)
-        movies = cursor.fetchall()
-        return movies
-    except mysql.connector.Error as err:
-        print(f"Error: {err}")
+
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                return []
+            
+            cursor.execute(query, params)
+            movies = cursor.fetchall()
+            return movies
+    except mysql.connector.Error:
         return []
-    finally:
-        if cursor:
-            cursor.close()
-        if conn and conn.is_connected():
-            conn.close()
 
 
 # イベント情報を複数件取得する関数（limit="取得件数" or "None" , random_order="True" or "False"）
@@ -130,231 +169,174 @@ def fetch_events(limit: int = 10, random_order: bool = False):
         limit (int): 取得するイベントの最大件数。デフォルトは10。
         random_order (bool): Trueの場合、取得順序をランダムにする。デフォルトはFalse（固定順序）。
     """
-    conn = None
-    cursor = None
+    sql_base = """
+                SELECT eventInfoId,
+                        eventTitle,
+                        eventStartDate,
+                        eventEndDate,
+                        eventDescription,
+                        eventImage,
+                        eventUrl
+                FROM t_event
+                WHERE eventStartDate <= %s
+                    AND eventEndDate >= %s \
+                """
     events = []
     today = date.today()  # 今日の日付を取得
 
     try:
-        conn = conn_db()
-        cursor = conn.cursor(dictionary=True)
-
-        # SQLクエリの基本部分
-        sql_base = """
-                   SELECT eventInfoId,
-                          eventTitle,
-                          eventStartDate,
-                          eventEndDate,
-                          eventDescription,
-                          eventImage,
-                          eventUrl
-                   FROM t_event
-                   WHERE eventStartDate <= %s
-                     AND eventEndDate >= %s \
-                   """
-
-        # ORDER BY 句を動的に変更
         if random_order:
             order_by_clause = "ORDER BY RAND()"
         else:
             order_by_clause = "ORDER BY eventStartDate ASC, eventInfoId ASC"
-
         # LIMIT 句
         limit_clause = "LIMIT %s"
-
         # 完全なSQLクエリを構築
-        sql = f"{sql_base} {order_by_clause} {limit_clause}"
+        sql = f"{sql_base} {order_by_clause} {limit_clause}"        
 
-        # SQLクエリを実行。パラメータはタプルで渡します。
-        # `%s` プレースホルダはSQLインジェクション攻撃を防ぐために重要です。
-        cursor.execute(sql, (today, today, limit))
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                return []
 
-        events = cursor.fetchall()
+            cursor.execute(sql, (today, today, limit))
+            events = cursor.fetchall()
+            return events
 
-    except mysql.connector.Error as err:
-        print(f"クエリ実行エラー: {err}")
-    finally:
-        # 接続とカーソルを必ず閉じる
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
-    return events
-
+    except mysql.connector.Error:
+        return []
 
 
 # 指定したIDのイベントの詳細情報を取得する関数（）
 def fetch_event_data(event_id):
-    """指定したIDのイベントの詳細情報を取得する関数"""
-    conn = None
-    cursor = None
-    events = []
-
+    sql = """
+            SELECT eventInfoId,
+                    eventTitle,
+                    eventStartDate,
+                    eventEndDate,
+                    eventDescription,
+                    eventImage,
+                    eventUrl
+            FROM t_event
+            WHERE eventInfoId = %s
+            """
     try:
-        conn = conn_db()
-        cursor = conn.cursor(dictionary=True)
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                return []
 
-        sql = """
-              SELECT eventInfoId,
-                     eventTitle,
-                     eventStartDate,
-                     eventEndDate,
-                     eventDescription,
-                     eventImage,
-                     eventUrl
-              FROM t_event
-              WHERE eventInfoId = %s \
-              """
+            cursor.execute(sql, (event_id,))
+            events = cursor.fetchone()
+            return events
 
-        cursor.execute(sql, (event_id,))
-
-        events = cursor.fetchone()
-
-    except mysql.connector.Error as err:
-        print(f"クエリ実行エラー: {err}")
-    finally:
-        # 接続とカーソルを必ず閉じる
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
-
-    return events
+    except mysql.connector.Error:
+        return []
 
 
 # ユーザーデータを取得する関数（user_id）
 def getUserData(user_id):
     """指定したIDのイベントの詳細情報を取得する関数"""
-    conn = None
-    cursor = None
+    sql = """
+            SELECT
+                accountId,
+                accountName,
+                emailAddress,
+                password,
+                accountIcon,
+                realName,
+                phoneNumber,
+                birthDate,
+                points
+            FROM
+                t_account
+            WHERE
+                accountId = %s;
+    """
     userData = []
-
     try:
-        conn = conn_db()
-        cursor = conn.cursor(dictionary=True)
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                return []
+            
+            cursor.execute(sql, (user_id,))
+            userData = cursor.fetchone()
+            if 'points' in userData:
+                if userData['points'] is None:
+                    userData['points'] = 0
+                    
+            return userData
 
-        sql = """
-                SELECT
-                    accountId,
-                    accountName,
-                    emailAddress,
-                    password,
-                    accountIcon,
-                    realName,
-                    phoneNumber,
-                    birthDate,
-                    points
-                FROM
-                    t_account
-                WHERE
-                    accountId = %s;
-        """
-        cursor.execute(sql, (user_id,))
-
-        userData = cursor.fetchone()
-        
-        if 'points' in userData:
-            if userData['points'] is None:
-                userData['points'] = 0
-        
-
-    except mysql.connector.Error as err:
-        print(f"クエリ実行エラー: {err}")
-    finally:
-        # 接続とカーソルを必ず閉じる
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
-
-    return userData
+    except mysql.connector.Error:
+        return []
 
 
-# ユーザーアイコンを取得する関数（user_id）（修正版）
+# ユーザーアイコンを取得する関数（user_id)
 def getUserIcon(user_id):
     """指定したIDのユーザーアイコンを取得する関数"""
-    conn = None
-    cursor = None
+    sql = """
+            SELECT accountIcon
+            FROM t_account
+            WHERE accountId = %s
+            """
     userIcon = None
-
+    
     try:
-        conn = conn_db()
-        cursor = conn.cursor(dictionary=True)
-
-        sql = """
-              SELECT accountIcon
-              FROM t_account
-              WHERE accountId = %s
-              """
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                return []
 
         cursor.execute(sql, (user_id,))
         userIcon = cursor.fetchone()
 
         return userIcon
 
-    except mysql.connector.Error as err:
-        print(f"Database error in getUserIcon: {err}")
+    except mysql.connector.Error:
         return None
     except Exception as e:
         print(f"Unexpected error in getUserIcon: {e}")
         return None
-    finally:
-        if cursor:
-            cursor.close()
-        if conn and conn.is_connected():
-            conn.close()
 
 
 #視聴履歴を取得する関数（user_id）
 def watchHistory(user_id):
     """指定したIDの視聴履歴を取得する関数"""
-    conn = None
-    cursor = None
+    sql = """
+            SELECT
+                A.accountName AS accountName,
+                M.movieTitle AS movieTitle,
+                M.movieImage AS movieImage, -- 映画の画像ファイル名を追加
+                SS.scheduledScreeningDate AS scheduledScreeningDate,
+                SR.seatNumber AS seatNumber,
+                SS.screenId AS screenId -- スクリーンIDを追加
+            FROM
+                t_account AS A
+            JOIN
+                t_seatreservation AS SR ON A.accountId = SR.accountId
+            JOIN
+                t_scheduledshowing AS SS ON SR.scheduledShowingId = SS.scheduledShowingId
+            JOIN
+                t_movies AS M ON SS.moviesId = M.moviesId
+            WHERE
+                A.accountId = %s
+            ORDER BY
+                SS.scheduledScreeningDate DESC, M.movieTitle ASC;
+    """
     history_data = [] # 視聴履歴のリストを格納する変数
     try:
-        conn = conn_db()
-        if conn is None:
-            return [] # 接続失敗時は空リストを返す
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                return []
 
-        cursor = conn.cursor(dictionary=True)
+            cursor.execute(sql, (user_id,))
+            history_data = cursor.fetchall() # 複数行の結果を取得するため fetchall()
+            return history_data
 
-        # 映画の画像パス (M.movieImage) とスクリーンID (SS.screenId) も取得するようにSQLを修正
-        sql = """
-                SELECT
-                    A.accountName AS accountName,
-                    M.movieTitle AS movieTitle,
-                    M.movieImage AS movieImage, -- 映画の画像ファイル名を追加
-                    SS.scheduledScreeningDate AS scheduledScreeningDate,
-                    SR.seatNumber AS seatNumber,
-                    SS.screenId AS screenId -- スクリーンIDを追加
-                FROM
-                    t_account AS A
-                JOIN
-                    t_seatreservation AS SR ON A.accountId = SR.accountId
-                JOIN
-                    t_scheduledshowing AS SS ON SR.scheduledShowingId = SS.scheduledShowingId
-                JOIN
-                    t_movies AS M ON SS.moviesId = M.moviesId
-                WHERE
-                    A.accountId = %s
-                ORDER BY
-                    SS.scheduledScreeningDate DESC, M.movieTitle ASC;
-        """
-        
-        cursor.execute(sql, (user_id,))
-        
-        # 複数行の結果を取得するため fetchall() を使用
-        history_data = cursor.fetchall()
-
-    except mysql.connector.Error as err:
-        print(f"クエリ実行エラー: {err}")
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
-    
-    return history_data
+    except mysql.connector.Error:
+        return []
 
 
 #ユーザーデータを読み込む
@@ -571,7 +553,6 @@ def profile():
     user_id = 2
     userData = getUserData(user_id)
     History = watchHistory(user_id)
-    print(userData)
     print(History)
     return render_template("profile.html", userData=userData, user_history=History)
 
