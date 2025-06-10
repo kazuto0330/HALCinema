@@ -505,11 +505,12 @@ def get_icon():
 # TOPページ
 @app.route('/')
 def index():
+    screen_event = fetch_events(limit=5, random_order="True")
     now_playing_movies = fetch_movies(status='now_playing', limit=10)
     coming_soon_movies = fetch_movies(status='coming_soon', limit=10)
     event = fetch_events(limit=10)
     
-    return render_template("top.html", now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
+    return render_template("top.html", screen_event=screen_event, now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
 
 
 # MOVIELIST(映画一覧)画面
@@ -1265,9 +1266,9 @@ def add_eventDB():
             # オリジナル画像を保存
             img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
 
-            # アスペクト比維持で縦200pxにリサイズ
+            # アスペクト比維持で縦100pxにリサイズ
             original_width, original_height = img.size
-            target_height = 200
+            target_height = 100
             target_width = int((target_height / original_height) * original_width)
 
             resized_img = img.resize((target_width, target_height), Image.Resampling.LANCZOS)

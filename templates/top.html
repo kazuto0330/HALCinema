@@ -15,22 +15,13 @@
     <!-- スライドショー -->
     <div class="slideshow-container">
         <div class="slideshow-wrapper">
-            <!-- ↓↓↓ aタグのhref="#"を各ページのURLに差し替えてください ↓↓↓ -->
-            <div class="slide-item">
-                <a href="event/6"><img src="{{ url_for('static', filename='images/eventimage1.jpg' ) }}" alt="画像1"></a>
-            </div>
-            <div class="slide-item">
-                <a href="event/7"><img src="{{ url_for('static', filename='images/eventimage2.jpg' ) }}" alt="画像2"></a>
-            </div>
-            <div class="slide-item">
-                <a href="event/3"><img src="{{ url_for('static', filename='images/eventimage3.jpg' ) }}" alt="画像3"></a>
-            </div>
-            <div class="slide-item">
-                <a href="event/9"><img src="{{ url_for('static', filename='images/eventimage4.jpg' ) }}" alt="画像4"></a>
-            </div>
-            <div class="slide-item">
-                <a href="event/5"><img src="{{ url_for('static', filename='images/eventimage5.jpg' ) }}" alt="画像5"></a>
-            </div>
+        {% if screen_event %}
+            {% for event in screen_event %}
+                <div class="slide-item">
+                    <a href="/event/{{ event.eventInfoId }}"><img src="{{ url_for('static', filename='images/event/original/' + event.eventImage ) }}" alt="{{ event.eventTitle }}"></a>
+                </div>
+            {% endfor %}
+        {% endif %}
         </div>
 
         <!-- 左右のナビゲーションボタン -->
@@ -83,7 +74,7 @@
                 {% if events %}
                     {% for event in events %}
                     <a href="/event/{{ event.eventInfoId }}" data-tippy-content="{{ event.eventTitle }}">
-                        <img src="{{ url_for('static', filename='images/' + event.eventImage ) }}" alt="{{ event.eventTitle }}" class="ContentImg EventImg">
+                        <img src="{{ url_for('static', filename='images/event/200h/' + event.eventImage ) }}" alt="{{ event.eventTitle }}" class="ContentImg EventImg">
                     </a>
                     {% endfor %}
                 {% endif %}
