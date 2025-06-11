@@ -187,8 +187,9 @@ a {
 }
 
 .ContentText {
-    margin-left: 25px;
-    font-size: 1.5rem;
+    font-weight: bold;
+    margin-left: 40px;
+    font-size: 1.4rem;
 }
 
 .ContentTextMore {

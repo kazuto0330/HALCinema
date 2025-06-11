@@ -17,7 +17,7 @@
 
     <div id="MainContent">
         <div id="Left">
-            <img src="{{ url_for('static', filename='images/' + event.eventImage) }}" alt="{{event.eventTitle}}" id="MainImg">
+            <img src="{{ url_for('static', filename='images/event/original/' + event.eventImage) }}" alt="{{event.eventTitle}}" id="MainImg">
             <div id="MainEvent">
                 <div id="Title">{{event.eventTitle}}</div>
                 <div id="SmallFeature">
@@ -36,7 +36,7 @@
                     {% for event in recommendation %}
                     <a href="{{event.eventInfoId}}">
                         <div class="Event">
-                            <div class="EventImg"><img src="{{ url_for('static', filename='images/' + event.eventImage) }}" alt="{{event.eventTitle}}">
+                            <div class="EventImg"><img src="{{ url_for('static', filename='images/event/200h/' + event.eventImage) }}" alt="{{event.eventTitle}}">
                             </div>
                             <div class="EventText">{{event.eventTitle}}</div>
                         </div>
