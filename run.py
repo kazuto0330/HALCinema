@@ -507,8 +507,8 @@ def get_icon():
 @app.route('/')
 def index():
     screen_event = fetch_events(limit=5, random_order="True")
-    now_playing_movies = fetch_movies(status='now_playing', limit=10)
-    coming_soon_movies = fetch_movies(status='coming_soon', limit=10)
+    now_playing_movies = fetch_movies(status='now_playing', limit=15)
+    coming_soon_movies = fetch_movies(status='coming_soon', limit=15)
     event = fetch_events(limit=10)
     
     print(screen_event)

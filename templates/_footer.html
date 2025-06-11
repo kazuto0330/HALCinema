@@ -20,3 +20,27 @@
         arrow: false,
     });
 </script>
+
+<script>
+    function adjustFooterPosition() {
+        const body = document.body;
+        const viewportHeight = window.innerHeight; // ビューポートの高さ
+
+        // document.documentElement.scrollHeight は、コンテンツ全体のスクロール可能な高さを返します
+        // スクロールバーが表示されているかどうかを判断するのに適しています
+        if (document.documentElement.scrollHeight <= viewportHeight) {
+            // コンテンツがビューポートに収まっている（スクロールバーが出ない）場合
+            body.classList.add('js-footer-absolute');
+        } else {
+            // コンテンツがビューポートよりも長い（スクロールバーが出る）場合
+            body.classList.remove('js-footer-absolute');
+        }
+    }
+
+    // ページロード時とウィンドウのリサイズ時にフッターの位置を調整
+    window.addEventListener('load', adjustFooterPosition);
+    window.addEventListener('resize', adjustFooterPosition);
+
+    // 初回ロード時にも実行
+    adjustFooterPosition();
+</script>

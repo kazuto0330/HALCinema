@@ -1,5 +1,8 @@
 body {
+    position: relative;
     width: 100%;
+    height: auto;
+    min-height: 100vh;
     margin: 0;
     padding: 0;
     background-color: #000918;
@@ -13,6 +16,8 @@ a {
 
 #MainContainer {
     padding: 1.5vw;
+    margin: 0 auto;
+    max-width: 1750px;
 }
 #TabSelect{
     display: flex;
@@ -51,30 +56,30 @@ a {
 }
 .Tab{
     display: grid;
-    /* コンテナの幅に応じて自動でカラムを生成 (最小120px, 最大1fr) */
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    /* コンテナの幅に応じて自動でカラムを生成 (最小150px, 最大1fr) */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     /* アイテム間の行と列のギャップ */
-    gap: 40px 30px;
+    gap: 30px 20px;
 
     /* コンテナ全体を中央揃えにする */
-    margin: 20px auto 0 auto;
+    margin: 0 auto;
     width: 100%; /* 親要素の幅いっぱい */
 
     padding: 10px 20px;
     /* width/max-widthにpaddingを含めるようにする */
     box-sizing: border-box;
-    flex-shrink: 0;
-    
+    flex-shrink: 0;  
 }
 .MovieImg{
-    /* グリッドセル内で画像を中央揃えに配置 */
+    display: flex;
     justify-self: center;
 }
 .MovieImg img{
     width: 100%; /* 親要素(MovieImg)の幅に合わせて調整 */
     min-width: 120px;
-    max-width: 160px;
+    max-width: 180px;
     border-radius: 5px;
+    object-fit: contain;
 }
 .MovieImg img:hover{
     transform: scale(1.1)translateY(-5px);
@@ -86,5 +91,22 @@ a {
 }
 
 
+@media (max-width: 1440px) {
+    .Tab{
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px 20px;
+    }
+}
 
-/* @media (max-width: 520px) {} */
+@media (max-width: 769px) {
+    .Tab{
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 0px 20px;
+    }
+    .MovieImg img {
+        min-width: 0px;
+    }
+}
+
+@media (max-width: 480px) {
+}

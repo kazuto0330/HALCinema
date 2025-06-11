@@ -28,7 +28,7 @@ a {
 
 /* 各スライドのアイテム */
 .slide-item {
-    width: 80vw;
+    width: 75vw;
     max-width: 1200px;
     flex-shrink: 0;
     box-sizing: border-box;
