@@ -55,3 +55,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         userIconElement.src = '/static/images/usericon/80x80/default.jpg';
     }
 });
+
+
+// スマホ用ハンバーガーメニューーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+
+// DOMが読み込まれたら実行
+document.addEventListener('DOMContentLoaded', () => {
+    // 必要な要素を取得
+    const hamburgerIcon = document.getElementById('hamburger-icon');
+    const navMenu = document.getElementById('nav-menu');
+    const closeButton = document.getElementById('close-button');
+    const menuOverlay = document.getElementById('menu-overlay');
+
+    // メニューを開く関数
+    const openMenu = () => {
+        navMenu.classList.add('is-active');
+        menuOverlay.classList.add('is-active');
+    };
+
+    // メニューを閉じる関数
+    const closeMenu = () => {
+        navMenu.classList.remove('is-active');
+        menuOverlay.classList.remove('is-active');
+    };
+
+    // ハンバーガーアイコンがクリックされたらメニューを開く
+    hamburgerIcon.addEventListener('click', openMenu);
+
+    // 閉じるボタンがクリックされたらメニューを閉じる
+    closeButton.addEventListener('click', closeMenu);
+
+    // オーバーレイがクリックされたらメニューを閉じる
+    menuOverlay.addEventListener('click', closeMenu);
+});

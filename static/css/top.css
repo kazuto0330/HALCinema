@@ -113,6 +113,28 @@ a {
 .next-button::after {
     transform: translate(-60%, -50%) rotate(45deg);
 }
+
+@media (max-width: 1440px) {
+    .slide-item {
+        width: 65vw;
+        min-width: 650px;
+        max-width: 850px;
+    }
+}
+
+@media (max-width: 769px) {
+    .slide-item {
+        width: 80vw;
+        min-width: 1px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slide-item {
+        width: 100vw;
+    }
+}
+
 /* ----------------------------------------------------------------メインコンテンツ------------------------------------------------------------------------- */
 /* スクロールボタンのスタイル */
 .ScrollButton {
@@ -266,50 +288,6 @@ a {
     display: none;
 }
 
-
-@media (max-width: 840px) {
-    .ContentText {
-        font-size: 1.3rem;
-    }
-
-    .ContentTextMore {
-        font-size: 0.9rem;
-    }
-
-
-    .ScrollButton {
-        height: 25vw;
-    }
-
-    .ScrollButton.EventButton {
-        height: 15vw;
-    }
-}
-
-@media (max-width: 520px) {
-    .ContentContainer {
-        margin: 20px 0;
-    }
-
-    .ImageWrapper {
-        padding-left: 20px;
-    }
-
-    .ContentText {
-        font-size: 1.2rem;
-    }
-
-    .ContentTextMore {
-        font-size: 0.85rem;
-    }
-
-    .ScrollButton {
-        display: none;
-    }
-}
-
-
-
 /* ボタンのホバー表示/非表示 */
 .ContentContainer .ScrollButton {
     visibility: hidden;
@@ -321,4 +299,41 @@ a {
     visibility: visible;
     opacity: 1;
     transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+
+@media (max-width: 1440px) {}
+
+@media (max-width: 769px) {
+    .slideshow-container {
+        padding: 1vh 0;
+    }
+    .ContentText {
+        margin-left: 18px;
+        font-size: max(16px,2.5vw);
+    }
+    .ContentTextMore {
+        margin: 0 10px 0 auto;
+        font-size: max(14px,2vw);
+    }
+    .ImageWrapper {
+        padding-left: 30px;
+    }
+    .ContentImg {
+        width: 13.25vw;
+        min-width: 95px;
+    }
+    .ImageWrapper.Event a img {
+        width: 26vw;
+        min-width: 160px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ContentContainer {
+        margin: 6vw 0;
+    }
+    .Arrow{
+        display: none;
+    }
 }
