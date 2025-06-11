@@ -22,7 +22,7 @@
             <div id="NowTab" class="Tab">
             {% if now_playing %}
                 {% for movie in now_playing %}
-                <a class="MovieImg" href="/movie_information/{{ movie.moviesId }}"><img src="{{ url_for('static', filename='images/movie/200h/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"></a>
+                <a class="MovieImg" href="/movie_information/{{ movie.moviesId }}"><div><img src="{{ url_for('static', filename='images/movie/200h/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}"></div></a>
                 {% endfor %}
             {% endif %}
             </div>
