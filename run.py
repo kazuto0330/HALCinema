@@ -191,6 +191,7 @@ def fetch_events(limit: int = 10, random_order: bool = False):
             return events
 
     except mysql.connector.Error:
+        print("error")
         return []
 
 
@@ -509,6 +510,9 @@ def index():
     now_playing_movies = fetch_movies(status='now_playing', limit=10)
     coming_soon_movies = fetch_movies(status='coming_soon', limit=10)
     event = fetch_events(limit=10)
+    
+    print(screen_event)
+    print(event)
     
     return render_template("top.html", screen_event=screen_event, now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
 
@@ -1266,9 +1270,9 @@ def add_eventDB():
             # オリジナル画像を保存
             img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
 
-            # アスペクト比維持で縦100pxにリサイズ
+            # アスペクト比維持で縦150pxにリサイズ
             original_width, original_height = img.size
-            target_height = 100
+            target_height = 150
             target_width = int((target_height / original_height) * original_width)
 
             resized_img = img.resize((target_width, target_height), Image.Resampling.LANCZOS)

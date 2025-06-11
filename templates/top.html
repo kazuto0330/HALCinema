@@ -47,7 +47,7 @@
                 {% if now_playing %}
                     {% for movie in now_playing %}
                     <a href="/movie_information/{{ movie.moviesId }}" data-tippy-content="{{ movie.movieTitle }}">
-                        <img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg">
+                        <img src="{{ url_for('static', filename='images/movie/200h/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg">
                     </a>
                     {% endfor %}
                 {% endif %}
@@ -102,7 +102,7 @@
                 {% if coming_soon %}
                     {% for movie in coming_soon %}
                     <a href="/movie_information/{{ movie.moviesId }}" data-tippy-content="{{ movie.movieTitle }}">
-                        <img src="{{ url_for('static', filename='images/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg">
+                        <img src="{{ url_for('static', filename='images/movie/200h/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg">
                         <div>{{ movie.movieReleaseDate|strftime('%Y年%m月%d日') }} 公開</div>
                     </a>
                     {% endfor %}
