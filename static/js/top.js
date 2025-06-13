@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ボタンのホバー表示/非表示
 // 定数：ビューポートのはみ出し判定の閾値（左右の余白）
-const OUT_OF_BOUNDS_THRESHOLD = 25;
+const OUT_OF_BOUNDS_THRESHOLD = 35;
 
 /**
  * 指定された画像要素のビューポート内での位置に基づき、

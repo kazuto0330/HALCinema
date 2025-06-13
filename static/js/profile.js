@@ -189,6 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // キャッシュを保存するためのキーを定義
     const CACHE_KEY = 'user_icon_url';
 
+    sessionStorage.removeItem(CACHE_KEY);
+
     // 1. アイコンクリックで、ファイル入力
     plusButton.addEventListener('click', () => {
         imageInput.click();

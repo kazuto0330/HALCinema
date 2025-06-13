@@ -24,7 +24,7 @@
 
     </div>
     <a href="/profile"><div class="userIcon Media">
-      <img src="{{ url_for('static', filename='images/usericon/80x80/default.jpg') }}" alt="ユーザーアイコン" data-tippy-content="プロフィール" id="user-icon"/>
+      <img src="{{ url_for('static', filename='images/usericon/80x80/default.jpg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/usericon/80x80/default.jpg') }}';" alt="ユーザーアイコン" data-tippy-content="プロフィール" id="user-icon"/>
     </div></a>
     <div id="hamburger-icon" class="hamburger-icon" data-tippy-content="メニュー">☰</div>
   </div>

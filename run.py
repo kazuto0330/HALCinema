@@ -511,9 +511,6 @@ def index():
     coming_soon_movies = fetch_movies(status='coming_soon', limit=15)
     event = fetch_events(limit=10)
     
-    print(screen_event)
-    print(event)
-    
     return render_template("top.html", screen_event=screen_event, now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
 
 
@@ -539,7 +536,6 @@ def profile():
     user_id = 2
     userData = getUserData(user_id)
     History = watchHistory(user_id)
-    print(History)
     return render_template("profile.html", userData=userData, user_history=History)
 
 

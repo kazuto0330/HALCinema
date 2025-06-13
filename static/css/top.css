@@ -152,8 +152,8 @@ a {
     position: relative;
 }
 .Arrow{
-    color: white;
-    font-size: 21px;
+    color: #fff;
+    font-size: 23px;
     font-weight: bold;
     user-select: none;
     z-index: 100;

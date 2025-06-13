@@ -18,7 +18,7 @@
         {% if screen_event %}
             {% for event in screen_event %}
                 <div class="slide-item">
-                    <a href="/event/{{ event.eventInfoId }}"><img src="{{ url_for('static', filename='images/event/original/' + event.eventImage ) }}" alt="{{ event.eventTitle }}"></a>
+                    <a href="/event/{{ event.eventInfoId }}"><img src="{{ url_for('static', filename='images/event/original/' + event.eventImage ) }}" alt="{{ event.eventTitle }}" loading="lazy"></a>
                 </div>
             {% endfor %}
         {% endif %}
@@ -47,7 +47,7 @@
                 {% if now_playing %}
                     {% for movie in now_playing %}
                     <a href="/movie_information/{{ movie.moviesId }}" data-tippy-content="{{ movie.movieTitle }}">
-                        <img src="{{ url_for('static', filename='images/movie/200h/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg">
+                        <img src="{{ url_for('static', filename='images/movie/200h/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg" loading="lazy">
                     </a>
                     {% endfor %}
                 {% endif %}
@@ -74,7 +74,7 @@
                 {% if events %}
                     {% for event in events %}
                     <a href="/event/{{ event.eventInfoId }}" data-tippy-content="{{ event.eventTitle }}">
-                        <img src="{{ url_for('static', filename='images/event/200h/' + event.eventImage ) }}" alt="{{ event.eventTitle }}" class="ContentImg EventImg">
+                        <img src="{{ url_for('static', filename='images/event/200h/' + event.eventImage ) }}" alt="{{ event.eventTitle }}" class="ContentImg EventImg" loading="lazy">
                     </a>
                     {% endfor %}
                 {% endif %}
@@ -102,7 +102,7 @@
                 {% if coming_soon %}
                     {% for movie in coming_soon %}
                     <a href="/movie_information/{{ movie.moviesId }}" data-tippy-content="{{ movie.movieTitle }}">
-                        <img src="{{ url_for('static', filename='images/movie/200h/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg">
+                        <img src="{{ url_for('static', filename='images/movie/200h/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg" loading="lazy">
                         <div>{{ movie.movieReleaseDate|strftime('%Y年%m月%d日') }} 公開</div>
                     </a>
                     {% endfor %}
