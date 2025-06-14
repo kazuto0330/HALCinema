@@ -64,6 +64,36 @@ header {
 .userIcon img:hover{
     opacity: 1;
 }
+/* ------------------弁当メニュー----------------------------- */
+.bento-menu-icon {
+    margin: 0 2vw 0 0;
+/*
+   * アイコンのサイズをフォントサイズに連動させます。
+   * 3em = 親要素のフォントサイズの3倍
+   */
+    font-size: 12px;
+    width: 1.5em;
+    height: 1.5em;
+
+    /* グリッドレイアウトで9個の点を配置します */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3つの列を等間隔で作成 */
+    grid-template-rows: repeat(3, 1fr);    /* 3つの行を等間隔で作成 */
+
+    /* 点と点の間の隙間。これもemで指定します */
+    gap: 0.3em;
+    cursor: pointer;
+    user-select: none;
+}
+
+.bento-menu-icon div {
+  /* 点の色 */
+  background-color: rgb(188, 187, 187);
+
+  /* 点の角を少し丸めます (25%程度が丁度良い) */
+  border-radius: 25%;
+}
+
 
 /* ------------------------  スマホ用ハンバーガーメニュー  ------------------------------- */
 .hamburger-icon {
@@ -82,7 +112,8 @@ header {
     width: 280px;
     height: 100vh;
     /* メニューの背景色をダークブルー系に変更 */
-    background-color: #000918; 
+    background-color: #000918a8;
+    backdrop-filter: blur(10px);
     /* 影の代わりに左の境界線でメニューを区別 */
     border-left: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: none; /* box-shadowは不要に */
@@ -141,7 +172,7 @@ header {
 
 .menu-item a:hover {
     /* ホバー時の背景色と文字色を明確に */
-    background-color: #202f4a;
+    background-color: #0115375a;
     color: #ffffff;
 }
 
@@ -154,7 +185,7 @@ header {
     width: 100%;
     height: 100%;
     /* オーバーレイの黒を少し濃くする */
-    background-color: rgba(0, 0, 0, 0.6); 
+    background-color: rgba(0, 0, 0, 0.3); 
     z-index: 99;
     /* フェードイン・アウトのアニメーションを追加 */
     opacity: 0;
@@ -197,6 +228,9 @@ header {
         display: block;
     }
     .Media{
+        display: none;
+    }
+    .bento-menu-icon-wrapper{
         display: none;
     }
 }

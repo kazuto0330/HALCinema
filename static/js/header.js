@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 document.addEventListener('DOMContentLoaded', () => {
     // 必要な要素を取得
     const hamburgerIcon = document.getElementById('hamburger-icon');
+    const bentoIcon = document.getElementById('bento-menu-icon');
     const navMenu = document.getElementById('nav-menu');
     const closeButton = document.getElementById('close-button');
     const menuOverlay = document.getElementById('menu-overlay');
@@ -81,6 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ハンバーガーアイコンがクリックされたらメニューを開く
     hamburgerIcon.addEventListener('click', openMenu);
+    // 弁当メニュー 〃
+    bentoIcon.addEventListener('click', openMenu);
 
     // 閉じるボタンがクリックされたらメニューを閉じる
     closeButton.addEventListener('click', closeMenu);

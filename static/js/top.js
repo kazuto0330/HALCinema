@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const slideCount = originalSlides.length;
     let currentIndex = 0;
     const ANIMATION_DURATION = 300;
-    const SLIDE_INTERVAL = 5000;
+    const SLIDE_INTERVAL = 4000;
     let autoPlayTimer; // タイマーIDを保持する変数
 
     const lastClone = originalSlides[slideCount - 1].cloneNode(true);
@@ -29,11 +29,9 @@ document.addEventListener('DOMContentLoaded', function () {
             wrapper.style.transition = 'none';
         }
 
-        // ▼▼▼ ここの計算方法を変更 ▼▼▼
         const slideWidth = allSlides[CLONE_COUNT_AHEAD].offsetWidth;
         // 画面全体の幅から現在のスライドの幅を引いて2で割り、正確な中央配置のためのオフセットを計算
         const offset = (window.innerWidth - slideWidth) / 2;
-        // ▲▲▲ ここまで変更 ▲▲▲
 
         const transformValue = -((slideWidth * (currentIndex + CLONE_COUNT_AHEAD))) + offset;
         wrapper.style.transform = `translateX(${transformValue}px)`;

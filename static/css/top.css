@@ -10,8 +10,7 @@ a {
     text-decoration: none;
 }
 
-/* ----------------------------------------------------------------スライドショー------------------------------------------------------------------------- */
-/* スライドショーのコンテナ */
+/* ------------------------------スライドショー----------------------------------- */
 .slideshow-container {
     width: 100%;
     overflow: hidden;
@@ -21,18 +20,16 @@ a {
     padding: 2vh 0;
 }
 
-/* スライドを横並びにするラッパー */
 .slideshow-wrapper {
     display: flex;
 }
 
-/* 各スライドのアイテム */
 .slide-item {
     width: 75vw;
     max-width: 1200px;
     flex-shrink: 0;
     box-sizing: border-box;
-    padding: 0; /* パディングを無くしてさらに近づける */
+    padding: 0;
     transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
     
     /* スケールを大きくして距離を縮める */
@@ -47,10 +44,9 @@ a {
     pointer-events: auto; /* アクティブなスライドのみクリック可能にする */
 }
 
-/* --- ▼▼▼ ここから変更・追加 ▼▼▼ --- */
 
 .slide-item a {
-    display: block; /* aタグが画像全体を覆うようにする */
+    display: block;
 }
 /* アクティブでないスライドはクリックできないようにする */
 .slide-item {
@@ -75,13 +71,13 @@ a {
     background-color: transparent; /* 通常時は背景を透明に */
     border: none;
     border-radius: 50%;
-    width: 50px; /* 少し大きくする */
-    height: 50px; /* 少し大きくする */
+    width: 50px;
+    height: 50px;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
-/* ホバー時に背景色を適用 */
+
 .slide-button:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
@@ -100,7 +96,7 @@ a {
 
 /* 前へボタン */
 .prev-button {
-    left: 1%; /* さらに外側に配置 */
+    left: 1%; /* 左から1% */
 }
 .prev-button::after {
     transform: translate(-40%, -50%) rotate(-135deg);
@@ -108,11 +104,13 @@ a {
 
 /* 次へボタン */
 .next-button {
-    right: 1%; /* さらに外側に配置 */
+    right: 1%; /* 右から1% */
 }
 .next-button::after {
     transform: translate(-60%, -50%) rotate(45deg);
 }
+
+
 
 @media (max-width: 1440px) {
     .slide-item {
@@ -135,8 +133,7 @@ a {
     }
 }
 
-/* ----------------------------------------------------------------メインコンテンツ------------------------------------------------------------------------- */
-/* スクロールボタンのスタイル */
+/* ------------------------------------メインコンテンツ------------------------------------------- */
 .ScrollButton {
     display: flex;
     align-items: center;
@@ -162,12 +159,6 @@ a {
 }
 .Arrow:hover{
     font-size: 28px;
-}
-.LeftArrow{
-    left: 0;
-}
-.RightArrow{
-    right: 0;
 }
 
 .LeftButton {
@@ -229,7 +220,7 @@ a {
     border-radius: 5px;
     box-shadow: 3px 5px 10px rgba(255, 255, 255, 0.1);
     filter: brightness(100%);
-    transition: filter 0.3s ease;
+    transition: all 0.3s ease;
 }
 .EventImg{
     min-width: 185px;
@@ -253,8 +244,6 @@ a {
     margin: 5px 20px 0 0;
     font-size: 0.8rem;
 }
-
-
 
 
 /* スクロールボタンのスタイル */

@@ -31,6 +31,7 @@
 
 
     <!-- メインコンテンツ -->
+     <!-- 人気の映画 -->
     <div class="ContentContainer">
         <div class="ContentBox">
             <div class="ContentText">人気の映画</div>
@@ -58,7 +59,7 @@
     </div>
 
 
-
+    <!-- 開催中のイベント -->
     <div class="ContentContainer">
         <div class="ContentBox">
             <div class="ContentText">イベント</div>
@@ -85,7 +86,7 @@
     </div>
 
 
-
+    <!-- 公開中の映画 -->
     <div class="ContentContainer">
         <div class="ContentBox">
             <div class="ContentText">公開予定の映画</div>
@@ -114,14 +115,10 @@
         </div>
     </div>
 
+
     {% include '_footer.html' %}
 
 
-
-
     <script src="{{ url_for('static', filename='js/top.js') }}"></script>
-
-
-
 </body>
 </html>
