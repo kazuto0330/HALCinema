@@ -3,6 +3,11 @@ import os
 import uuid
 import re
 from datetime import date, datetime, timedelta
+from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash
+from werkzeug.utils import secure_filename
+
+
 
 import mysql.connector
 from PIL import Image
@@ -14,7 +19,9 @@ app = Flask(__name__)
 #セッションの暗号化
 app.secret_key = 'qawsedrftgyhujikolp'
 #ユーザーデータの場所(とりあえず、次dbに)
-USER_FILE = 'users.json'
+
+USER_DATA_FILE = 'user_data.json'
+
 
 app.config['USER_ICON_UPLOAD_FOLDER'] = 'static/images/usericon'
 app.config['MOVIE_UPLOAD_FOLDER'] = 'static/images/movie'
@@ -291,17 +298,19 @@ def getUserIcon(user_id):
 
 
 # ユーザーデータを読み込む
-def load_users():
-    if not os.path.exists(USER_FILE):
-        return {}
-    with open(USER_FILE, 'r') as f:
-        return json.load(f)
 
 
-# ユーザーデータを保存する
-def save_users(users):
-    with open(USER_FILE, 'w') as f:
-        json.dump(users, f)
+def load_user_data():
+    if os.path.exists(USER_DATA_FILE):
+        with open(USER_DATA_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+def save_user_data(data):
+    with open(USER_DATA_FILE, 'w') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
 
 
 # 支払い処理用の関数
@@ -734,28 +743,115 @@ def member_login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        users = load_users()
-        if username in users:
-            return 'ユーザー名は既に存在します'
-        users[username] = password
-        save_users(users)
-        return redirect(url_for('login'))
+        accountId = request.form.get('accountId')
+        accountName = request.form.get('accountName')
+        emailAddress = request.form.get('emailAddress')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        realName = request.form.get('realName')
+        phoneNumber = request.form.get('phoneNumber')
+        birthDate = request.form.get('birthDate')
+
+        # 验证字段是否填写
+        if not all([accountId, accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
+            error = "すべての必須項目を入力してください。"
+            return render_template('register.html', error=error)
+
+        if password != confirm_password:
+            error = "パスワードが一致しません。"
+            return render_template('register.html', error=error)
+
+        if '@' not in emailAddress or '.' not in emailAddress:
+            error = "メールアドレスの形式が正しくありません。"
+            return render_template('register.html', error=error)
+
+        if not re.match(r"^[0-9\\s\\+\\-]+$", phoneNumber):
+            error = "電話番号の形式が正しくありません。"
+            return render_template('register.html', error=error)
+
+        hashed_password = generate_password_hash(password)
+
+        conn = conn_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT accountId FROM t_account WHERE accountId = %s", (accountId,))
+        if cursor.fetchone():
+            cursor.close()
+            conn.close()
+            error = "このユーザーIDは既に使用されています。"
+            return render_template('register.html', error=error)
+
+        sql = """
+            INSERT INTO t_account (
+                accountId, accountName, emailAddress, password,
+                realName, phoneNumber, birthDate,
+                accountIcon, points
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        values = (
+            accountId, accountName, emailAddress, hashed_password,
+            realName, phoneNumber, birthDate,
+            "default.jpg", 0
+        )
+        cursor.execute(sql, values)
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        session['user'] = {
+            'accountId': accountId,
+            'accountName': accountName,
+            'emailAddress': emailAddress
+        }
+        return redirect('/success')
+
     return render_template('register.html')
 
 
+
+@app.route('/success')
+def success():
+    if 'user' in session:
+        return render_template('success.html', user=session['user'])
+    return redirect('/register')
+
+
+
+# login画面
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['username']
+        email = request.form['emailAddress']
         password = request.form['password']
-        users = load_users()
-        if users.get(username) == password:
-            session['username'] = username
-            return render_template('top.html')
-        return 'ユーザー名またはパスワードが間違っています'
+
+        conn = conn_db()
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT accountId, accountName, emailAddress, password, accountIcon, points
+            FROM t_account
+            WHERE emailAddress = %s
+        """, (email,))
+        user = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if user and check_password_hash(user[3], password):
+            session['user'] = {
+                'accountId': user[0],
+                'accountName': user[1],
+                'emailAddress': user[2],
+                'accountIcon': user[4],
+                'points': user[5]
+            }
+            return redirect('/')  # 登录成功后跳转到首页
+        else:
+            error = "メールアドレスまたはパスワードが正しくありません。"
+            return render_template('login.html', error=error)
+
     return render_template('login.html')
+
+
+
+
 
 
 # pay画面

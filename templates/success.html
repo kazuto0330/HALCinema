@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head><title>登録完了</title></head>
+<body>
+  {% include '_header.html' %}
+  <main>
+    <h2>登録が完了しました！ようこそ、{{ user.accountName }}さん。</h2>
+    <form action="/login" method="get" style="display:inline;">
+      <button type="submit">ログインする</button>
+    </form>
+    <form action="/" method="get" style="display:inline;">
+      <button type="submit">ホームに戻る</button>
+    </form>
+  </main>
+  {% include '_footer.html' %}
+
+  <script src="{{ url_for('static', filename='js/test.js') }}"></script>
+</body>
+</html>

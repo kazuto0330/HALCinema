@@ -1,22 +1,26 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ログインページ</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/') }}">
+  <title>ログイン</title>
 </head>
-
 <body>
-    <h2>ユーザーログイン</h2>
-    <form method="post">
-        <label for="username">ユーザー名：</label>
-        <input type="text" name="username" required><br><br>
-        <label for="password">パスワード：</label>
-        <input type="password" name="password" required><br><br>
-        <button type="submit">ログイン</button>
-    </form>
-    <p>アカウントをお持ちでない方は、<a href="{{ url_for('register') }}">こちらから登録</a></p>
-</body>
+  {% include '_header.html' %}
+  <main>
+    <h2>ログイン</h2>
 
+    {% if error %}
+      <p style="color:red;">{{ error }}</p>
+    {% endif %}
+  
+    <form method="POST">
+      <label>メールアドレス: <input type="email" name="emailAddress" required></label><br>
+      <label>パスワード: <input type="password" name="password" required></label><br>
+      <button type="submit">ログイン</button>
+    </form>
+  </main>
+
+  {% include '_footer.html' %}
+
+  <script src="{{ url_for('static', filename='js/test.js') }}"></script>
+</body>
 </html>
