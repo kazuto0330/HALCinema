@@ -12,7 +12,7 @@ a{
 
 #MainContent{
     display: flex;
-    width: clamp(900px, 80vw, 1600px);
+    width: clamp(300px, 80vw, 1600px);
     margin: 10px auto 250px auto;
 }
 #Left{
@@ -27,6 +27,7 @@ a{
     padding: 5px;
 }
 #Title{
+    font-weight: 500;
     font-size: 1.6rem;
 }
 #SmallFeature{
@@ -67,8 +68,7 @@ a{
 }
 #RecommendedEvents h1{
     margin: 0;
-    font-size: 2.2vw;
-    font-size: clamp(21px, 2.2vw, 33px);
+    font-size: clamp(21px, 2vw, 33px);
 }
 #EventsList{
     margin: 10px 0 0 1vw;
@@ -95,5 +95,50 @@ a{
     font-size:clamp(13px, 1.3vw, 18.5px);
 }
 
-@media (max-width: 1000px){
+
+@media (max-width: 1440px) {
+    #MainContent{
+    width: clamp(0px, 90vw, 1600px);
+    margin: 10px auto 250px auto;
+}
+}
+
+@media (max-width: 769px) {
+    #MainContent{
+        display: block;
+    }
+    #Left {
+        width: 100%;
+        margin-bottom: 40px;
+    }
+    #Title {
+        font-size: max(19px,2.8vw);
+    }
+    #SmallFeature {
+        font-size: max(13px, 2vw);
+    }
+    #MainText {
+        font-size: max(14.5px,2.3vw);
+    }
+    #Right {
+        width: 100%;
+        margin-left: 0;
+    }
+    #RecommendedEvents h1 {
+        font-size: max(19px,2.8vw);
+    }
+    .Event {
+        padding: 10px 5px;
+    }
+    .EventImg {
+        width: 30%;
+        min-width: 30%;
+    }
+    .EventImg img {
+        width: 100%;
+        border-radius: 5px;
+    }
+}
+
+@media (max-width: 480px) {
 }

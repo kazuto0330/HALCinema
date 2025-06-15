@@ -182,7 +182,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const uploadBtn = document.getElementById('upload-crop-btn');
     const cancelBtn = document.getElementById('cancel-crop-btn');
 
+    const headerImg = document.getElementById("user-icon");
+
     let cropper = null;
+
+    // キャッシュを保存するためのキーを定義
+    const CACHE_KEY = 'user_icon_url';
+
+    sessionStorage.removeItem(CACHE_KEY);
 
     // 1. アイコンクリックで、ファイル入力
     plusButton.addEventListener('click', () => {
@@ -249,6 +256,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     // 成功したら、ページの画像を新しいURLに差し替える
                     const avatarImg = document.getElementById('avatar-img');
                     avatarImg.src = data.new_icon_url + '?t=' + new Date().getTime(); // キャッシュ対策
+                    headerImg.src = data.new_icon_url + '?t=' + new Date().getTime();  //ヘッダー用画像
+                    sessionStorage.removeItem(CACHE_KEY);
                     closeModal();
                 } else {
                     alert('エラーが発生しました: ' + data.message);

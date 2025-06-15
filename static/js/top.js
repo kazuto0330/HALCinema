@@ -1,81 +1,109 @@
-// スライドショー関連の変数
-let slideIndex = 0;
-let slides;
-let slidesWrapper;
-const displayDuration = 6000; // 画像表示時間 (ミリ秒)
-let slideTimer;
+document.addEventListener('DOMContentLoaded', function () {
+    const wrapper = document.querySelector('.slideshow-wrapper');
+    const originalSlides = Array.from(wrapper.children);
+    const prevButton = document.querySelector('.prev-button');
+    const nextButton = document.querySelector('.next-button');
 
-// CSS設定値 (vw単位) - デフォルト値として扱う
-const defaultSlideWidthVw = 65;
-const defaultSlideMarginVw = 0.25;
+    if (originalSlides.length === 0) return;
 
-// ページ読み込み後の初期化
-document.addEventListener('DOMContentLoaded', () => {
-    slides = document.getElementsByClassName("MySlides");
-    slidesWrapper = document.querySelector(".SlidesWrapper");
+    const slideCount = originalSlides.length;
+    let currentIndex = 0;
+    const ANIMATION_DURATION = 300;
+    const SLIDE_INTERVAL = 4000;
+    let autoPlayTimer; // タイマーIDを保持する変数
 
-    // 初回スライド表示開始
-    showSlides();
+    const lastClone = originalSlides[slideCount - 1].cloneNode(true);
+    wrapper.insertBefore(lastClone, originalSlides[0]);
+    const firstClone = originalSlides[0].cloneNode(true);
+    wrapper.appendChild(firstClone);
+    
+    const allSlides = document.querySelectorAll('.slide-item');
+    const CLONE_COUNT_AHEAD = 1;
 
-    // ウィンドウのリサイズ時にもスライドショーの位置を再計算する
-    // これにより、画面サイズ変更時にも正しく中央に表示される
-    window.addEventListener('resize', showSlides);
+    // --- 関数の定義 ---
+
+    function updateSlider(withAnimation = true) {
+        if (withAnimation) {
+            wrapper.style.transition = `transform ${ANIMATION_DURATION}ms ease-in-out`;
+        } else {
+            wrapper.style.transition = 'none';
+        }
+
+        const slideWidth = allSlides[CLONE_COUNT_AHEAD].offsetWidth;
+        // 画面全体の幅から現在のスライドの幅を引いて2で割り、正確な中央配置のためのオフセットを計算
+        const offset = (window.innerWidth - slideWidth) / 2;
+
+        const transformValue = -((slideWidth * (currentIndex + CLONE_COUNT_AHEAD))) + offset;
+        wrapper.style.transform = `translateX(${transformValue}px)`;
+
+        allSlides.forEach((slide, index) => {
+            if (index === currentIndex + CLONE_COUNT_AHEAD) {
+                slide.classList.add('active');
+            } else {
+                slide.classList.remove('active');
+            }
+        });
+    }
+
+    // 次のスライドへ
+    function slideToNext() {
+        currentIndex++;
+        updateSlider();
+    }
+
+    // 前のスライドへ
+    function slideToPrev() {
+        currentIndex--;
+        updateSlider();
+    }
+    
+    // 自動再生を開始/リセットする関数
+    function startAutoPlay() {
+        clearInterval(autoPlayTimer); // 既存のタイマーをクリア
+        autoPlayTimer = setInterval(slideToNext, SLIDE_INTERVAL);
+    }
+
+    // アニメーション完了時のループ処理
+    wrapper.addEventListener('transitionend', () => {
+        // 最後のスライド（＝最初の画像のクローン）に到達した場合
+        if (currentIndex >= slideCount) {
+            currentIndex = 0;
+            updateSlider(false);
+        }
+        // 最初のスライド（=最後の画像のクローン）に到達した場合
+        if (currentIndex < 0) {
+            currentIndex = slideCount - 1;
+            updateSlider(false);
+        }
+    });
+
+    // --- イベントリスナーの設定 ---
+
+    // 次へボタンがクリックされた時
+    nextButton.addEventListener('click', () => {
+        slideToNext();
+        startAutoPlay(); // タイマーをリセットして再開
+    });
+
+    // 前へボタンがクリックされた時
+    prevButton.addEventListener('click', () => {
+        slideToPrev();
+        startAutoPlay(); // タイマーをリセットして再開
+    });
+    
+    // ウィンドウサイズが変更されたとき
+    window.addEventListener('resize', () => {
+        updateSlider(false);
+    });
+
+    // --- 初期化処理 ---
+    updateSlider(false);
+    startAutoPlay(); // 最初の自動再生を開始
 });
 
-// スライド表示とタイマー設定
-function showSlides() {
-    clearTimeout(slideTimer);
 
-    // レスポンシブ対応: 現在のスライド幅とマージンを決定
-    let currentSlideWidthVw;
-    let currentSlideMarginVw;
 
-    if (window.innerWidth <= 620) {
-        currentSlideWidthVw = 100; // 画面幅いっぱいに
-        currentSlideMarginVw = 0;   // マージンなし
-    } else {
-        currentSlideWidthVw = defaultSlideWidthVw;
-        currentSlideMarginVw = defaultSlideMarginVw;
-    }
 
-    // インデックス調整 (ループ)
-    if (slideIndex >= slides.length) { slideIndex = 0; }
-    if (slideIndex < 0) { slideIndex = slides.length - 1; }
-
-    // activeクラスの付け替えと、CSSプロパティの動的設定
-    // JavaScriptから直接CSSプロパティを設定することで、メディアクエリと連携しつつ、
-    // 正確な計算に基づいたスタイルを適用します。
-    for (let i = 0; i < slides.length; i++) {
-        slides[i].classList.remove("active");
-        // ここでflexとmarginをJavaScriptから設定し、CSSのメディアクエリと連携させる
-        slides[i].style.flex = `0 0 ${currentSlideWidthVw}vw`;
-        slides[i].style.margin = `0 ${currentSlideMarginVw}vw`;
-    }
-    slides[slideIndex].classList.add("active");
-
-    // wrapper移動量の計算と適用
-    // 計算にはcurrentSlideWidthVwとcurrentSlideMarginVwを使用
-    const distanceFromWrapperLeftVw = slideIndex * (currentSlideWidthVw + (2 * currentSlideMarginVw));
-    const containerWidthVw = 100; // コンテナ幅 (CSSと合わせる)
-    const activeSlideCenterXFromWrapperVw = distanceFromWrapperLeftVw + currentSlideWidthVw / 2;
-    const containerCenterXFromWrapperVw = containerWidthVw / 2;
-    const moveAmountVw = containerCenterXFromWrapperVw - activeSlideCenterXFromWrapperVw;
-
-    slidesWrapper.style.transform = 'translateX(' + moveAmountVw + 'vw)';
-
-    // 次のスライドへのタイマー再設定
-    slideTimer = setTimeout(() => {
-        slideIndex++;
-        showSlides();
-    }, displayDuration);
-}
-
-// 前後ボタンでのスライド切り替え
-function plusSlides(n) {
-    clearTimeout(slideTimer);
-    slideIndex += n;
-    showSlides();
-}
 
 // コンテンツスクロールとボタン操作 (ユーザー提供のコードをそのまま残します)
 document.addEventListener('DOMContentLoaded', () => {
@@ -103,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ボタンのホバー表示/非表示
 // 定数：ビューポートのはみ出し判定の閾値（左右の余白）
-const OUT_OF_BOUNDS_THRESHOLD = 25;
+const OUT_OF_BOUNDS_THRESHOLD = 35;
 
 /**
  * 指定された画像要素のビューポート内での位置に基づき、
@@ -114,7 +142,7 @@ const OUT_OF_BOUNDS_THRESHOLD = 25;
 function updateImageDarkenState(img) {
     const rect = img.getBoundingClientRect(); // 要素のビューポートに対する位置とサイズを取得
     const viewportWidth = window.innerWidth;
-    if (viewportWidth<520){
+    if (viewportWidth<481){
         return;
     }
 

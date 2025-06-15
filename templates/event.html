@@ -17,18 +17,12 @@
 
     <div id="MainContent">
         <div id="Left">
-            <img src="{{ url_for('static', filename='images/' + event.eventImage) }}" alt="{{event.eventTitle}}" id="MainImg">
+            <img src="{{ url_for('static', filename='images/event/original/' + event.eventImage) }}" alt="{{event.eventTitle}}" id="MainImg">
             <div id="MainEvent">
                 <div id="Title">{{event.eventTitle}}</div>
                 <div id="SmallFeature">
                     <div id="Date">{{event. eventStartDate|strftime('%Y年%m月%d日')}}</div>
                     <a href="{{event.eventUrl}}" id="EventUrl" target="_blank">{{event.eventUrl}}</a>
-                    <div id="TagList">
-                        <div class="Tag">名古屋</div>
-                        <div class="Tag">ScreenX</div>
-                        <div class="Tag">名古屋</div>
-                        <div class="Tag">まだ作ってない</div>
-                    </div>
                 </div>
                 <div id="MainText">{{event.eventDescription}}</div>
             </div>
@@ -42,7 +36,7 @@
                     {% for event in recommendation %}
                     <a href="{{event.eventInfoId}}">
                         <div class="Event">
-                            <div class="EventImg"><img src="{{ url_for('static', filename='images/' + event.eventImage) }}" alt="{{event.eventTitle}}">
+                            <div class="EventImg"><img src="{{ url_for('static', filename='images/event/200h/' + event.eventImage) }}" alt="{{event.eventTitle}}">
                             </div>
                             <div class="EventText">{{event.eventTitle}}</div>
                         </div>

@@ -30,7 +30,7 @@
         <div class="container">
             <div class="profile-header">
                 <div class="profile-avatar" data-tippy-content="アイコンの変更">
-                    <img src="{{ url_for('static', filename='images/usericon/400x400/' + userData.accountIcon) }}" alt="プロフィール画像" id="avatar-img">
+                    <img src="{{ url_for('static', filename='images/usericon/400x400/' + userData.accountIcon) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/usericon/400x400/default.jpg') }}';" alt="プロフィール画像" id="avatar-img">
                     <div class="avatar-overlay" id="avatar-plus-button">
                         <span>+</span>
                     </div>
@@ -102,7 +102,7 @@
                         <div class="points-card">
                             <div class="points-info">
                                 <h4>現在のポイント</h4>
-                                <span class="points-value">1,250ポイント</span>
+                                <span class="points-value">{{ userData.points}}ポイント</span>
                             </div>
                             <div class="points-actions">
                                 <button class="use-points-btn">ポイント使用</button>
@@ -120,34 +120,30 @@
                     </div>
                 </div>
 
-
                 <div class="profile-section">
                     <h3 class="section-title">視聴履歴</h3>
                     <div class="movie-history">
-                        <div class="movie-card">
-                            <img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt="映画1">
-                            <div class="movie-info">
-                                <h4>アベンジャーズ: エンドゲーム</h4>
-                                <p>2024年3月15日 19:00</p>
-                                <span class="theater">シアター1</span>
-                            </div>
-                        </div>
-                        <div class="movie-card">
-                            <img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt="映画2">
-                            <div class="movie-info">
-                                <h4>君の名は。</h4>
-                                <p>2024年3月8日 14:30</p>
-                                <span class="theater">シアター3</span>
-                            </div>
-                        </div>
-                        <div class="movie-card">
-                            <img src="{{ url_for('static', filename='images/movieimage5.jpg') }}" alt="映画3">
-                            <div class="movie-info">
-                                <h4>ワンダーウーマン 1984</h4>
-                                <p>2024年2月28日 21:00</p>
-                                <span class="theater">シアター2</span>
-                            </div>
-                        </div>
+                        {# user_history が空でないかを確認し、ループ処理で各映画の情報を表示 #}
+                        {% if user_history %}
+                            {% for record in user_history %}
+                                <div class="movie-card">
+                                    {# staticフォルダ内のimagesフォルダに映画画像があると仮定 #}
+                                    {# movieImageはDBから取得したファイル名を使用 #}
+                                    <img src="{{ url_for('static', filename='images/' + record.movieImage) }}" alt="{{ record.movieTitle }}">
+                                    <div class="movie-info">
+                                        <h4>{{ record.movieTitle }}</h4>
+                                        {# 日付はdatetime.dateオブジェクトなので、strftimeフィルターでフォーマット #}
+                                        {# 現在は時間情報がないため、日付のみを表示します。 #}
+                                        {# もし時間情報も必要なら、DBに時刻カラムを追加し、SQLで取得してここに表示します #}
+                                        <p>{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}</p>
+                                        {# シアター情報と座席番号を表示 #}
+                                        <span class="theater">シアター{{ record.screenId }} (座席: {{ record.seatNumber }})</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="no-history">視聴履歴はありません。</p>
+                        {% endif %}
                     </div>
                 </div>
 

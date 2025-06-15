@@ -10,47 +10,147 @@ a {
     text-decoration: none;
 }
 
-/* ----------------------------------------------------------------スライドショー------------------------------------------------------------------------- */
-.SlideshowContainer {
-    width: 99vw; /* スライドショー全体の幅 */
+/* ------------------------------スライドショー----------------------------------- */
+.slideshow-container {
+    width: 100%;
+    overflow: hidden;
     position: relative;
-    overflow: hidden;
-}
-
-.SlidesWrapper {
-    /* widthはJavaScriptで動的に計算 */
     display: flex;
-    transition: transform 0.3s ease-in-out;
-    align-items: center; /* 画像を縦方向中央に揃える */
+    align-items: center;
+    padding: 2vh 0;
 }
 
-.MySlides {
-    flex: 0 0 65vw; /* スライドの幅 */
-    margin: 0 0.25vw;
+.slideshow-wrapper {
+    display: flex;
+}
+
+.slide-item {
+    width: 75vw;
+    max-width: 1200px;
+    flex-shrink: 0;
     box-sizing: border-box;
-    overflow: hidden;
-    opacity: 0.3; /*不透明度*/
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    padding: 0;
+    transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
+    
+    /* スケールを大きくして距離を縮める */
+    filter: brightness(0.4);
+    transform: scale(0.95);
 }
 
-.MySlides:hover {
-    opacity: 0.5;
+/* メインに表示されるスライドのスタイル */
+.slide-item.active {
+    filter: brightness(1);
+    transform: scale(1);
+    pointer-events: auto; /* アクティブなスライドのみクリック可能にする */
 }
 
-.MySlides.active {
-    opacity: 1;
-}
 
-.MySlides img {
+.slide-item a {
     display: block;
+}
+/* アクティブでないスライドはクリックできないようにする */
+.slide-item {
+    pointer-events: none;
+}
+
+
+.slide-item img {
     width: 100%;
     height: auto;
-    object-fit: cover;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
+/* ナビゲーションボタンの共通スタイル */
+.slide-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background-color: transparent; /* 通常時は背景を透明に */
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+
+.slide-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 矢印の作成（CSSで描画） */
+.slide-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px; /* 矢印を大きくする */
+    height: 14px; /* 矢印を大きくする */
+    border-top: 4px solid #fff; /* 矢印を太くする */
+    border-right: 4px solid #fff; /* 矢印を太くする */
+}
+
+/* 前へボタン */
+.prev-button {
+    left: 1%; /* 左から1% */
+}
+.prev-button::after {
+    transform: translate(-40%, -50%) rotate(-135deg);
+}
+
+/* 次へボタン */
+.next-button {
+    right: 1%; /* 右から1% */
+}
+.next-button::after {
+    transform: translate(-60%, -50%) rotate(45deg);
+}
+
+
+
+@media (max-width: 1440px) {
+    .slide-item {
+        width: 65vw;
+        min-width: 650px;
+        max-width: 850px;
+    }
+}
+
+@media (max-width: 769px) {
+    .slide-item {
+        width: 80vw;
+        min-width: 1px;
+    }
+}
+
+@media (max-width: 480px) {
+    .slide-item {
+        width: 100vw;
+    }
+}
+
+/* ------------------------------------メインコンテンツ------------------------------------------- */
+.ScrollButton {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    user-select: none;
+    cursor: pointer;
+}
+
+
+.ScrollButton div {
+    position: relative;
+}
 .Arrow{
-    color: white;
-    font-size: 21px;
+    color: #fff;
+    font-size: 23px;
     font-weight: bold;
     user-select: none;
     z-index: 100;
@@ -60,53 +160,14 @@ a {
 .Arrow:hover{
     font-size: 28px;
 }
-.LeftArrow{
+
+.LeftButton {
     left: 0;
 }
-.RightArrow{
+
+.RightButton {
     right: 0;
 }
-
-
-/* 前後のボタンのスタイル */
-.Prev,
-.Next {
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: auto;
-    z-index: 10;
-    border-radius: 3px;
-    text-decoration: none;
-    padding: 20px;
-}
-
-.Prev {
-    left: 0px;
-}
-
-.Next {
-    right: 0px;
-}
-
-@media (max-width: 620px) {
-    .MySlides {
-        flex: 0 0 100vw; /* 画面幅いっぱいに */
-        margin: 0; /* マージンなし */
-    }
-
-    /* ボタンの位置を調整する場合 */
-    .Prev {
-        left: 5px;
-    }
-
-    .Next {
-        right: 5px;
-    }
-}
-
-/* ----------------------------------------------------------------メインコンテンツ------------------------------------------------------------------------- */
 .ContentContainer {
     margin: 4vw 0;
 }
@@ -117,8 +178,9 @@ a {
 }
 
 .ContentText {
-    margin-left: 25px;
-    font-size: 1.5rem;
+    font-weight: bold;
+    margin-left: 40px;
+    font-size: 1.4rem;
 }
 
 .ContentTextMore {
@@ -158,7 +220,7 @@ a {
     border-radius: 5px;
     box-shadow: 3px 5px 10px rgba(255, 255, 255, 0.1);
     filter: brightness(100%);
-    transition: filter 0.3s ease;
+    transition: all 0.3s ease;
 }
 .EventImg{
     min-width: 185px;
@@ -182,8 +244,6 @@ a {
     margin: 5px 20px 0 0;
     font-size: 0.8rem;
 }
-
-
 
 
 /* スクロールボタンのスタイル */
@@ -218,50 +278,6 @@ a {
     display: none;
 }
 
-
-@media (max-width: 840px) {
-    .ContentText {
-        font-size: 1.3rem;
-    }
-
-    .ContentTextMore {
-        font-size: 0.9rem;
-    }
-
-
-    .ScrollButton {
-        height: 25vw;
-    }
-
-    .ScrollButton.EventButton {
-        height: 15vw;
-    }
-}
-
-@media (max-width: 520px) {
-    .ContentContainer {
-        margin: 20px 0;
-    }
-
-    .ImageWrapper {
-        padding-left: 20px;
-    }
-
-    .ContentText {
-        font-size: 1.2rem;
-    }
-
-    .ContentTextMore {
-        font-size: 0.85rem;
-    }
-
-    .ScrollButton {
-        display: none;
-    }
-}
-
-
-
 /* ボタンのホバー表示/非表示 */
 .ContentContainer .ScrollButton {
     visibility: hidden;
@@ -273,4 +289,41 @@ a {
     visibility: visible;
     opacity: 1;
     transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+
+@media (max-width: 1440px) {}
+
+@media (max-width: 769px) {
+    .slideshow-container {
+        padding: 1vh 0;
+    }
+    .ContentText {
+        margin-left: 18px;
+        font-size: max(16px,2.5vw);
+    }
+    .ContentTextMore {
+        margin: 0 10px 0 auto;
+        font-size: max(14px,2vw);
+    }
+    .ImageWrapper {
+        padding-left: 30px;
+    }
+    .ContentImg {
+        width: 13.25vw;
+        min-width: 95px;
+    }
+    .ImageWrapper.Event a img {
+        width: 26vw;
+        min-width: 160px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ContentContainer {
+        margin: 6vw 0;
+    }
+    .Arrow{
+        display: none;
+    }
 }

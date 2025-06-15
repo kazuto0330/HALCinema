@@ -46,3 +46,30 @@ nowBtn.addEventListener('click', () => {
 comingBtn.addEventListener('click', () => {
     setActiveTab(comingBtn, movieContainer.clientWidth); // 「公開予定」タブへ切り替え、コンテンツを右に
 });
+
+
+
+
+// ------------------------公開日付の処理--------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    const targetSelector = '.ComingSoon div';
+    const yearPattern = /\b20\d{2}年\b/g;
+    const breakpoint = 769;
+
+    function toggleYearDisplay(element, hide) {
+        if (!element.dataset.originalHtml) {
+            element.dataset.originalHtml = element.innerHTML;
+        }
+        element.innerHTML = hide ? element.dataset.originalHtml.replace(yearPattern, '') : element.dataset.originalHtml;
+    }
+
+    function handleResize() {
+        const hideYear = window.innerWidth <= breakpoint;
+        document.querySelectorAll(targetSelector).forEach(element => {
+            toggleYearDisplay(element, hideYear);
+        });
+    }
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+});
