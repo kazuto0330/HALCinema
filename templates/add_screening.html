@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>上映予定登録</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_movie.css') }}">
+</head>
+
+<body>
+    <h1>上映予定登録フォーム</h1>
+
+    <form action="/add_screening" method="post" enctype="multipart/form-data">
+
+        <!-- 映画タイトルの選択 -->
+        <label for="moviesId">映画タイトル</label>
+        <select id="moviesId" name="moviesId" required>
+            <option value="" disabled selected>選択してください</option>
+            {% for movie in movies %}
+            <option value="{{ movie.moviesId }}">{{ movie.movieTitle }}</option>
+            {% endfor %}
+        </select>
+
+        <!-- 上映スクリーンの選択 -->
+        <label for="screenId">上映スクリーン</label>
+        <select id="screenId" name="screenId" required>
+            <option value="" disabled selected>選択してください</option>
+            {% for screen in screens %}
+            <option value="{{ screen.screenId }}">スクリーン{{ screen.screenId }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="scheduledScreeningDate">上映日</label>
+        <select id="scheduledScreeningDate" name="scheduledScreeningDate" required>
+            <option value="" disabled selected>選択してください</option>
+        </select>
+
+        <label for="screeningStartTime">上映開始時刻</label>
+        <input type="time" id="screeningStartTime" name="screeningStartTime" required>
+
+        <button type="submit">登録</button>
+    </form>
+
+    <script>
+        const moviesData = {{ movies_json | tojson | safe }};
+        
+        console.log("script loaded");
+        console.log(moviesData);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const moviesSelect = document.getElementById('moviesId');
+            const dateSelect = document.getElementById('scheduledScreeningDate');
+
+            function formatDate(date) {
+                return date.toISOString().slice(0, 10);
+            }
+
+            moviesSelect.addEventListener('change', () => {
+                console.log("change event fired");
+                dateSelect.innerHTML = '<option value="" disabled selected>選択してください</option>';
+
+                const selectedId = moviesSelect.value;
+                const movie = moviesData.find(m => String(m.moviesId) === selectedId);
+                console.log("selected movie:", movie);
+
+                if (!movie) return;
+
+                const start = new Date(movie.movieReleaseDate);
+                const end = new Date(movie.movieEndDate);
+
+                if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+                    console.log('Invalid dates', movie.movieReleaseDate, movie.movieEndDate);
+                    return;
+                }
+
+                for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                    const option = document.createElement('option');
+                    option.value = formatDate(d);
+                    option.textContent = formatDate(d);
+                    dateSelect.appendChild(option);
+                }
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>

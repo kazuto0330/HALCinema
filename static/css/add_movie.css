@@ -26,13 +26,20 @@ label {
     font-weight: bold;
 }
 
-input, textarea, button {
+input,
+textarea,
+select,
+button {
     padding: 8px;
     font-size: 16px;
     border-radius: 6px;
     border: 1px solid #ccc;
     width: 100%;
     box-sizing: border-box;
+}
+
+select {
+    background-color: white;
 }
 
 textarea {
