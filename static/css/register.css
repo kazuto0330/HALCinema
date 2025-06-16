@@ -1,58 +1,99 @@
+/* 页面整体背景和字体设置 */
+body {
+  background-color: #000918;
+  color: #1a1a1a;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* main 区域居中布局 */
 main {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 40px;
-    background-color: #f5f5f5;
-    font-family: 'Segoe UI', sans-serif;;
-  }
-  
-  main h2 {
-    grid-column: 1 / -1;
-    font-size: 24px;
-    margin-bottom: 20px;
-  }
-  
-  main p {
-    grid-column: 1 / -1;
-    color: red;
-    font-weight: bold;
-  }
-  
-  form {
-    display: contents; /* 让 form 的子元素直接参与 grid 布局 */
-  }
-  
-  label {
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 6px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    display: block;
-  }
-  
-  input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  button[type="submit"] {
-    grid-column: 1 / -1;
-    justify-self: start;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #0056b3;
-  }
-  
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* form 表单样式 */
+form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background-color: #f0f4f8; /* 浅色背景 */
+  color: #1a1a1a;
+  padding: 40px;
+  border-radius: 12px;
+  border: 2px solid #b22222; /* 酒红色边框 */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+/* 标题样式 */
+form h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+/* 表单项标签样式 */
+label {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* 输入框样式 */
+input {
+  margin-top: 8px;
+  padding: 10px;
+  font-size: 14px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  color: #1a1a1a;
+}
+
+/* 注册按钮样式 */
+button[type="submit"] {
+  padding: 12px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+/* 错误提示样式：浮在表单上方中央，不影响布局 */
+main > p {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #d9534f;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  max-width: 90%;
+  text-align: center;
+  pointer-events: none;
+}
