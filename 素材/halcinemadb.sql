@@ -144,6 +144,7 @@ CREATE TABLE `t_scheduledshowing` (
   `moviesId` int NOT NULL,
   `screenId` int NOT NULL,
   `scheduledScreeningDate` date DEFAULT NULL,
+  `screeningStartTime` time DEFAULT NULL,
   PRIMARY KEY (`scheduledShowingId`),
   KEY `moviesId` (`moviesId`),
   KEY `screenId` (`screenId`),
@@ -223,4 +224,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-11  9:28:51
+-- Dump completed on 2025-06-16 10:19:11

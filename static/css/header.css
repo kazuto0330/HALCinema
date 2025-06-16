@@ -6,6 +6,7 @@ body{
 }
 a{
     color: white;
+    text-decoration: none;
 }
 /* ヘッダー */
 header {
@@ -67,6 +68,7 @@ header {
 /* ------------------弁当メニュー----------------------------- */
 .bento-menu-icon {
     margin: 0 2vw 0 0;
+    padding: 10px;
 /*
    * アイコンのサイズをフォントサイズに連動させます。
    * 3em = 親要素のフォントサイズの3倍
@@ -92,6 +94,10 @@ header {
 
   /* 点の角を少し丸めます (25%程度が丁度良い) */
   border-radius: 25%;
+  transition: background-color 0.3s ease; 
+}
+.bento-menu-icon:hover div {
+  background-color: #e8bb18; /* ホバー時の新しい背景色 */
 }
 
 
@@ -146,7 +152,7 @@ header {
 }
 
 .close-button:hover {
-    color: #ffffff;
+    color: #f5c518;
     transform: rotate(90deg); /* ホバー時に少し回転するアニメーション */
 }
 
