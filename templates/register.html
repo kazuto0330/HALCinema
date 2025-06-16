@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html>
-<head><title>ユーザー登録</title></head>
+<head>
+  <meta charset="UTF-8">
+  <title>ユーザー登録</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/register.css') }}">
+</head>
 <body>
   {% include '_header.html' %}
-  <h2>ユーザー登録</h2>
   <main>
+    <h2>ユーザー登録</h2>
     {% if error %}
     <p style="color:red;  ">{{ error }}</p>
     {% endif %}
@@ -21,8 +25,6 @@
       <button type="submit">登録</button>
     </form>
   </main>
-
-
   {% include '_footer.html' %}
 
   <script src="{{ url_for('static', filename='js/test.js') }}"></script>

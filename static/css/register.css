@@ -1,67 +1,58 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #000813;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
-.login-container {
-    background: white;
-    padding: 3rem 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    min-height: 500px; /* 項目が多いので高さを調整 */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-h1 {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    color: #333;
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-label {
+main {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 40px;
+    background-color: #f5f5f5;
+    font-family: 'Segoe UI', sans-serif;;
+  }
+  
+  main h2 {
+    grid-column: 1 / -1;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  main p {
+    grid-column: 1 / -1;
+    color: red;
+    font-weight: bold;
+  }
+  
+  form {
+    display: contents; /* 让 form 的子元素直接参与 grid 布局 */
+  }
+  
+  label {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     display: block;
-    margin-bottom: 0.5rem;
-    color: #555;
-}
-
-input {
+  }
+  
+  input {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 8px;
+    margin-top: 5px;
     box-sizing: border-box;
-}
-
-input:focus {
-    outline: none;
-    border-color: #007bff;
-}
-
-.submit-btn {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: #007bff; /* ログイン画面と同じ青色 */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  button[type="submit"] {
+    grid-column: 1 / -1;
+    justify-self: start;
+    padding: 10px 20px;
+    background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
-    margin-top: 1rem;
-}
-
-.submit-btn:hover {
+    font-size: 16px;
+  }
+  
+  button[type="submit"]:hover {
     background-color: #0056b3;
-}
+  }
+  
