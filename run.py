@@ -3,11 +3,6 @@ import os
 import uuid
 import re
 from datetime import date, datetime, timedelta
-from werkzeug.security import generate_password_hash
-from werkzeug.security import check_password_hash
-from werkzeug.utils import secure_filename
-
-
 
 import mysql.connector
 from contextlib import contextmanager
@@ -20,9 +15,7 @@ app = Flask(__name__)
 #セッションの暗号化
 app.secret_key = 'qawsedrftgyhujikolp'
 #ユーザーデータの場所(とりあえず、次dbに)
-
-USER_DATA_FILE = 'user_data.json'
-
+USER_FILE = 'users.json'
 
 app.config['USER_ICON_UPLOAD_FOLDER'] = 'static/images/usericon'
 app.config['MOVIE_UPLOAD_FOLDER'] = 'static/images/movie'
@@ -118,6 +111,8 @@ def fetch_movies(status='now_playing', limit=None):
             query = """
                     SELECT moviesId,
                            movieTitle,
+                           movieReleaseDate,
+                           movieEndDate,
                            movieImage
                     FROM t_movies
                     WHERE movieEndDate >= %s
@@ -130,6 +125,7 @@ def fetch_movies(status='now_playing', limit=None):
                     SELECT moviesId,
                            movieTitle,
                            movieReleaseDate,
+                           movieEndDate,
                            movieImage
                     FROM t_movies
                     WHERE movieReleaseDate > %s
@@ -294,7 +290,6 @@ def getUserIcon(user_id):
         return None
 
 
-# ユーザーデータを読み込む
 #視聴履歴を取得する関数（user_id）
 def watchHistory(user_id):
     """指定したIDの視聴履歴を取得する関数"""
@@ -342,17 +337,10 @@ def load_users():
         return json.load(f)
 
 
-def load_user_data():
-    if os.path.exists(USER_DATA_FILE):
-        with open(USER_DATA_FILE, 'r') as f:
-            return json.load(f)
-    return {}
-
-def save_user_data(data):
-    with open(USER_DATA_FILE, 'w') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-
+# ユーザーデータを保存する
+def save_users(users):
+    with open(USER_FILE, 'w') as f:
+        json.dump(users, f)
 
 
 # 支払い処理用の関数
@@ -484,7 +472,38 @@ def save_payment_info(user_id, payment_method, payment_data, amount):
             cursor.close()
         if conn and conn.is_connected():
             conn.close()
+            
+            
+    
+def get_screens():
+    """スクリーンIDとスクリーンタイプを取得する関数
 
+    Returns:
+        list[dict]: スクリーン情報（screenId, screenType）のリスト
+    """
+    try:
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                return []
+
+            query = """
+                SELECT screenId, screenType
+                FROM t_screen
+                ORDER BY screenId
+            """
+            cursor.execute(query)
+            screens = cursor.fetchall()  # DictCursor想定
+            return screens
+    except mysql.connector.Error as e:
+        print("MySQL エラー:", e)
+        return []
+
+
+
+
+
+    
 
 ############################################################################
 ### パスの定義
@@ -786,115 +805,28 @@ def member_login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        accountId = request.form.get('accountId')
-        accountName = request.form.get('accountName')
-        emailAddress = request.form.get('emailAddress')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
-        realName = request.form.get('realName')
-        phoneNumber = request.form.get('phoneNumber')
-        birthDate = request.form.get('birthDate')
-
-        # 验证字段是否填写
-        if not all([accountId, accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
-            error = "すべての必須項目を入力してください。"
-            return render_template('register.html', error=error)
-
-        if password != confirm_password:
-            error = "パスワードが一致しません。"
-            return render_template('register.html', error=error)
-
-        if '@' not in emailAddress or '.' not in emailAddress:
-            error = "メールアドレスの形式が正しくありません。"
-            return render_template('register.html', error=error)
-
-        if not re.match(r"^[0-9\\s\\+\\-]+$", phoneNumber):
-            error = "電話番号の形式が正しくありません。"
-            return render_template('register.html', error=error)
-
-        hashed_password = generate_password_hash(password)
-
-        conn = conn_db()
-        cursor = conn.cursor()
-        cursor.execute("SELECT accountId FROM t_account WHERE accountId = %s", (accountId,))
-        if cursor.fetchone():
-            cursor.close()
-            conn.close()
-            error = "このユーザーIDは既に使用されています。"
-            return render_template('register.html', error=error)
-
-        sql = """
-            INSERT INTO t_account (
-                accountId, accountName, emailAddress, password,
-                realName, phoneNumber, birthDate,
-                accountIcon, points
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
-        values = (
-            accountId, accountName, emailAddress, hashed_password,
-            realName, phoneNumber, birthDate,
-            "default.jpg", 0
-        )
-        cursor.execute(sql, values)
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        session['user'] = {
-            'accountId': accountId,
-            'accountName': accountName,
-            'emailAddress': emailAddress
-        }
-        return redirect('/success')
-
+        username = request.form['username']
+        password = request.form['password']
+        users = load_users()
+        if username in users:
+            return 'ユーザー名は既に存在します'
+        users[username] = password
+        save_users(users)
+        return redirect(url_for('login'))
     return render_template('register.html')
 
 
-
-@app.route('/success')
-def success():
-    if 'user' in session:
-        return render_template('success.html', user=session['user'])
-    return redirect('/register')
-
-
-
-# login画面
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['emailAddress']
+        username = request.form['username']
         password = request.form['password']
-
-        conn = conn_db()
-        cursor = conn.cursor()
-        cursor.execute("""
-            SELECT accountId, accountName, emailAddress, password, accountIcon, points
-            FROM t_account
-            WHERE emailAddress = %s
-        """, (email,))
-        user = cursor.fetchone()
-        cursor.close()
-        conn.close()
-
-        if user and check_password_hash(user[3], password):
-            session['user'] = {
-                'accountId': user[0],
-                'accountName': user[1],
-                'emailAddress': user[2],
-                'accountIcon': user[4],
-                'points': user[5]
-            }
-            return redirect('/')  # 登录成功后跳转到首页
-        else:
-            error = "メールアドレスまたはパスワードが正しくありません。"
-            return render_template('login.html', error=error)
-
+        users = load_users()
+        if users.get(username) == password:
+            session['username'] = username
+            return render_template('top.html')
+        return 'ユーザー名またはパスワードが間違っています'
     return render_template('login.html')
-
-
-
-
 
 
 # pay画面
@@ -1176,249 +1108,319 @@ def member():
 
 
 # add_movie画面
-@app.route('/add_movie')
+@app.route('/add_movie', methods=['GET', 'POST'])
 def add_movie():
-    return render_template("add_movie.html")
+    if request.method == 'POST':
+        con = conn_db()
+        cur = con.cursor()
 
-# 映画情報登録処理
-@app.route('/add_movieDB', methods=['POST'])
-def add_movieDB():
-    con = conn_db()
-    cur = con.cursor()
+        #ID作成
+        cur.execute("SELECT MAX(moviesId) FROM t_movies")
+        max_id = cur.fetchone()[0]
+        if max_id:
+            moviesId = f"{int(max_id) + 1:05}"
+        else:
+            moviesId = "00001"
+            
 
-    #ID作成
-    cur.execute("SELECT MAX(moviesId) FROM t_movies")
-    max_id = cur.fetchone()[0]
-    if max_id:
-        moviesId = f"{int(max_id) + 1:05}"
-    else:
-        moviesId = "00001"
+        #入力画面から値の受け取り
+        movieTitle = request.form.get('movieTitle')
+        movieReleaseDate = request.form.get('movieReleaseDate')
+        movieEndDate = request.form.get('movieEndDate')
+        movieRunningTime = request.form.get('movieRunningTime')
+        movieSynopsis = request.form.get('movieSynopsis')
+
+
+        errors = {}
         
+        
+        # 日付チェック
+        if movieReleaseDate > movieEndDate:
+            errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
 
-    #入力画面から値の受け取り
-    movieTitle = request.form.get('movieTitle')
-    movieReleaseDate = request.form.get('movieReleaseDate')
-    movieEndDate = request.form.get('movieEndDate')
-    movieRunningTime = request.form.get('movieRunningTime')
-    movieSynopsis = request.form.get('movieSynopsis')
-
-
-    errors = {}
-    
-    
-    # 日付チェック
-    if movieReleaseDate > movieEndDate:
-        errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
-
-    
-    file = request.files.get('movieImage')
-    if not file or file.filename == '':
-        errors["movieImage"] = "画像が選択されていません。"
+        
+        file = request.files.get('movieImage')
+        if not file or file.filename == '':
+            errors["movieImage"] = "画像が選択されていません。"
 
 
-    # エラーがある場合はテンプレート再表示
-    if errors:
-        return render_template('add_movie.html', errors=errors)
-    
-    
-    
-    if file:
-        try:
-            # ベースの保存先パス
-            base_upload_path = app.config['MOVIE_UPLOAD_FOLDER']
-            path_original = os.path.join(base_upload_path, 'original')
-            path_200h = os.path.join(base_upload_path, '200h')
+        # エラーがある場合はテンプレート再表示
+        if errors:
+            return render_template('add_movie.html', errors=errors)
+        
+        
+        
+        if file:
+            try:
+                # ベースの保存先パス
+                base_upload_path = app.config['MOVIE_UPLOAD_FOLDER']
+                path_original = os.path.join(base_upload_path, 'original')
+                path_200h = os.path.join(base_upload_path, '200h')
 
-            # 各フォルダがなければ作成
-            os.makedirs(path_original, exist_ok=True)
-            os.makedirs(path_200h, exist_ok=True)
+                # 各フォルダがなければ作成
+                os.makedirs(path_original, exist_ok=True)
+                os.makedirs(path_200h, exist_ok=True)
 
-            # ファイル名を生成
-            base_filename = str(uuid.uuid4()) + '.jpg'
+                # ファイル名を生成
+                base_filename = str(uuid.uuid4()) + '.jpg'
 
-            # Pillowで画像を開く
-            img = Image.open(file.stream)
+                # Pillowで画像を開く
+                img = Image.open(file.stream)
 
-            # オリジナル画像を保存
-            img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
+                # オリジナル画像を保存
+                img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
 
-            # アスペクト比維持で縦200pxにリサイズ
-            original_width, original_height = img.size
-            target_height = 200
-            target_width = int((target_height / original_height) * original_width)
+                # アスペクト比維持で縦200pxにリサイズ
+                original_width, original_height = img.size
+                target_height = 200
+                target_width = int((target_height / original_height) * original_width)
 
-            resized_img = img.resize((target_width, target_height), Image.Resampling.LANCZOS)
+                resized_img = img.resize((target_width, target_height), Image.Resampling.LANCZOS)
 
-            # リサイズ画像を保存
-            resized_img.convert('RGB').save(os.path.join(path_200h, base_filename), 'JPEG', quality=95)
+                # リサイズ画像を保存
+                resized_img.convert('RGB').save(os.path.join(path_200h, base_filename), 'JPEG', quality=95)
 
-        finally:
-            pass
-    
-    
-    # データの挿入
-    sql = """
-        INSERT INTO t_movies (
-            moviesId,
-            movieTitle,
-            movieReleaseDate,
-            movieEndDate,
-            movieRunningTime,
-            movieAudienceCount,
-            movieSynopsis,
-            movieImage
-        ) VALUES (
-            %(moviesId)s,
-            %(movieTitle)s,
-            %(movieReleaseDate)s,
-            %(movieEndDate)s,
-            %(movieRunningTime)s,
-            %(movieAudienceCount)s,
-            %(movieSynopsis)s,
-            %(movieImage)s
-        )
-    """
-    data = {
-        'moviesId': moviesId,
-        'movieTitle': movieTitle,
-        'movieReleaseDate': movieReleaseDate,
-        'movieEndDate': movieEndDate,
-        'movieRunningTime': movieRunningTime,
-        'movieAudienceCount': 0,
-        'movieSynopsis': movieSynopsis,
-        'movieImage': base_filename
-    }
-    
-    cur.execute(sql, data)
-    
-    
-    con.commit()
-    con.close()
-    cur.close()
-    
+            finally:
+                pass
+        
+        
+        # データの挿入
+        sql = """
+            INSERT INTO t_movies (
+                moviesId,
+                movieTitle,
+                movieReleaseDate,
+                movieEndDate,
+                movieRunningTime,
+                movieAudienceCount,
+                movieSynopsis,
+                movieImage
+            ) VALUES (
+                %(moviesId)s,
+                %(movieTitle)s,
+                %(movieReleaseDate)s,
+                %(movieEndDate)s,
+                %(movieRunningTime)s,
+                %(movieAudienceCount)s,
+                %(movieSynopsis)s,
+                %(movieImage)s
+            )
+        """
+        data = {
+            'moviesId': moviesId,
+            'movieTitle': movieTitle,
+            'movieReleaseDate': movieReleaseDate,
+            'movieEndDate': movieEndDate,
+            'movieRunningTime': movieRunningTime,
+            'movieAudienceCount': 0,
+            'movieSynopsis': movieSynopsis,
+            'movieImage': base_filename
+        }
+        
+        cur.execute(sql, data)
+        
+        
+        con.commit()
+        con.close()
+        cur.close()
+        
+        
     return render_template("add_movie.html")
 
 
 
 # add_event画面
-@app.route('/add_event')
+@app.route('/add_event', methods=['GET', 'POST'])
 def add_event():
-    return render_template("add_event.html")
+    if request.method == 'POST':
+        con = conn_db()
+        cur = con.cursor()
 
-# イベント情報登録処理
-@app.route('/add_eventDB', methods=['POST'])
-def add_eventDB():
-    con = conn_db()
-    cur = con.cursor()
+        #ID作成
+        cur.execute("SELECT MAX(eventInfoId) FROM t_event")
+        max_id = cur.fetchone()[0]
+        if max_id:
+            eventInfoId = f"{int(max_id) + 1:05}"
+        else:
+            eventInfoId = "00001"
+            
 
-    #ID作成
-    cur.execute("SELECT MAX(eventInfoId) FROM t_event")
-    max_id = cur.fetchone()[0]
-    if max_id:
-        eventInfoId = f"{int(max_id) + 1:05}"
-    else:
-        eventInfoId = "00001"
+        #入力画面から値の受け取り
+        eventTitle = request.form.get('eventTitle')
+        eventStartDate = request.form.get('eventStartDate')
+        eventEndDate = request.form.get('eventEndDate')
+        eventDescription = request.form.get('eventDescription')
+        eventUrl = request.form.get('eventUrl')
+
+
+        errors = {}
         
+        
+        # 日付チェック
+        if eventStartDate > eventEndDate:
+            errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
 
-    #入力画面から値の受け取り
-    eventTitle = request.form.get('eventTitle')
-    eventStartDate = request.form.get('eventStartDate')
-    eventEndDate = request.form.get('eventEndDate')
-    eventDescription = request.form.get('eventDescription')
-    eventUrl = request.form.get('eventUrl')
-
-
-    errors = {}
-    
-    
-    # 日付チェック
-    if eventStartDate > eventEndDate:
-        errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
-
-    
-    file = request.files.get('eventImage')
-    if not file or file.filename == '':
-        errors["eventImage"] = "画像が選択されていません。"
+        
+        file = request.files.get('eventImage')
+        if not file or file.filename == '':
+            errors["eventImage"] = "画像が選択されていません。"
 
 
-    # エラーがある場合はテンプレート再表示
-    if errors:
-        return render_template('add_event.html', errors=errors)
-    
-    
-    
-    if file:
-        try:
-            # ベースの保存先パス
-            base_upload_path = app.config['EVENT_UPLOAD_FOLDER']
-            path_original = os.path.join(base_upload_path, 'original')
-            path_200h = os.path.join(base_upload_path, '200h')
+        # エラーがある場合はテンプレート再表示
+        if errors:
+            return render_template('add_event.html', errors=errors)
+        
+        
+        
+        if file:
+            try:
+                # ベースの保存先パス
+                base_upload_path = app.config['EVENT_UPLOAD_FOLDER']
+                path_original = os.path.join(base_upload_path, 'original')
+                path_200h = os.path.join(base_upload_path, '200h')
 
-            # 各フォルダがなければ作成
-            os.makedirs(path_original, exist_ok=True)
-            os.makedirs(path_200h, exist_ok=True)
+                # 各フォルダがなければ作成
+                os.makedirs(path_original, exist_ok=True)
+                os.makedirs(path_200h, exist_ok=True)
 
-            # ファイル名を生成
-            base_filename = str(uuid.uuid4()) + '.jpg'
+                # ファイル名を生成
+                base_filename = str(uuid.uuid4()) + '.jpg'
 
-            # Pillowで画像を開く
-            img = Image.open(file.stream)
+                # Pillowで画像を開く
+                img = Image.open(file.stream)
 
-            # オリジナル画像を保存
-            img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
+                # オリジナル画像を保存
+                img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
 
-            # アスペクト比維持で縦150pxにリサイズ
-            original_width, original_height = img.size
-            target_height = 150
-            target_width = int((target_height / original_height) * original_width)
+                # アスペクト比維持で縦150pxにリサイズ
+                original_width, original_height = img.size
+                target_height = 150
+                target_width = int((target_height / original_height) * original_width)
 
-            resized_img = img.resize((target_width, target_height), Image.Resampling.LANCZOS)
+                resized_img = img.resize((target_width, target_height), Image.Resampling.LANCZOS)
 
-            # リサイズ画像を保存
-            resized_img.convert('RGB').save(os.path.join(path_200h, base_filename), 'JPEG', quality=95)
+                # リサイズ画像を保存
+                resized_img.convert('RGB').save(os.path.join(path_200h, base_filename), 'JPEG', quality=95)
 
-        finally:
-            pass
-    
-    
-    # データの挿入
-    sql = """
-        INSERT INTO t_event (
-            eventInfoId,
-            eventTitle,
-            eventStartDate,
-            eventEndDate,
-            eventDescription,
-            eventImage,
-            eventUrl
-        ) VALUES (
-            %(eventInfoId)s,
-            %(eventTitle)s,
-            %(eventStartDate)s,
-            %(eventEndDate)s,
-            %(eventDescription)s,
-            %(eventImage)s,
-            %(eventUrl)s
-        )
-    """
-    data = {
-        'eventInfoId': eventInfoId,
-        'eventTitle': eventTitle,
-        'eventStartDate': eventStartDate,
-        'eventEndDate': eventEndDate,
-        'eventDescription': eventDescription,
-        'eventImage': base_filename,
-        'eventUrl': eventUrl
-    }
-    
-    cur.execute(sql, data)
-    
-    
-    con.commit()
-    con.close()
-    cur.close()
-    
+            finally:
+                pass
+        
+        
+        # データの挿入
+        sql = """
+            INSERT INTO t_event (
+                eventInfoId,
+                eventTitle,
+                eventStartDate,
+                eventEndDate,
+                eventDescription,
+                eventImage,
+                eventUrl
+            ) VALUES (
+                %(eventInfoId)s,
+                %(eventTitle)s,
+                %(eventStartDate)s,
+                %(eventEndDate)s,
+                %(eventDescription)s,
+                %(eventImage)s,
+                %(eventUrl)s
+            )
+        """
+        data = {
+            'eventInfoId': eventInfoId,
+            'eventTitle': eventTitle,
+            'eventStartDate': eventStartDate,
+            'eventEndDate': eventEndDate,
+            'eventDescription': eventDescription,
+            'eventImage': base_filename,
+            'eventUrl': eventUrl
+        }
+        
+        cur.execute(sql, data)
+        
+        
+        con.commit()
+        con.close()
+        cur.close()
+        
+        
     return render_template("add_event.html")
+
+
+
+# add_screening画面
+@app.route('/add_screening', methods=['GET', 'POST'])
+def add_screening():
+    if request.method == 'POST':
+        con = conn_db()
+        cur = con.cursor()
+
+        #ID作成
+        cur.execute("SELECT MAX(scheduledShowingId) FROM t_scheduledShowing")
+        max_id = cur.fetchone()[0]
+        if max_id:
+            scheduledShowingId = f"{int(max_id) + 1:05}"
+        else:
+            scheduledShowingId = "00001"
+            
+
+        #入力画面から値の受け取り
+        moviesId = request.form.get('moviesId')
+        screenId = request.form.get('screenId')
+        scheduledScreeningDate = request.form.get('scheduledScreeningDate')
+        screeningStartTime = request.form.get('screeningStartTime')
+
+
+        errors = {}
+
+
+        # エラーがある場合はテンプレート再表示
+        if errors:
+            return render_template('add_event.html', errors=errors)
+        
+        
+        # データの挿入
+        sql = """
+            INSERT INTO t_scheduledShowing (
+                scheduledShowingId,
+                moviesId,
+                screenId,
+                scheduledScreeningDate,
+                screeningStartTime
+            ) VALUES (
+                %(scheduledShowingId)s,
+                %(moviesId)s,
+                %(screenId)s,
+                %(scheduledScreeningDate)s,
+                %(screeningStartTime)s
+            )
+        """
+        data = {
+            'scheduledShowingId': scheduledShowingId,
+            'moviesId': moviesId,
+            'screenId': screenId,
+            'scheduledScreeningDate': scheduledScreeningDate,
+            'screeningStartTime': screeningStartTime
+        }
+        
+        cur.execute(sql, data)
+        
+        
+        con.commit()
+        con.close()
+        cur.close()
+        
+        
+    # 映画情報の取得（現在上映中 + 近日公開）
+    now_playing = fetch_movies(status='now_playing')
+    coming_soon = fetch_movies(status='coming_soon')
+    movies = now_playing + coming_soon
+
+    # スクリーン情報の取得
+    screens = get_screens()
+    
+        
+    return render_template("add_screening.html", movies=movies, screens=screens, movies_json=movies)
 
 
 
