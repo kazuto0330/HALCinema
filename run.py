@@ -805,7 +805,6 @@ def member_login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-<<<<<<< Updated upstream
         username = request.form['username']
         password = request.form['password']
         users = load_users()
@@ -817,88 +816,11 @@ def register():
     return render_template('register.html')
 
 
-=======
-        accountId = request.form.get('accountId')
-        accountName = request.form.get('accountName')
-        emailAddress = request.form.get('emailAddress')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
-        realName = request.form.get('realName')
-        phoneNumber = request.form.get('phoneNumber')
-        birthDate = request.form.get('birthDate')
-
-        if not all([accountId, accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
-            error = "すべての必須項目を入力してください。"
-            return render_template('register.html', error=error)
-
-        if password != confirm_password:
-            error = "パスワードが一致しません。"
-            return render_template('register.html', error=error)
-
-        if '@' not in emailAddress or '.' not in emailAddress:
-            error = "メールアドレスの形式が正しくありません。"
-            return render_template('register.html', error=error)
-
-        if not re.match(r"^[0-9\s\+\-]+$", phoneNumber):
-            error = "電話番号の形式が正しくありません。"
-            return render_template('register.html', error=error)
-
-        hashed_password = generate_password_hash(password)
-
-        conn = conn_db()
-        cursor = conn.cursor(buffered=True)
-        cursor.execute("SELECT accountId FROM t_account WHERE accountId = %s", (accountId,))
-        if cursor.fetchone():
-            cursor.close()
-            conn.close()
-            error = "このユーザーIDは既に使用されています。"
-            return render_template('register.html', error=error)
-
-        sql = """
-            INSERT INTO t_account (
-                accountId, accountName, emailAddress, password,
-                realName, phoneNumber, birthDate,
-                accountIcon, points
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
-        values = (
-            accountId, accountName, emailAddress, hashed_password,
-            realName, phoneNumber, birthDate,
-            "default.jpg", 0
-        )
-        cursor.execute(sql, values)
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-        session['user'] = {
-            'accountId': accountId,
-            'accountName': accountName,
-            'emailAddress': emailAddress
-        }
-        return redirect('/success')
-
-    return render_template('register.html')
-
-
-
-
-@app.route('/success')
-def success():
-    if 'user' in session:
-        return render_template('success.html', user=session['user'])
-    return redirect('/register')
-
-
-
-# login画面
->>>>>>> Stashed changes
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-<<<<<<< Updated upstream
         users = load_users()
         if users.get(username) == password:
             session['username'] = username
@@ -907,41 +829,6 @@ def login():
     return render_template('login.html')
 
 
-=======
-
-        conn = conn_db()
-        cursor = conn.cursor(buffered=True)
-        cursor.execute("""
-            SELECT accountId, accountName, emailAddress, password, accountIcon, points
-            FROM t_account
-            WHERE emailAddress = %s
-        """, (email,))
-        user = cursor.fetchone()
-        cursor.close()
-        conn.close()
-
-        if user and check_password_hash(user[3], password):
-            session['user'] = {
-                'accountId': user[0],
-                'accountName': user[1],
-                'emailAddress': user[2],
-                'accountIcon': user[4],
-                'points': user[5]
-            }
-            return redirect('/')
-        else:
-            error = "メールアドレスまたはパスワードが正しくありません。"
-            return render_template('login.html', error=error)
-
-    return render_template('login.html')
-
-
-
-
-
-
-
->>>>>>> Stashed changes
 # pay画面
 @app.route('/pay')
 def pay():
