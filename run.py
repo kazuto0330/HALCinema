@@ -294,9 +294,7 @@ def getUserIcon(user_id):
         return None
 
 
-<<<<<<< HEAD
 # ユーザーデータを読み込む
-=======
 #視聴履歴を取得する関数（user_id）
 def watchHistory(user_id):
     """指定したIDの視聴履歴を取得する関数"""
@@ -342,7 +340,6 @@ def load_users():
         return {}
     with open(USER_FILE, 'r') as f:
         return json.load(f)
->>>>>>> main
 
 
 def load_user_data():
