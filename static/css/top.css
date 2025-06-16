@@ -214,11 +214,10 @@ a {
     width: 11.25vw;
     min-width: 110px;
     max-width: 165px;
-    margin-right: 3.5vw;
-    margin-right: 20px;
+    margin-right: 2vw;
     object-fit: cover; /* 要素に合わせて画像を拡大縮小し、アスペクト比を維持（はみ出しは切り取る） */
     border-radius: 5px;
-    box-shadow: 3px 5px 10px rgba(255, 255, 255, 0.1);
+    box-shadow:3px 5px 10px rgba(255, 255, 255, 0.1);
     filter: brightness(100%);
     transition: all 0.3s ease;
 }
