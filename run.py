@@ -494,8 +494,7 @@ def save_payment_info(user_id, payment_method, payment_data, amount):
 @app.route('/api/user_icon', methods=['GET'])
 def get_icon():
     try:
-        user_id = 2
-        Icon = getUserIcon(user_id)
+        Icon = getUserIcon(session.get('user_id'))
 
         if Icon is None:
             return jsonify({
@@ -521,6 +520,8 @@ def get_icon():
 # TOPページ
 @app.route('/')
 def index():
+    session['user_id'] = 2
+    
     screen_event = fetch_events(limit=5, random_order="True")
     now_playing_movies = fetch_movies(status='now_playing', limit=15)
     coming_soon_movies = fetch_movies(status='coming_soon', limit=15)
@@ -557,7 +558,6 @@ def profile():
 # PROFILE画像のアップロード処理 (既存アカウントの更新)
 @app.route('/add_account_img', methods=['POST'])
 def update_profile_img():
-    session['user_id'] = 2
     account_id = session.get('user_id')  # セッションからユーザーIDを取得
 
     # ユーザーがログインしていない、またはセッションにIDがない場合
@@ -671,7 +671,6 @@ def update_profile_img():
 # PROFILEのアップロード処理 (既存アカウントの更新)
 @app.route('/add_account', methods=['POST'])
 def update_profile():
-    session['user_id'] = 2
     account_id = session.get('user_id')  # セッションからユーザーIDを取得
 
     # ユーザーがログインしていない、またはセッションにIDがない場合
