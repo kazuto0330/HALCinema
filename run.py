@@ -779,9 +779,119 @@ def update_profile():
 
 
 # movie_information画面
-@app.route('/movie_information')
-def movie_information():
-    return render_template("movie_information.html")
+@app.route('/movie_information/<int:movie_id>')
+def movie_information(movie_id):
+    movie_db = {
+        1: {
+            "title": "名探偵コナン<br>隻眼の残像",
+            "release": "2025年6月1日",
+            "poster": "images/conan.png",
+            "description": (
+                "長野県・八ヶ岳連峰未宝岳。長野県警の大和敢助が雪山で“ある男”を追っていた時、"
+                "不意に何者かの影が敢助の視界に。気をとられた瞬間、“ある男”が放ったライフル弾が"
+                "敢助の左眼をかすめ、大きな地響きとともに雪崩が発生。そのまま敢助を飲み込んでしまい......。"
+                "10カ月後。国立天文台野辺山の施設研究員が何者かに襲われたという通報を受け、"
+                "雪崩から奇跡的に生還した敢助と、上原由衣が現場へ駆けつけた。"
+            ),
+            "duration": "110分",
+            "schedule": {
+                "Mon": {
+                    "month": "11",
+                    "day": "11",
+                    "week": "Mon",
+                    "slots": [
+                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "B", "time": "11:00〜13:00", "status": "✕"},
+                        {"label": "D", "time": "10:00〜12:00", "status": "△"},
+                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "E", "time": "10:00〜12:00", "status": "✕"},
+                    ]
+                },
+                "Tue": {
+                    "month": "11",
+                    "day": "12",
+                    "week": "Tue",
+                    "slots": [
+                        {"label": "A", "time": "10:00〜12:00", "status": "△"},
+                        {"label": "B", "time": "11:00〜13:00", "status": "✕"},
+                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
+                    ]
+                },
+                "Wed": {
+                    "month": "11",
+                    "day": "13",
+                    "week": "Wed",
+                    "slots": [
+                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "B", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
+                    ]
+                },
+                "Thu": {
+                    "month": "11",
+                    "day": "14",
+                    "week": "Thu",
+                    "slots": [
+                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "B", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
+                    ]
+                },
+                "Fri": {
+                    "month": "11",
+                    "day": "15",
+                    "week": "Fri",
+                    "slots": [
+                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "B", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
+                    ]
+                },
+                "Sat": {
+                    "month": "11",
+                    "day": "16",
+                    "week": "Sat",
+                    "slots": [
+                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "B", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
+                    ]
+                },
+                "Sun": {
+                    "month": "11",
+                    "day": "17",
+                    "week": "Sun",
+                    "slots": [
+                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "B", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
+                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
+                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
+                    ]
+                },
+            }
+        }
+    }
+
+    def get_movie_by_id(movie_id):
+        return movie_db.get(movie_id)
+    movie = get_movie_by_id(movie_id)
+    if movie is None:
+        return "映画が見つかりません", 404
+    return render_template("movie_information.html", movie=movie)
+
+
+
 
 
 # guide画面

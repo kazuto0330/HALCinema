@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head><title>登録完了</title></head>
+<head>
+  <title>登録完了</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/success.css') }}">
+</head>
 <body>
   {% include '_header.html' %}
   <main>
     <h2>登録が完了しました！ようこそ、{{ user.accountName }}さん。</h2>
-    <form action="/login" method="get" style="display:inline;">
-      <button type="submit">ログインする</button>
-    </form>
-    <form action="/" method="get" style="display:inline;">
-      <button type="submit">ホームに戻る</button>
-    </form>
+    <div class="button-group">
+      <form action="/login" method="get">
+        <button type="submit">ログインする</button>
+      </form>
+      <form action="/" method="get">
+        <button type="submit">ホームに戻る</button>
+      </form>
+    </div>
   </main>
+  
   {% include '_footer.html' %}
 
   <script src="{{ url_for('static', filename='js/test.js') }}"></script>
