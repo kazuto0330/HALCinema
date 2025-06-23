@@ -58,23 +58,170 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 有効期限のフォーマット処理
+    // 有効期限のフォーマット処理（改良版）
     const expiryDateInput = document.getElementById('expiry-date');
     if (expiryDateInput) {
+        let isProcessing = false; // 処理中フラグを追加
+
+        // キーダウンイベントで特殊キーの処理
+        expiryDateInput.addEventListener('keydown', function(e) {
+            if (isProcessing) return; // 処理中なら何もしない
+
+            const cursorPosition = e.target.selectionStart;
+            const cursorEnd = e.target.selectionEnd;
+            const value = e.target.value;
+
+            // Backspaceキーの処理
+            if (e.key === 'Backspace') {
+                e.preventDefault();
+                isProcessing = true;
+
+                // 範囲選択がある場合
+                if (cursorPosition !== cursorEnd) {
+                    const newValue = value.substring(0, cursorPosition) + value.substring(cursorEnd);
+                    const numbersOnly = newValue.replace(/\D/g, '');
+                    formatAndSet(numbersOnly, cursorPosition);
+                    isProcessing = false;
+                    return;
+                }
+
+                // カーソルが先頭の場合は何もしない
+                if (cursorPosition === 0) {
+                    isProcessing = false;
+                    return;
+                }
+
+                // カーソルが「/」の直後にある場合（例：「12/|」「12/3|」の状態）
+                if (cursorPosition === 3 && value.charAt(2) === '/') {
+                    const numbersOnly = value.substring(0, 1) + value.substring(3);
+                    formatAndSet(numbersOnly.replace(/\D/g, ''), 1);
+                    isProcessing = false;
+                    return;
+                }
+
+                // カーソルが「/」の位置の場合（例：「12|/34」の状態）
+                if (cursorPosition === 3 && value.charAt(cursorPosition - 1) === '/') {
+                    const numbersOnly = value.substring(0, 1) + value.substring(3);
+                    formatAndSet(numbersOnly.replace(/\D/g, ''), 1);
+                    isProcessing = false;
+                    return;
+                }
+
+                // 通常の文字削除
+                const newValue = value.substring(0, cursorPosition - 1) + value.substring(cursorPosition);
+                const numbersOnly = newValue.replace(/\D/g, '');
+                const newCursorPos = Math.max(0, cursorPosition - 1);
+                formatAndSet(numbersOnly, newCursorPos);
+
+                isProcessing = false;
+            }
+
+            // Deleteキーの処理
+            if (e.key === 'Delete') {
+                e.preventDefault();
+                isProcessing = true;
+
+                // 範囲選択がある場合
+                if (cursorPosition !== cursorEnd) {
+                    const newValue = value.substring(0, cursorPosition) + value.substring(cursorEnd);
+                    const numbersOnly = newValue.replace(/\D/g, '');
+                    formatAndSet(numbersOnly, cursorPosition);
+                    isProcessing = false;
+                    return;
+                }
+
+                // カーソルが末尾の場合は何もしない
+                if (cursorPosition === value.length) {
+                    isProcessing = false;
+                    return;
+                }
+
+                // カーソルが「/」の直前にある場合（例：「12|/34」の状態）
+                if (cursorPosition === 2 && value.charAt(2) === '/') {
+                    const numbersOnly = value.substring(0, 2) + value.substring(4);
+                    formatAndSet(numbersOnly.replace(/\D/g, ''), 2);
+                    isProcessing = false;
+                    return;
+                }
+
+                // 通常の文字削除
+                const newValue = value.substring(0, cursorPosition) + value.substring(cursorPosition + 1);
+                const numbersOnly = newValue.replace(/\D/g, '');
+                formatAndSet(numbersOnly, cursorPosition);
+
+                isProcessing = false;
+            }
+        });
+
+        // 入力イベントの処理
         expiryDateInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
+            if (isProcessing) return; // 処理中なら何もしない
+
+            isProcessing = true;
+            const cursorPosition = e.target.selectionStart;
+            let value = e.target.value.replace(/\D/g, ''); // 数字以外を除去
+
+            // 4桁を超える場合は切り取り
             if (value.length > 4) {
                 value = value.substring(0, 4);
             }
-            if (value.length >= 2) {
-                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+
+            formatAndSet(value, cursorPosition);
+            isProcessing = false;
+        });
+
+        // フォーマット処理を統一する関数
+        function formatAndSet(numbersOnly, cursorPos) {
+            // 4桁を超える場合は切り取り
+            if (numbersOnly.length > 4) {
+                numbersOnly = numbersOnly.substring(0, 4);
             }
-            e.target.value = value;
+
+            let formattedValue = '';
+            let newCursorPosition = cursorPos;
+
+            if (numbersOnly.length >= 2) {
+                formattedValue = numbersOnly.substring(0, 2) + '/' + numbersOnly.substring(2, 4);
+
+                // カーソル位置の調整
+                if (cursorPos === 2 && numbersOnly.length >= 3) {
+                    newCursorPosition = 3; // 「/」の後に移動
+                } else if (cursorPos > 2) {
+                    newCursorPosition = cursorPos + 1; // 「/」が挿入された分を考慮
+                }
+            } else {
+                formattedValue = numbersOnly;
+                newCursorPosition = Math.min(cursorPos, formattedValue.length);
+            }
+
+            // 値を設定
+            expiryDateInput.value = formattedValue;
+
+            // カーソル位置を調整（安全範囲内に制限）
+            newCursorPosition = Math.max(0, Math.min(newCursorPosition, formattedValue.length));
+
+            // 次のフレームでカーソル位置を設定（DOM更新後に実行）
+            setTimeout(() => {
+                expiryDateInput.setSelectionRange(newCursorPosition, newCursorPosition);
+            }, 0);
 
             // リアルタイムバリデーション
-            if (value.length === 5) {
-                validateExpiryDate(value);
+            if (formattedValue.length === 5) {
+                validateExpiryDate(formattedValue);
             }
+        }
+
+        // ペースト処理
+        expiryDateInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            isProcessing = true;
+
+            // クリップボードからデータを取得
+            const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+            const numbersOnly = pasteData.replace(/\D/g, '');
+
+            formatAndSet(numbersOnly, numbersOnly.length);
+            isProcessing = false;
         });
     }
 
