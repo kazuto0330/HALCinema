@@ -30,9 +30,30 @@
         </div>
     </div>
     <div id="hamburger-icon" class="hamburger-icon" data-tippy-content="メニュー">☰</div>
-    <a href="/profile"><div class="userIcon Media">
-      <img src="{{ url_for('static', filename='images/usericon/80x80/default.jpg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/usericon/80x80/default.jpg') }}';" alt="ユーザーアイコン" data-tippy-content="プロフィール" id="user-icon"/>
-    </div></a>
+
+    <!-- ユーザーメニューのコンテナ -->
+    <div class="user-menu-container">
+      <!-- アイコン部分（クリックのトリガー） -->
+      <div class="userIcon Media" id="user-icon-wrapper" data-tippy-content="プロフィール">
+        {% if user_data %}
+        <img src="{{ url_for('static', filename='images/usericon/80x80/' + user_data.accountIcon) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/usericon/80x80/default.jpg') }}';" alt="ユーザーアイコン" id="user-icon"/>
+        {% else %}
+        <img src="{{ url_for('static', filename='images/usericon/80x80/default.jpg') }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/usericon/80x80/default.jpg') }}';" alt="ユーザーアイコン" id="user-icon"/>
+        {% endif %}
+      </div>
+
+      <!-- ドロップダウンメニュー（最初は非表示） -->
+      <div id="user-dropdown-menu" class="user-dropdown-menu">
+        <div class="user-info">
+          <!-- 実際にはサーバーから取得したデータに置き換えてください -->
+          <div class="user-name">{{user_data.accountName}}</div>
+          <div class="user-email">{{user_data.emailAddress}}</div>
+        </div>
+        <a href="/profile" class="dropdown-item">プロフィール</a>
+        <a href="/logout" class="dropdown-item">ログアウト</a>
+      </div>
+    </div>
+
   </div>
 </header>
 
@@ -51,6 +72,9 @@
         <div class="menu-item"><a href="/movie_list?set=comingsoon">公開予定</a></div>
         <div class="menu-item"><a href="/guide">劇場を探す</a></div>
         <div class="menu-item"><a href="/profile">マイアカウント</a></div>
+        <div class="menu-item"><a href="/logout">ログアウト</a></div>
     </div>
 </div>
+
+<script>const userData = {{ user_data | tojson }};</script>
  

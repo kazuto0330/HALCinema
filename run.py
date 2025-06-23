@@ -7,6 +7,7 @@ from datetime import date, datetime, timedelta
 import mysql.connector
 from contextlib import contextmanager
 from PIL import Image
+from functools import wraps
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -90,6 +91,55 @@ def format_datetime(value, format='%Y年%m月%d日'):
 
 
 app.jinja_env.filters['strftime'] = format_datetime
+
+
+#ログインしているか確認する関数
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # セッションに 'user_id' が存在しない場合
+        if 'user_id' not in session:
+            # /login のURLにリダイレクト
+            return redirect(url_for('login'))
+        # 存在する場合は、元の関数（マイページ表示など）を実行
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+#ヘッダーに表示するデータを取得
+@app.context_processor
+def inject_user():
+    # session['user_id'] = 111
+    if 'user_id' in session:
+        user_id = session.get('user_id')
+        sql = """
+                SELECT
+                    accountName,
+                    emailAddress,
+                    accountIcon
+                FROM
+                    t_account
+                WHERE
+                    accountId = %s;
+        """
+        user_info = []
+        try:
+            with get_db_cursor() as cursor:
+                if cursor is None:
+                    print("カーソルの取得に失敗しました。")
+                    return []
+                
+                cursor.execute(sql, (user_id,))
+                user_info = cursor.fetchone()
+                print(user_info)
+
+                # ここで返した辞書が、すべてのテンプレートのコンテキストに追加される
+                return dict(user_data=user_info)
+
+        except mysql.connector.Error:
+            return dict(user_data=None)
+    else:
+        return dict(user_data=None)
 
 
 # 映画情報を複数件取得する関数（status="now_playing" or "coming_soon" , limit="取得件数" or "None"）
@@ -495,38 +545,16 @@ def get_screens():
 ### パスの定義
 ############################################################################
 
-# ユーザーアイコン取得API（修正版）
-@app.route('/api/user_icon', methods=['GET'])
-def get_icon():
-    try:
-        Icon = getUserIcon(session.get('user_id'))
-
-        if Icon is None:
-            return jsonify({
-                'success': False,
-                'message': 'ユーザーが見つかりません',
-                'accountIcon': None
-            }), 404
-
-        return jsonify({
-            'success': True,
-            'accountIcon': Icon.get('accountIcon', None)
-        })
-
-    except Exception as e:
-        print(f"User icon error: {e}")
-        return jsonify({
-            'success': False,
-            'message': 'サーバーエラーが発生しました',
-            'accountIcon': None
-        }), 500
-
+#ログアウト
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None) # セッションからuser_idを削除
+    session.pop('user', None)
+    return redirect(url_for('index'))
 
 # TOPページ
 @app.route('/')
 def index():
-    session['user_id'] = 2
-
     screen_event = fetch_events(limit=5, random_order="True")
     now_playing_movies = fetch_movies(status='now_playing', limit=15)
     coming_soon_movies = fetch_movies(status='coming_soon', limit=15)
@@ -554,8 +582,9 @@ def event(event_id):
 
 # PROFILE画面
 @app.route('/profile')
+@login_required
 def profile():
-    user_id = 2
+    user_id = session.get('user_id') 
     userData = getUserData(user_id)
     History = watchHistory(user_id)
     return render_template("profile.html", userData=userData, user_history=History)
@@ -1022,6 +1051,7 @@ def login():
                 'accountIcon': user[4],
                 'points': user[5]
             }
+            session['user_id'] = user[0]
             return redirect('/')
         else:
             error = "メールアドレスまたはパスワードが正しくありません。"
