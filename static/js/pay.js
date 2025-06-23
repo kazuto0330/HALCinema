@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('pay.js loaded');
+
     // DOM要素の取得
     const paymentForm = document.getElementById('payment-form');
     const paymentMethods = document.querySelectorAll('input[name="payment-method"]');
@@ -58,24 +60,130 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 有効期限のフォーマット処理
-    const expiryDateInput = document.getElementById('expiry-date');
-    if (expiryDateInput) {
-        expiryDateInput.addEventListener('input', function(e) {
+    // 有効期限のフォーマット処理（完全リセット版）
+    const originalExpiryInput = document.getElementById('expiry-date');
+    if (originalExpiryInput) {
+        console.log('有効期限フィールドを初期化中...');
+
+        // 完全に新しい要素を作成
+        const newExpiryInput = document.createElement('input');
+        newExpiryInput.type = 'text';
+        newExpiryInput.id = 'expiry-date';
+        newExpiryInput.placeholder = 'MM/YY';
+        newExpiryInput.maxLength = '5';
+        newExpiryInput.required = true;
+
+        // 元の要素のスタイルをコピー
+        newExpiryInput.className = originalExpiryInput.className;
+
+        // 親要素から元の要素を削除し、新しい要素を追加
+        const parent = originalExpiryInput.parentNode;
+        parent.removeChild(originalExpiryInput);
+        parent.insertBefore(newExpiryInput, parent.querySelector('.error-message'));
+
+        console.log('新しい有効期限フィールドを作成');
+
+        // 入力イベント
+        newExpiryInput.addEventListener('input', function(e) {
+            console.log('=== INPUT EVENT ===');
+            console.log('元の値:', e.target.value);
+
+            // 数字のみ抽出
             let value = e.target.value.replace(/\D/g, '');
+            console.log('数字のみ:', value);
+
+            // 4桁制限
             if (value.length > 4) {
                 value = value.substring(0, 4);
+                console.log('4桁制限後:', value);
             }
-            if (value.length >= 2) {
-                value = value.substring(0, 2) + '/' + value.substring(2, 4);
-            }
-            e.target.value = value;
 
-            // リアルタイムバリデーション
+            // フォーマット
+            if (value.length >= 3) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+                console.log('フォーマット後:', value);
+            }
+
+            // 値を設定
+            e.target.value = value;
+            console.log('最終値:', e.target.value);
+
+            // バリデーション
             if (value.length === 5) {
                 validateExpiryDate(value);
+            } else {
+                clearError('expiry-date-error');
             }
+            console.log('===================');
         });
+
+        // キーダウンイベント
+        newExpiryInput.addEventListener('keydown', function(e) {
+            console.log('=== KEYDOWN EVENT ===');
+            console.log('押されたキー:', e.key);
+            console.log('カーソル位置:', e.target.selectionStart);
+            console.log('現在の値:', e.target.value);
+
+            if (e.key === 'Backspace') {
+                const pos = e.target.selectionStart;
+                const value = e.target.value;
+
+                console.log('バックスペース検出');
+                console.log('位置:', pos, '値:', value);
+
+                // スラッシュの直後（位置3）でバックスペース
+                if (pos === 3 && value.charAt(2) === '/') {
+                    console.log('スラッシュ位置でのバックスペース検出');
+                    e.preventDefault();
+
+                    // 月の部分の最後の桁を削除
+                    const monthPart = value.substring(0, 2);
+                    if (monthPart.length > 0) {
+                        const newValue = monthPart.substring(0, monthPart.length - 1);
+                        console.log('新しい値:', newValue);
+
+                        e.target.value = newValue;
+
+                        // カーソル位置を設定
+                        setTimeout(() => {
+                            e.target.setSelectionRange(newValue.length, newValue.length);
+                            console.log('カーソル位置設定:', newValue.length);
+                        }, 0);
+                    }
+                }
+            }
+
+            // 数字以外の入力を防ぐ
+            if (!/\d/.test(e.key) &&
+                !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key) &&
+                !e.ctrlKey && !e.metaKey) {
+                console.log('無効なキーをブロック:', e.key);
+                e.preventDefault();
+            }
+            console.log('====================');
+        });
+
+        // ペースト処理
+        newExpiryInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+
+            const pastedData = (e.clipboardData || window.clipboardData).getData('text');
+            const numbersOnly = pastedData.replace(/\D/g, '').substring(0, 4);
+
+            console.log('ペースト:', pastedData, '数字のみ:', numbersOnly);
+
+            if (numbersOnly.length <= 2) {
+                e.target.value = numbersOnly;
+            } else {
+                e.target.value = numbersOnly.substring(0, 2) + '/' + numbersOnly.substring(2);
+            }
+
+            setTimeout(() => {
+                e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+            }, 0);
+        });
+
+        console.log('有効期限フィールドの初期化完了');
     }
 
     // セキュリティコードの入力制限
@@ -95,6 +203,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (phoneNumberInput) {
         phoneNumberInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/[^0-9-]/g, '');
+            e.target.value = value;
+        });
+    }
+
+    // カード名義の大文字変換処理
+    const cardNameInput = document.getElementById('card-name');
+    if (cardNameInput) {
+        cardNameInput.addEventListener('input', function(e) {
+            let value = e.target.value;
+            // 英字を大文字に変換、スペースは保持
+            value = value.replace(/[a-z]/g, function(match) {
+                return match.toUpperCase();
+            });
             e.target.value = value;
         });
     }
@@ -127,6 +248,9 @@ document.addEventListener('DOMContentLoaded', function() {
             isValid = validateCreditCardForm();
         } else if (selectedMethod === 'convenience') {
             isValid = validateConvenienceForm();
+        } else if (selectedMethod === 'paypay') {
+            // PayPayは特別なバリデーションは不要
+            isValid = true;
         }
 
         return isValid;
@@ -160,10 +284,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function validateConvenienceForm() {
-        const phoneNumber = document.getElementById('phone-number').value;
+        const phoneNumber = document.getElementById('phone-number').value.trim();
 
         // 電話番号は任意なので、入力されている場合のみバリデーション
-        if (phoneNumber && !validatePhoneNumber(phoneNumber)) {
+        if (phoneNumber && phoneNumber.length > 0 && !validatePhoneNumber(phoneNumber)) {
             return false;
         }
 
@@ -244,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const phoneClean = phoneNumber.replace(/[-\s()]/g, '');
 
         if (!/^0\d{9,10}$/.test(phoneClean)) {
-            showError('phone-number-error', '正しい電話番号を入力してください');
+            showError('phone-number-error', '正しい電話番号を入力してください（例：090-1234-5678）');
             return false;
         }
 
