@@ -12,317 +12,45 @@
     {% include '_header.html' %}
     <main>
         <section class="movieCard">
-{#            <img src="image/conan.png" alt="映画ポスター" class="moviePoster"/>#}
-            <img src="{{ url_for('static', filename='images/conan.png') }}" alt="" class="moviePoster">
+            <img src="{{ url_for('static', filename=movie.poster) }}" alt="{{ movie.title }}のポスター" class="moviePoster">
             <div class="movieInfo">
-                <h2 class="movieTitle">名探偵コナン<br>隻眼の残像</h2>
-                <p class="movieRelease">公開日: 2025年6月1日</p>
-                <p class="movieDescription">
-                    長野県・八ヶ岳連峰未宝岳。長野県警の大和敢助が雪山で“ある男”を追っていた時、不意に何者かの影が敢助の視界に。気をとられた瞬間、“ある男”が放ったライフル弾が敢助の左眼をかすめ、大きな地響きとともに雪崩が発生。そのまま敢助を飲み込んでしまい......。10カ月後。国立天文台野辺山の施設研究員が何者かに襲われたという通報を受け、雪崩から奇跡的に生還した敢助と、上原由衣が現場へ駆けつけた。事情聴取のさなか天文台の巨大パラボラアンテナが動き出すと......
-                </p>
-                <p class="movieTime">上映時間 : 110分</p>
+                <h2 class="movieTitle">{{ movie.title|safe }}</h2>
+                <p class="movieRelease">公開日: {{ movie.release }}</p>
+                <p class="movieDescription">{{ movie.description }}</p>
+                <p class="movieTime">上映時間 : {{ movie.duration }}</p>
             </div>
         </section>
 
         <section class="scheduleSection">
             <h2>上映スケジュール</h2>
             <div class="scheduleGrid">
-                <div class="dayCard Mon">
+                {% for day_key, day_info in movie.schedule.items() %}
+                <div class="dayCard {{ day_key }}">
                     <div class="date">
-                        <span class="month">11/</span><span class="day">11</span>
+                        <span class="month">{{ day_info.month }}/</span><span class="day">{{ day_info.day }}</span>
                     </div>
-                    <div class="weekdayBox">Mon</div>
+                    <div class="weekdayBox">{{ day_info.week }}</div>
                 </div>
-
-                <div class="dayCard Tue">
-                    <div class="date">
-                        <span class="month">11/</span><span class="day">12</span>
-                    </div>
-                    <div class="weekdayBox">Tue</div>
-                </div>
-                <div class="dayCard Wed">
-                    <div class="date">
-                        <span class="month">11/</span><span class="day">13</span>
-                    </div>
-                    <div class="weekdayBox">Web</div>
-                </div>
-                <div class="dayCard Thu">
-                    <div class="date">
-                        <span class="month">11/</span><span class="day">14</span>
-                    </div>
-                    <div class="weekdayBox">Thu</div>
-                </div>
-                <div class="dayCard Fri">
-                    <div class="date">
-                        <span class="month">11/</span><span class="day">15</span>
-                    </div>
-                    <div class="weekdayBox">Fri</div>
-                </div>
-                <div class="dayCard Sat">
-                    <div class="date">
-                        <span class="month">11/</span><span class="day">16</span>
-                    </div>
-                    <div class="weekdayBox">Sat</div>
-                </div>
-                <div class="dayCard Sun">
-                    <div class="date">
-                        <span class="month">11/</span><span class="day">17</span>
-                    </div>
-                    <div class="weekdayBox">Sun</div>
-                </div>
+                {% endfor %}
             </div>
         </section>
 
+
         <section>
-            <!-- スケジュール一覧（初期状態は非表示） -->
-
-            <div class="reservationSchedule hidden" id="schedule-Mon">
-                <h2>11/11(月)　　　　　　　　　　　　　　　　　予約状況</h2>
+            {% for day_key, day_info in movie.schedule.items() %}
+            <div class="reservationSchedule hidden" id="schedule-{{ day_key }}">
+                <h2>{{ day_info.month }}/{{ day_info.day }}({{ day_info.week }})　　　　　　　　　　　　　　　　　予約状況</h2>
                 <hr>
+                {% for slot in day_info.slots %}
                 <div class="slot">
-                    <span class="label">A</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
+                    <span class="label">{{ slot.label }}</span>
+                    <span class="time">{{ slot.time }}</span>
+                    <span class="status">{{ slot.status }}</span>
                     <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
                 </div>
-                <div class="slot">
-                    <span class="label">B</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">✕</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">D</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">△</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">C</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">E</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">✕</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
+                {% endfor %}
             </div>
-
-            <div class="reservationSchedule hidden" id="schedule-Tue">
-                <h2>11/12(火)　　　　　　　　　　　　　　　　　予約状況</h2>
-                <hr>
-                <div class="slot">
-                    <span class="label">A</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">△</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">B</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">✕</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">D</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">C</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">E</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-            </div>
-
-            <div class="reservationSchedule hidden" id="schedule-Wed">
-                <h2>11/13(水)　　　　　　　　　　　　　　　　　予約状況</h2>
-                <hr>
-                <div class="slot">
-                    <span class="label">A</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">B</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">D</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">C</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">E</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-            </div>
-
-            <div class="reservationSchedule hidden" id="schedule-Thu">
-                <h2>11/14(木)　　　　　　　　　　　　　　　　　予約状況</h2>
-                <hr>
-                <div class="slot">
-                    <span class="label">A</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">B</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">D</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">C</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">E</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-            </div>
-
-            <div class="reservationSchedule hidden" id="schedule-Fri">
-                <h2>11/15(金)　　　　　　　　　　　　　　　　　予約状況</h2>
-                <hr>
-                <div class="slot">
-                    <span class="label">A</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">B</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">D</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">C</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">E</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-            </div>
-
-
-            <div class="reservationSchedule hidden" id="schedule-Sat">
-                <h2>11/16(土)　　　　　　　　　　　　　　　　　予約状況</h2>
-                <hr>
-                <div class="slot">
-                    <span class="label">A</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">B</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">D</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">C</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">E</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-            </div>
-
-            <div class="reservationSchedule hidden" id="schedule-Sun">
-                <h2>11/17(日)　　　　　　　　　　　　　　　　　予約状況</h2>
-                <hr>
-                <div class="slot">
-                    <span class="label">A</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">B</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">D</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">C</span>
-                    <span class="time">11:00〜13:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-                <div class="slot">
-                    <span class="label">E</span>
-                    <span class="time">10:00〜12:00</span>
-                    <span class="status">〇</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
-                </div>
-            </div>
-
-
+            {% endfor %}
         </section>
 
         <div class="eiga">&copy; 2025 青山剛昌／名探偵コナン製作委員会</div>
