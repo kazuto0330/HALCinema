@@ -12,10 +12,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
-
-#セッションの暗号化
+# セッションの暗号化
 app.secret_key = 'qawsedrftgyhujikolp'
-#ユーザーデータの場所(とりあえず、次dbに)
+# ユーザーデータの場所(とりあえず、次dbに)
 USER_FILE = 'users.json'
 
 app.config['USER_ICON_UPLOAD_FOLDER'] = 'static/images/usericon'
@@ -40,7 +39,7 @@ def conn_db():
     except mysql.connector.Error as err:
         print(f"データベース接続エラー: {err}")
         return None
-    
+
 
 # ----------------------------------------------------------------
 #  DB接続とカーソル管理を行うコンテキストマネージャ
@@ -84,7 +83,6 @@ def get_db_cursor():
             conn.close()
 
 
-
 def format_datetime(value, format='%Y年%m月%d日'):
     if value is None:
         return ''
@@ -107,7 +105,7 @@ def fetch_movies(status='now_playing', limit=None):
         today = date.today()
         query = ""
         params = ()  # パラメータの初期化を空のタプルにする
-        
+
         if status == 'now_playing':
             query = """
                     SELECT moviesId,
@@ -142,12 +140,11 @@ def fetch_movies(status='now_playing', limit=None):
         elif limit is not None:
             print("Warning: limit は正の整数である必要があります。")
 
-
         with get_db_cursor() as cursor:
             if cursor is None:
                 print("カーソルの取得に失敗しました。")
                 return []
-            
+
             cursor.execute(query, params)
             movies = cursor.fetchall()
             return movies
@@ -165,13 +162,13 @@ def fetch_events(limit: int = 10, random_order: bool = False):
         random_order (bool): Trueの場合、取得順序をランダムにする。デフォルトはFalse（固定順序）。
     """
     sql_base = """
-                SELECT eventInfoId,
-                        eventTitle,
-                        eventImage
-                FROM t_event
-                WHERE eventStartDate <= %s
-                    AND eventEndDate >= %s \
-                """
+               SELECT eventInfoId,
+                      eventTitle,
+                      eventImage
+               FROM t_event
+               WHERE eventStartDate <= %s
+                 AND eventEndDate >= %s \
+               """
     events = []
     today = date.today()  # 今日の日付を取得
 
@@ -183,7 +180,7 @@ def fetch_events(limit: int = 10, random_order: bool = False):
         # LIMIT 句
         limit_clause = "LIMIT %s"
         # 完全なSQLクエリを構築
-        sql = f"{sql_base} {order_by_clause} {limit_clause}"        
+        sql = f"{sql_base} {order_by_clause} {limit_clause}"
 
         with get_db_cursor() as cursor:
             if cursor is None:
@@ -202,16 +199,16 @@ def fetch_events(limit: int = 10, random_order: bool = False):
 # 指定したIDのイベントの詳細情報を取得する関数（）
 def fetch_event_data(event_id):
     sql = """
-            SELECT eventInfoId,
-                    eventTitle,
-                    eventStartDate,
-                    eventEndDate,
-                    eventDescription,
-                    eventImage,
-                    eventUrl
-            FROM t_event
-            WHERE eventInfoId = %s
-            """
+          SELECT eventInfoId,
+                 eventTitle,
+                 eventStartDate,
+                 eventEndDate,
+                 eventDescription,
+                 eventImage,
+                 eventUrl
+          FROM t_event
+          WHERE eventInfoId = %s \
+          """
     try:
         with get_db_cursor() as cursor:
             if cursor is None:
@@ -230,34 +227,31 @@ def fetch_event_data(event_id):
 def getUserData(user_id):
     """指定したIDのイベントの詳細情報を取得する関数"""
     sql = """
-            SELECT
-                accountId,
-                accountName,
-                emailAddress,
-                password,
-                accountIcon,
-                realName,
-                phoneNumber,
-                birthDate,
-                points
-            FROM
-                t_account
-            WHERE
-                accountId = %s;
-    """
+          SELECT accountId, \
+                 accountName, \
+                 emailAddress, \
+                 password, \
+                 accountIcon, \
+                 realName, \
+                 phoneNumber, \
+                 birthDate, \
+                 points
+          FROM t_account
+          WHERE accountId = %s; \
+          """
     userData = []
     try:
         with get_db_cursor() as cursor:
             if cursor is None:
                 print("カーソルの取得に失敗しました。")
                 return []
-            
+
             cursor.execute(sql, (user_id,))
             userData = cursor.fetchone()
             if 'points' in userData:
                 if userData['points'] is None:
                     userData['points'] = 0
-                    
+
             return userData
 
     except mysql.connector.Error:
@@ -268,12 +262,12 @@ def getUserData(user_id):
 def getUserIcon(user_id):
     """指定したIDのユーザーアイコンを取得する関数"""
     sql = """
-            SELECT accountIcon
-            FROM t_account
-            WHERE accountId = %s
-            """
-    userIcon = None 
-    
+          SELECT accountIcon
+          FROM t_account
+          WHERE accountId = %s \
+          """
+    userIcon = None
+
     try:
         with get_db_cursor() as cursor:
             if cursor is None:
@@ -291,31 +285,27 @@ def getUserIcon(user_id):
         return None
 
 
-#視聴履歴を取得する関数（user_id）
+# 視聴履歴を取得する関数（user_id）
 def watchHistory(user_id):
     """指定したIDの視聴履歴を取得する関数"""
     sql = """
-            SELECT
-                A.accountName AS accountName,
-                M.movieTitle AS movieTitle,
-                M.movieImage AS movieImage, -- 映画の画像ファイル名を追加
-                SS.scheduledScreeningDate AS scheduledScreeningDate,
-                SR.seatNumber AS seatNumber,
-                SS.screenId AS screenId -- スクリーンIDを追加
-            FROM
-                t_account AS A
-            JOIN
-                t_seatreservation AS SR ON A.accountId = SR.accountId
-            JOIN
-                t_scheduledshowing AS SS ON SR.scheduledShowingId = SS.scheduledShowingId
-            JOIN
-                t_movies AS M ON SS.moviesId = M.moviesId
-            WHERE
-                A.accountId = %s
-            ORDER BY
-                SS.scheduledScreeningDate DESC, M.movieTitle ASC;
-    """
-    history_data = [] # 視聴履歴のリストを格納する変数
+          SELECT A.accountName             AS accountName, \
+                 M.movieTitle              AS movieTitle, \
+                 M.movieImage              AS movieImage, -- 映画の画像ファイル名を追加 \
+                 SS.scheduledScreeningDate AS scheduledScreeningDate, \
+                 SR.seatNumber             AS seatNumber, \
+                 SS.screenId               AS screenId    -- スクリーンIDを追加
+          FROM t_account AS A \
+                   JOIN \
+               t_seatreservation AS SR ON A.accountId = SR.accountId \
+                   JOIN \
+               t_scheduledshowing AS SS ON SR.scheduledShowingId = SS.scheduledShowingId \
+                   JOIN \
+               t_movies AS M ON SS.moviesId = M.moviesId
+          WHERE A.accountId = %s
+          ORDER BY SS.scheduledScreeningDate DESC, M.movieTitle ASC; \
+          """
+    history_data = []  # 視聴履歴のリストを格納する変数
     try:
         with get_db_cursor() as cursor:
             if cursor is None:
@@ -323,14 +313,14 @@ def watchHistory(user_id):
                 return []
 
             cursor.execute(sql, (user_id,))
-            history_data = cursor.fetchall() # 複数行の結果を取得するため fetchall()
+            history_data = cursor.fetchall()  # 複数行の結果を取得するため fetchall()
             return history_data
 
     except mysql.connector.Error:
         return []
 
 
-#ユーザーデータを読み込む
+# ユーザーデータを読み込む
 def load_users():
     if not os.path.exists(USER_FILE):
         return {}
@@ -365,7 +355,8 @@ def validate_credit_card(card_number, expiry_date, security_code, card_name):
 
             # 現在年と比較（20XX年として処理）
             current_year = datetime.now().year % 100
-            if year < current_year:
+            current_month = datetime.now().month
+            if year < current_year or (year == current_year and month < current_month):
                 errors.append('有効期限が過去の日付です')
         except ValueError:
             errors.append('有効期限の形式が正しくありません')
@@ -388,7 +379,7 @@ def validate_phone_number(phone_number):
     # 日本の電話番号形式をチェック
     phone_clean = re.sub(r'[-\s()]', '', phone_number)
     if not re.match(r'^(0\d{9,10})$', phone_clean):
-        return ['正しい電話番号を入力してください']
+        return ['正しい電話番号を入力してください（例：090-1234-5678）']
     return []
 
 
@@ -449,7 +440,7 @@ def save_payment_info(user_id, payment_method, payment_data, amount):
             payment_method,
             json.dumps(payment_data),  # JSON形式で保存
             amount,
-            'pending',  # 支払い状況：pending, completed, failed
+            payment_data.get('status', 'pending'),  # 支払い状況：pending, completed, failed
             datetime.now()
         )
 
@@ -473,9 +464,8 @@ def save_payment_info(user_id, payment_method, payment_data, amount):
             cursor.close()
         if conn and conn.is_connected():
             conn.close()
-            
-            
-    
+
+
 def get_screens():
     """スクリーンIDとスクリーンタイプを取得する関数
 
@@ -489,10 +479,10 @@ def get_screens():
                 return []
 
             query = """
-                SELECT screenId, screenType
-                FROM t_screen
-                ORDER BY screenId
-            """
+                    SELECT screenId, screenType
+                    FROM t_screen
+                    ORDER BY screenId \
+                    """
             cursor.execute(query)
             screens = cursor.fetchall()  # DictCursor想定
             return screens
@@ -500,11 +490,6 @@ def get_screens():
         print("MySQL エラー:", e)
         return []
 
-
-
-
-
-    
 
 ############################################################################
 ### パスの定義
@@ -541,13 +526,14 @@ def get_icon():
 @app.route('/')
 def index():
     session['user_id'] = 2
-    
+
     screen_event = fetch_events(limit=5, random_order="True")
     now_playing_movies = fetch_movies(status='now_playing', limit=15)
     coming_soon_movies = fetch_movies(status='coming_soon', limit=15)
     event = fetch_events(limit=10)
-    
-    return render_template("top.html", screen_event=screen_event, now_playing=now_playing_movies, coming_soon=coming_soon_movies, events=event)
+
+    return render_template("top.html", screen_event=screen_event, now_playing=now_playing_movies,
+                           coming_soon=coming_soon_movies, events=event)
 
 
 # MOVIELIST(映画一覧)画面
@@ -787,11 +773,11 @@ def movie_information(movie_id):
             "release": "2025年6月1日",
             "poster": "images/conan.png",
             "description": (
-                "長野県・八ヶ岳連峰未宝岳。長野県警の大和敢助が雪山で“ある男”を追っていた時、"
-                "不意に何者かの影が敢助の視界に。気をとられた瞬間、“ある男”が放ったライフル弾が"
-                "敢助の左眼をかすめ、大きな地響きとともに雪崩が発生。そのまま敢助を飲み込んでしまい......。"
-                "10カ月後。国立天文台野辺山の施設研究員が何者かに襲われたという通報を受け、"
-                "雪崩から奇跡的に生還した敢助と、上原由衣が現場へ駆けつけた。"
+                "長野県・八ヶ岳連峰未宝岳。長野県警の大和敢助が雪山で"ある男"を追っていた時、"
+            "不意に何者かの影が敢助の視界に。気をとられた瞬間、"ある男"が放ったライフル弾が"
+            "敢助の左眼をかすめ、大きな地響きとともに雪崩が発生。そのまま敢助を飲み込んでしまい......。"
+            "10カ月後。国立天文台野辺山の施設研究員が何者かに襲われたという通報を受け、"
+            "雪崩から奇跡的に生還した敢助と、上原由衣が現場へ駆けつけた。"
             ),
             "duration": "110分",
             "schedule": {
@@ -885,13 +871,11 @@ def movie_information(movie_id):
 
     def get_movie_by_id(movie_id):
         return movie_db.get(movie_id)
+
     movie = get_movie_by_id(movie_id)
     if movie is None:
         return "映画が見つかりません", 404
     return render_template("movie_information.html", movie=movie)
-
-
-
 
 
 # guide画面
@@ -925,7 +909,8 @@ def register():
         phoneNumber = request.form.get('phoneNumber')
         birthDate = request.form.get('birthDate')
 
-        if not all([accountId, accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
+        if not all(
+                [accountId, accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
             error = "すべての必須項目を入力してください。"
             return render_template('register.html', error=error)
 
@@ -953,12 +938,11 @@ def register():
             return render_template('register.html', error=error)
 
         sql = """
-            INSERT INTO t_account (
-                accountId, accountName, emailAddress, password,
-                realName, phoneNumber, birthDate,
-                accountIcon, points
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
+              INSERT INTO t_account (accountId, accountName, emailAddress, password, \
+                                     realName, phoneNumber, birthDate, \
+                                     accountIcon, points) \
+              VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
+              """
         values = (
             accountId, accountName, emailAddress, hashed_password,
             realName, phoneNumber, birthDate,
@@ -978,11 +962,13 @@ def register():
 
     return render_template('register.html')
 
+
 @app.route('/success')
 def success():
     if 'user' in session:
         return render_template('success.html', user=session['user'])
     return redirect('/register')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -993,10 +979,10 @@ def login():
         conn = conn_db()
         cursor = conn.cursor(buffered=True)
         cursor.execute("""
-            SELECT accountId, accountName, emailAddress, password, accountIcon, points
-            FROM t_account
-            WHERE emailAddress = %s
-        """, (email,))
+                       SELECT accountId, accountName, emailAddress, password, accountIcon, points
+                       FROM t_account
+                       WHERE emailAddress = %s
+                       """, (email,))
         user = cursor.fetchone()
         cursor.close()
         conn.close()
@@ -1015,7 +1001,6 @@ def login():
             return render_template('login.html', error=error)
 
     return render_template('login.html')
-
 
 
 # pay画面
@@ -1089,19 +1074,20 @@ def process_payment():
         elif payment_method == 'convenience':
             phone_number = data.get('phone_number', '')
 
-            if phone_number:
+            # 電話番号のバリデーション（任意項目）
+            if phone_number and phone_number.strip():
                 errors = validate_phone_number(phone_number)
 
             if not errors:
                 payment_number = generate_payment_number()
                 payment_data = {
                     'payment_number': payment_number,
-                    'phone_number': phone_number[-4:] if len(phone_number) >= 4 else '',  # 下4桁のみ保存
+                    'phone_number': phone_number[-4:] if phone_number and len(phone_number) >= 4 else '',  # 下4桁のみ保存
                     'expire_date': (datetime.now().replace(hour=23, minute=59, second=59) +
                                     timedelta(days=3)).isoformat()  # 3日後まで有効
                 }
-                payment_status = 'pending'
-                message = f'コンビニ支払い番号: {payment_number}'
+                payment_status = 'completed'  # コンビニ払いは番号発行で完了とする
+                message = f'コンビニ支払い番号を発行しました: {payment_number}'
 
         elif payment_method == 'paypay':
             qr_code = generate_paypay_qr()
@@ -1109,8 +1095,8 @@ def process_payment():
                 'qr_code': qr_code,
                 'expire_time': (datetime.now() + timedelta(minutes=15)).isoformat()  # 15分後まで有効
             }
-            payment_status = 'pending'
-            message = 'PayPayで支払いを完了してください'
+            payment_status = 'completed'  # PayPayもQRコード生成で完了とする
+            message = 'PayPay決済用QRコードを生成しました'
 
         else:
             return jsonify({
@@ -1283,19 +1269,6 @@ def member():
     return render_template("member.html")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 # add_movie画面
 @app.route('/add_movie', methods=['GET', 'POST'])
 def add_movie():
@@ -1303,42 +1276,35 @@ def add_movie():
         con = conn_db()
         cur = con.cursor()
 
-        #ID作成
+        # ID作成
         cur.execute("SELECT MAX(moviesId) FROM t_movies")
         max_id = cur.fetchone()[0]
         if max_id:
             moviesId = f"{int(max_id) + 1:05}"
         else:
             moviesId = "00001"
-            
 
-        #入力画面から値の受け取り
+        # 入力画面から値の受け取り
         movieTitle = request.form.get('movieTitle')
         movieReleaseDate = request.form.get('movieReleaseDate')
         movieEndDate = request.form.get('movieEndDate')
         movieRunningTime = request.form.get('movieRunningTime')
         movieSynopsis = request.form.get('movieSynopsis')
 
-
         errors = {}
-        
-        
+
         # 日付チェック
         if movieReleaseDate > movieEndDate:
             errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
 
-        
         file = request.files.get('movieImage')
         if not file or file.filename == '':
             errors["movieImage"] = "画像が選択されていません。"
 
-
         # エラーがある場合はテンプレート再表示
         if errors:
             return render_template('add_movie.html', errors=errors)
-        
-        
-        
+
         if file:
             try:
                 # ベースの保存先パス
@@ -1371,30 +1337,26 @@ def add_movie():
 
             finally:
                 pass
-        
-        
+
         # データの挿入
         sql = """
-            INSERT INTO t_movies (
-                moviesId,
-                movieTitle,
-                movieReleaseDate,
-                movieEndDate,
-                movieRunningTime,
-                movieAudienceCount,
-                movieSynopsis,
-                movieImage
-            ) VALUES (
-                %(moviesId)s,
-                %(movieTitle)s,
-                %(movieReleaseDate)s,
-                %(movieEndDate)s,
-                %(movieRunningTime)s,
-                %(movieAudienceCount)s,
-                %(movieSynopsis)s,
-                %(movieImage)s
-            )
-        """
+              INSERT INTO t_movies (moviesId, \
+                                    movieTitle, \
+                                    movieReleaseDate, \
+                                    movieEndDate, \
+                                    movieRunningTime, \
+                                    movieAudienceCount, \
+                                    movieSynopsis, \
+                                    movieImage) \
+              VALUES (%(moviesId)s, \
+                      %(movieTitle)s, \
+                      %(movieReleaseDate)s, \
+                      %(movieEndDate)s, \
+                      %(movieRunningTime)s, \
+                      %(movieAudienceCount)s, \
+                      %(movieSynopsis)s, \
+                      %(movieImage)s) \
+              """
         data = {
             'moviesId': moviesId,
             'movieTitle': movieTitle,
@@ -1405,17 +1367,14 @@ def add_movie():
             'movieSynopsis': movieSynopsis,
             'movieImage': base_filename
         }
-        
+
         cur.execute(sql, data)
-        
-        
+
         con.commit()
         con.close()
         cur.close()
-        
-        
-    return render_template("add_movie.html")
 
+    return render_template("add_movie.html")
 
 
 # add_event画面
@@ -1425,42 +1384,35 @@ def add_event():
         con = conn_db()
         cur = con.cursor()
 
-        #ID作成
+        # ID作成
         cur.execute("SELECT MAX(eventInfoId) FROM t_event")
         max_id = cur.fetchone()[0]
         if max_id:
             eventInfoId = f"{int(max_id) + 1:05}"
         else:
             eventInfoId = "00001"
-            
 
-        #入力画面から値の受け取り
+        # 入力画面から値の受け取り
         eventTitle = request.form.get('eventTitle')
         eventStartDate = request.form.get('eventStartDate')
         eventEndDate = request.form.get('eventEndDate')
         eventDescription = request.form.get('eventDescription')
         eventUrl = request.form.get('eventUrl')
 
-
         errors = {}
-        
-        
+
         # 日付チェック
         if eventStartDate > eventEndDate:
             errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
 
-        
         file = request.files.get('eventImage')
         if not file or file.filename == '':
             errors["eventImage"] = "画像が選択されていません。"
 
-
         # エラーがある場合はテンプレート再表示
         if errors:
             return render_template('add_event.html', errors=errors)
-        
-        
-        
+
         if file:
             try:
                 # ベースの保存先パス
@@ -1493,28 +1445,24 @@ def add_event():
 
             finally:
                 pass
-        
-        
+
         # データの挿入
         sql = """
-            INSERT INTO t_event (
-                eventInfoId,
-                eventTitle,
-                eventStartDate,
-                eventEndDate,
-                eventDescription,
-                eventImage,
-                eventUrl
-            ) VALUES (
-                %(eventInfoId)s,
-                %(eventTitle)s,
-                %(eventStartDate)s,
-                %(eventEndDate)s,
-                %(eventDescription)s,
-                %(eventImage)s,
-                %(eventUrl)s
-            )
-        """
+              INSERT INTO t_event (eventInfoId, \
+                                   eventTitle, \
+                                   eventStartDate, \
+                                   eventEndDate, \
+                                   eventDescription, \
+                                   eventImage, \
+                                   eventUrl) \
+              VALUES (%(eventInfoId)s, \
+                      %(eventTitle)s, \
+                      %(eventStartDate)s, \
+                      %(eventEndDate)s, \
+                      %(eventDescription)s, \
+                      %(eventImage)s, \
+                      %(eventUrl)s) \
+              """
         data = {
             'eventInfoId': eventInfoId,
             'eventTitle': eventTitle,
@@ -1524,17 +1472,14 @@ def add_event():
             'eventImage': base_filename,
             'eventUrl': eventUrl
         }
-        
+
         cur.execute(sql, data)
-        
-        
+
         con.commit()
         con.close()
         cur.close()
-        
-        
-    return render_template("add_event.html")
 
+    return render_template("add_event.html")
 
 
 # add_screening画面
@@ -1544,46 +1489,39 @@ def add_screening():
         con = conn_db()
         cur = con.cursor()
 
-        #ID作成
+        # ID作成
         cur.execute("SELECT MAX(scheduledShowingId) FROM t_scheduledShowing")
         max_id = cur.fetchone()[0]
         if max_id:
             scheduledShowingId = f"{int(max_id) + 1:05}"
         else:
             scheduledShowingId = "00001"
-            
 
-        #入力画面から値の受け取り
+        # 入力画面から値の受け取り
         moviesId = request.form.get('moviesId')
         screenId = request.form.get('screenId')
         scheduledScreeningDate = request.form.get('scheduledScreeningDate')
         screeningStartTime = request.form.get('screeningStartTime')
 
-
         errors = {}
-
 
         # エラーがある場合はテンプレート再表示
         if errors:
             return render_template('add_event.html', errors=errors)
-        
-        
+
         # データの挿入
         sql = """
-            INSERT INTO t_scheduledShowing (
-                scheduledShowingId,
-                moviesId,
-                screenId,
-                scheduledScreeningDate,
-                screeningStartTime
-            ) VALUES (
-                %(scheduledShowingId)s,
-                %(moviesId)s,
-                %(screenId)s,
-                %(scheduledScreeningDate)s,
-                %(screeningStartTime)s
-            )
-        """
+              INSERT INTO t_scheduledShowing (scheduledShowingId, \
+                                              moviesId, \
+                                              screenId, \
+                                              scheduledScreeningDate, \
+                                              screeningStartTime) \
+              VALUES (%(scheduledShowingId)s, \
+                      %(moviesId)s, \
+                      %(screenId)s, \
+                      %(scheduledScreeningDate)s, \
+                      %(screeningStartTime)s) \
+              """
         data = {
             'scheduledShowingId': scheduledShowingId,
             'moviesId': moviesId,
@@ -1591,15 +1529,13 @@ def add_screening():
             'scheduledScreeningDate': scheduledScreeningDate,
             'screeningStartTime': screeningStartTime
         }
-        
+
         cur.execute(sql, data)
-        
-        
+
         con.commit()
         con.close()
         cur.close()
-        
-        
+
     # 映画情報の取得（現在上映中 + 近日公開）
     now_playing = fetch_movies(status='now_playing')
     coming_soon = fetch_movies(status='coming_soon')
@@ -1607,20 +1543,10 @@ def add_screening():
 
     # スクリーン情報の取得
     screens = get_screens()
-    
-        
+
     return render_template("add_screening.html", movies=movies, screens=screens, movies_json=movies)
 
 
-
-
-
-
-
-
-
-
-
-#実行制御
-if __name__ ==  "__main__":
+# 実行制御
+if __name__ == "__main__":
     app.run(debug=True)
