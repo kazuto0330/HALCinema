@@ -207,6 +207,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // カード名義の大文字変換処理
+    const cardNameInput = document.getElementById('card-name');
+    if (cardNameInput) {
+        cardNameInput.addEventListener('input', function(e) {
+            let value = e.target.value;
+            // 英字を大文字に変換、スペースは保持
+            value = value.replace(/[a-z]/g, function(match) {
+                return match.toUpperCase();
+            });
+            e.target.value = value;
+        });
+    }
+
     // フォーム送信処理
     paymentForm.addEventListener('submit', function(e) {
         e.preventDefault();
