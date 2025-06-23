@@ -1,7 +1,8 @@
+
 /* 页面整体背景和字体设置 */
 body {
-  background-color: #000918;
-  color: #1a1a1a;
+  background-color: #000000;
+  color: #f0f0f0;
   font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
@@ -13,7 +14,7 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  margin-top: 30px;
 }
 
 /* form 表单样式 */
@@ -23,12 +24,12 @@ form {
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  background-color: #f0f4f8; /* 浅色背景 */
-  color: #1a1a1a;
+  background-color: rgba(30, 30, 30, 0.95); /* 深灰半透明背景 */
+  color: #f0f0f0;
   padding: 40px;
   border-radius: 12px;
-  border: 2px solid #b22222; /* 酒红色边框 */
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border: 1px solid #444;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   width: 100%;
   max-width: 400px;
   box-sizing: border-box;
@@ -38,7 +39,7 @@ form {
 form h2 {
   margin: 0;
   font-size: 24px;
-  color: #1a1a1a;
+  color: #ffffff;
   text-align: center;
 }
 
@@ -49,6 +50,7 @@ label {
   width: 100%;
   font-weight: bold;
   font-size: 14px;
+  color: #cccccc;
 }
 
 /* 输入框样式 */
@@ -56,36 +58,44 @@ input {
   margin-top: 8px;
   padding: 10px;
   font-size: 14px;
-  background-color: #ffffff;
-  border: 1px solid #cccccc;
+  background-color: #e8f0fe;
+  border: 1px solid #555;
   border-radius: 5px;
-  color: #1a1a1a;
+  color: #ffffff; /* 设置输入框内文字颜色为白色 */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px #007bff;
 }
 
 /* 注册按钮样式 */
 button[type="submit"] {
   padding: 12px;
   font-size: 16px;
-  background-color: #007bff;
+  background: linear-gradient(135deg, #007bff, #00d4ff);
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
 }
 
 button[type="submit"]:hover {
-  background-color: #0056b3;
+  background: linear-gradient(135deg, #0056b3, #00aaff);
 }
 
-/* 错误提示样式：浮在表单上方中央，不影响布局 */
+/* 错误提示样式 */
 main > p {
   position: absolute;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #d9534f;
+  background-color: #b22222;
   color: white;
   padding: 10px 20px;
   border-radius: 6px;
