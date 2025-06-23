@@ -58,105 +58,101 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 有効期限のフォーマット処理（改良版）
+    // 有効期限のフォーマット処理（修正版）
     const expiryDateInput = document.getElementById('expiry-date');
     if (expiryDateInput) {
-        // シンプルで確実なアプローチ
-        expiryDateInput.addEventListener('input', function(e) {
-            // 現在の値から数字のみを抽出
-            const numbersOnly = e.target.value.replace(/\D/g, '');
+        console.log('有効期限フィールドが見つかりました');
 
-            // 4桁以上は切り捨て
-            const limitedNumbers = numbersOnly.substring(0, 4);
+        // 既存のイベントリスナーを全て削除して新しく設定
+        const newInput = expiryDateInput.cloneNode(true);
+        expiryDateInput.parentNode.replaceChild(newInput, expiryDateInput);
+        const input = document.getElementById('expiry-date');
 
-            // フォーマット適用
-            let formattedValue = '';
-            if (limitedNumbers.length === 0) {
-                formattedValue = '';
-            } else if (limitedNumbers.length <= 2) {
-                formattedValue = limitedNumbers;
-            } else {
-                // 3桁以上の場合は MM/YY 形式
-                formattedValue = limitedNumbers.substring(0, 2) + '/' + limitedNumbers.substring(2);
+        console.log('イベントリスナーをクリアしました');
+
+        // 最もシンプルなアプローチ
+        input.addEventListener('input', function(e) {
+            console.log('Input event:', e.target.value);
+
+            // 数字のみ抽出
+            let value = e.target.value.replace(/\D/g, '');
+            console.log('Numbers only:', value);
+
+            // 4桁制限
+            if (value.length > 4) {
+                value = value.substring(0, 4);
             }
 
-            // 値が変更された場合のみ更新
-            if (e.target.value !== formattedValue) {
-                const cursorPosition = e.target.selectionStart;
-                e.target.value = formattedValue;
-
-                // カーソル位置の調整
-                let newPosition = cursorPosition;
-
-                // スラッシュが追加された場合の調整
-                if (limitedNumbers.length === 3 && cursorPosition === 2) {
-                    newPosition = 3; // スラッシュの後に移動
-                }
-
-                // カーソル位置が文字列長を超えないように調整
-                newPosition = Math.min(newPosition, formattedValue.length);
-
-                // 次のフレームでカーソル位置を設定
-                setTimeout(() => {
-                    e.target.setSelectionRange(newPosition, newPosition);
-                }, 0);
+            // フォーマット
+            if (value.length >= 3) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
             }
+
+            console.log('Formatted value:', value);
+
+            // 値を設定
+            e.target.value = value;
+
+            console.log('Final value set:', e.target.value);
 
             // バリデーション
-            if (formattedValue.length === 5) {
-                validateExpiryDate(formattedValue);
+            if (value.length === 5) {
+                validateExpiryDate(value);
             } else {
                 clearError('expiry-date-error');
             }
         });
 
-        // キーダウンイベントでの特別処理
-        expiryDateInput.addEventListener('keydown', function(e) {
-            const cursorPosition = e.target.selectionStart;
-            const value = e.target.value;
+        // キーダウンイベント
+        input.addEventListener('keydown', function(e) {
+            console.log('Key pressed:', e.key, 'at position:', e.target.selectionStart);
 
-            // バックスペースキーの処理
+            // バックスペースの特別処理
             if (e.key === 'Backspace') {
-                // スラッシュの位置（index 2）でバックスペースが押された場合
-                if (cursorPosition === 3 && value.charAt(2) === '/') {
+                const pos = e.target.selectionStart;
+                const value = e.target.value;
+
+                console.log('Backspace at:', pos, 'value:', value);
+
+                // スラッシュの直後でバックスペースが押された場合（3文字目を削除）
+                if (pos === 3 && value.charAt(2) === '/') {
+                    console.log('Backspace after slash detected - removing 3rd character and slash');
                     e.preventDefault();
 
-                    // 数字部分のみ取得して最後の1文字を削除
-                    const numbers = value.replace(/\D/g, '');
-                    const newNumbers = numbers.substring(0, numbers.length - 1);
+                    // 月の部分の最後の桁を削除（スラッシュも削除される）
+                    const monthPart = value.substring(0, 2);
 
-                    // 新しい値をフォーマット
-                    if (newNumbers.length <= 2) {
-                        e.target.value = newNumbers;
+                    if (monthPart.length > 0) {
+                        const newValue = monthPart.substring(0, monthPart.length - 1);
+
+                        console.log('New value after backspace:', newValue);
+                        e.target.value = newValue;
+
+                        // カーソル位置を設定
                         setTimeout(() => {
-                            e.target.setSelectionRange(newNumbers.length, newNumbers.length);
-                        }, 0);
-                    } else {
-                        const formatted = newNumbers.substring(0, 2) + '/' + newNumbers.substring(2);
-                        e.target.value = formatted;
-                        setTimeout(() => {
-                            e.target.setSelectionRange(formatted.length, formatted.length);
+                            e.target.setSelectionRange(newValue.length, newValue.length);
                         }, 0);
                     }
-                    return;
                 }
             }
 
-            // 数字以外の入力を防ぐ（制御キーは除く）
+            // 数字以外の入力を防ぐ
             if (!/\d/.test(e.key) &&
-                !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key) &&
-                !e.ctrlKey && !e.metaKey) {
+                !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                console.log('Non-digit key blocked:', e.key);
                 e.preventDefault();
             }
         });
 
         // ペースト処理
-        expiryDateInput.addEventListener('paste', function(e) {
+        input.addEventListener('paste', function(e) {
             e.preventDefault();
 
             // ペーストされたデータから数字のみを抽出
             const pastedData = (e.clipboardData || window.clipboardData).getData('text');
             const numbersOnly = pastedData.replace(/\D/g, '').substring(0, 4);
+
+            console.log('Paste event:', pastedData, 'Numbers only:', numbersOnly);
 
             // フォーマットして設定
             if (numbersOnly.length <= 2) {
@@ -170,6 +166,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.target.setSelectionRange(e.target.value.length, e.target.value.length);
             }, 0);
         });
+
+        console.log('イベントリスナーを設定しました');
     }
 
     // セキュリティコードの入力制限
