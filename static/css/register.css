@@ -61,7 +61,7 @@ input {
   background-color: #e8f0fe;
   border: 1px solid #555;
   border-radius: 5px;
-  color: #ffffff; /* 设置输入框内文字颜色为白色 */
+  color: #555; /* 设置输入框内文字颜色为白色 */
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
