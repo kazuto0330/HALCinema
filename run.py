@@ -887,8 +887,6 @@ def guide():
 # seat_reservation画面
 @app.route('/seat_reservation/<int:showing_id>', methods=['GET', 'POST'])
 def seat_reservation(showing_id):
-    accountId = session.get('accountId')
-
     if request.method == 'POST':
         data = request.get_json()
         seats = data.get('seats', [])  # [{ row: 'A', seatNumber: 3 }, ...]
