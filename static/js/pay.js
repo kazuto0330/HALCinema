@@ -58,22 +58,114 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 有効期限のフォーマット処理
+    // 有効期限のフォーマット処理（改良版）
     const expiryDateInput = document.getElementById('expiry-date');
     if (expiryDateInput) {
+        // キーダウンイベントで特殊キーの処理
+        expiryDateInput.addEventListener('keydown', function(e) {
+            const cursorPosition = e.target.selectionStart;
+            const value = e.target.value;
+
+            // Backspaceキーの処理
+            if (e.key === 'Backspace') {
+                // カーソルが「/」の直後にある場合（例：「12/|」の状態）
+                if (cursorPosition === 3 && value.charAt(2) === '/') {
+                    // 「/」とその前の文字を削除
+                    e.preventDefault();
+                    e.target.value = value.substring(0, 1);
+                    e.target.setSelectionRange(1, 1);
+                    return;
+                }
+                // カーソルが「/」の位置にある場合（例：「12|/34」の状態）
+                if (cursorPosition === 2 && value.charAt(2) === '/') {
+                    // 「/」の前の文字を削除
+                    e.preventDefault();
+                    e.target.value = value.substring(0, 1) + value.substring(3);
+                    e.target.setSelectionRange(1, 1);
+                    return;
+                }
+            }
+
+            // Deleteキーの処理
+            if (e.key === 'Delete') {
+                // カーソルが「/」の直前にある場合（例：「12|/34」の状態）
+                if (cursorPosition === 2 && value.charAt(2) === '/') {
+                    // 「/」とその後の文字を削除
+                    e.preventDefault();
+                    const newValue = value.substring(0, 2) + value.substring(4);
+                    e.target.value = newValue;
+                    e.target.setSelectionRange(2, 2);
+                    return;
+                }
+                // カーソルが「/」の位置にある場合（例：「12/|34」の状態）
+                if (cursorPosition === 3 && value.charAt(2) === '/') {
+                    // 「/」の後の文字を削除
+                    e.preventDefault();
+                    e.target.value = value.substring(0, 3) + value.substring(4);
+                    e.target.setSelectionRange(3, 3);
+                    return;
+                }
+            }
+        });
+
+        // 入力イベントの処理（既存の処理を改良）
         expiryDateInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
+            let value = e.target.value.replace(/\D/g, ''); // 数字以外を除去
+            const cursorPosition = e.target.selectionStart;
+
+            // 4桁を超える場合は切り取り
             if (value.length > 4) {
                 value = value.substring(0, 4);
             }
+
+            // フォーマットの適用
+            let formattedValue = '';
             if (value.length >= 2) {
-                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                formattedValue = value.substring(0, 2) + '/' + value.substring(2, 4);
+            } else {
+                formattedValue = value;
             }
-            e.target.value = value;
+
+            // 値を設定
+            e.target.value = formattedValue;
+
+            // カーソル位置の調整
+            let newCursorPosition = cursorPosition;
+
+            // カーソルが「/」を挿入した位置を超えている場合の調整
+            if (cursorPosition === 2 && value.length >= 2) {
+                newCursorPosition = 3; // 「/」の後に移動
+            }
+
+            // カーソル位置を設定
+            e.target.setSelectionRange(newCursorPosition, newCursorPosition);
 
             // リアルタイムバリデーション
-            if (value.length === 5) {
-                validateExpiryDate(value);
+            if (formattedValue.length === 5) {
+                validateExpiryDate(formattedValue);
+            }
+        });
+
+        // ペースト処理
+        expiryDateInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+
+            // クリップボードからデータを取得
+            const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+            const numbersOnly = pasteData.replace(/\D/g, '');
+
+            // 4桁まで処理
+            const limitedNumbers = numbersOnly.substring(0, 4);
+
+            if (limitedNumbers.length >= 2) {
+                e.target.value = limitedNumbers.substring(0, 2) + '/' + limitedNumbers.substring(2);
+            } else {
+                e.target.value = limitedNumbers;
+            }
+
+            // バリデーション実行
+            if (e.target.value.length === 5) {
+                validateExpiryDate(e.target.value);
             }
         });
     }
