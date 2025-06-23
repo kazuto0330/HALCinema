@@ -248,6 +248,9 @@ document.addEventListener('DOMContentLoaded', function() {
             isValid = validateCreditCardForm();
         } else if (selectedMethod === 'convenience') {
             isValid = validateConvenienceForm();
+        } else if (selectedMethod === 'paypay') {
+            // PayPayは特別なバリデーションは不要
+            isValid = true;
         }
 
         return isValid;
@@ -281,10 +284,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function validateConvenienceForm() {
-        const phoneNumber = document.getElementById('phone-number').value;
+        const phoneNumber = document.getElementById('phone-number').value.trim();
 
         // 電話番号は任意なので、入力されている場合のみバリデーション
-        if (phoneNumber && !validatePhoneNumber(phoneNumber)) {
+        if (phoneNumber && phoneNumber.length > 0 && !validatePhoneNumber(phoneNumber)) {
             return false;
         }
 
@@ -365,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const phoneClean = phoneNumber.replace(/[-\s()]/g, '');
 
         if (!/^0\d{9,10}$/.test(phoneClean)) {
-            showError('phone-number-error', '正しい電話番号を入力してください');
+            showError('phone-number-error', '正しい電話番号を入力してください（例：090-1234-5678）');
             return false;
         }
 
