@@ -791,9 +791,40 @@ def guide():
 
 
 # seat_reservation画面
-@app.route('/seat_reservation')
-def seat_reservation():
-    return render_template("seat_reservation.html")
+@app.route('/seat_reservation/<int:showing_id>', methods=['GET', 'POST'])
+def seat_reservation(showing_id):
+    accountId = session.get('accountId')
+
+    if request.method == 'POST':
+        data = request.get_json()
+        seats = data.get('seats', [])  # [{ row: 'A', seatNumber: 3 }, ...]
+
+        # ここではDBに予約を入れず、セッションに選択座席を保存するだけに変更
+        session['selected_seats'] = seats
+        session['showing_id'] = showing_id
+
+        return jsonify({'message': '座席選択を受け付けました。次に支払い画面へ進んでください。'}), 200
+
+    # GET時は予約済み座席を取得し、画面表示
+    conn = conn_db()
+    cursor = conn.cursor()
+
+    # スクリーンIDを取得
+    cursor.execute("SELECT screenId FROM t_scheduledShowing WHERE scheduledShowingId = %s", (showing_id,))
+    result = cursor.fetchone()
+    screenId = result[0]
+
+    # 予約済み座席を取得（seatNumberカラムに'A-1'などが入っている想定）
+    cursor.execute("""
+        SELECT seatNumber FROM t_seatReservation
+        WHERE scheduledShowingId = %s
+    """, (showing_id,))
+    reserved_seats = [row[0] for row in cursor.fetchall()]
+
+    cursor.close()
+    conn.close()
+
+    return render_template("seat_reservation.html", screenId=screenId, showing_id=showing_id, reserved_seats=reserved_seats)
 
 
 # member_login画面
@@ -1053,17 +1084,60 @@ def process_payment():
         }), 500
 
 
-# 支払い完了ページ
 @app.route('/pay_comp')
 def pay_comp():
     # セッションから支払い情報を取得
     payment_info = session.get('last_payment')
+    print("アクセス")
 
     if not payment_info:
         # 支払い情報がない場合は支払いページにリダイレクト
         return redirect(url_for('pay'))
 
+    # 支払いステータスが完了なら予約確定処理を実行
+    if payment_info.get('status') == 'completed':
+        accountId = session.get('accountId')
+        seats = session.get('selected_seats', [])
+        showing_id = session.get('showing_id')
+
+        if seats and showing_id:
+            conn = conn_db()
+            cursor = conn.cursor()
+
+            try:
+                cursor.execute("SELECT MAX(seatReservationId) FROM t_seatReservation")
+                max_id = cursor.fetchone()[0]
+                next_id = int(max_id) + 1 if max_id else 1
+
+                for seat in seats:
+                    seat_label = f"{seat.get('row')}-{seat.get('seatNumber')}"
+                    seatReservationId = f"{next_id:05}"
+                    next_id += 1
+                    print(f"予約登録: seatReservationId={seatReservationId}, showing_id={showing_id}, accountId={accountId}, seat_label={seat_label}")
+
+                    cursor.execute("""
+                        INSERT INTO t_seatReservation (seatReservationId, scheduledShowingId, accountId, seatNumber)
+                        VALUES (%s, %s, %s, %s)
+                    """, (seatReservationId, showing_id, accountId, seat_label))
+
+                conn.commit()
+
+                # 登録成功したらセッションの座席情報をクリア
+                session.pop('selected_seats', None)
+                session.pop('showing_id', None)
+
+            except Exception as e:
+                conn.rollback()
+                print("予約DB登録失敗:", e)
+                # ここでエラーメッセージを画面に渡しても良い
+                return "予約処理でエラーが発生しました。管理者に連絡してください。", 500
+
+            finally:
+                cursor.close()
+                conn.close()
+
     return render_template("pay_comp.html", payment_info=payment_info)
+
 
 
 # 支払い状況確認API
