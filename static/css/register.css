@@ -23,7 +23,6 @@ form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
   background-color: rgba(30, 30, 30, 0.95); /* 深灰半透明背景 */
   color: #f0f0f0;
   padding: 40px;
@@ -51,6 +50,7 @@ label {
   font-weight: bold;
   font-size: 14px;
   color: #cccccc;
+  margin-top: 10px;
 }
 
 /* 输入框样式 */
@@ -83,6 +83,7 @@ button[type="submit"] {
   transition: background 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+  margin-top: 30px;
 }
 
 button[type="submit"]:hover {
