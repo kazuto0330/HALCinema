@@ -101,6 +101,66 @@ header {
 }
 
 
+/* --- ユーザーアイコンメニュー --- */
+.user-menu-container {
+    position: relative; /* ドロップダウンメニューの位置の基準点になります */
+    margin-left: 5px;   /* 隣の要素との間隔調整 */
+}
+
+#user-icon-wrapper {
+    cursor: pointer; /* クリックできることを示すカーソル */
+}
+
+.user-dropdown-menu {
+    display: none; /* 初期状態では非表示 */
+    position: absolute;
+    top: calc(100% + 10px); /* アイコンの高さ分下に、さらに10pxの間隔を空ける */
+    right: 0; /* 右端に配置。これにより画面からはみ出しません */
+    background-color: #2c2c2c;
+    border: 1px solid #444;
+    border-radius: 8px;
+    min-width: 240px; /* メニューの最小幅 */
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    z-index: 1000; /* 他の要素より手前に表示 */
+    overflow: hidden; /* 子要素が角丸からはみ出ないようにする */
+}
+
+/* JavaScriptでこのクラスを付け外しして表示を制御します */
+.user-dropdown-menu.show {
+    display: block;
+}
+
+.user-info {
+    padding: 15px 20px;
+    border-bottom: 1px solid #444;
+}
+
+.user-name {
+    font-weight: 500;
+    font-size: 1rem;
+    color: #f5f5f5;
+}
+
+.user-email {
+    font-size: 0.85rem;
+    color: #b0b0b0;
+    margin-top: 4px;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 12px 20px;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: #f5c518;
+    color: #111;
+}
+
+
 /* ------------------------  スマホ用ハンバーガーメニュー  ------------------------------- */
 .hamburger-icon {
     display: none;

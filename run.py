@@ -111,8 +111,9 @@ def login_required(f):
 #ヘッダーに表示するデータを取得
 @app.context_processor
 def inject_user():
+    # session['user_id'] = 111
     if 'user_id' in session:
-        user_id = session.get[(user_id)]
+        user_id = session.get('user_id')
         sql = """
                 SELECT
                     accountName,
@@ -132,12 +133,13 @@ def inject_user():
                 
                 cursor.execute(sql, (user_id,))
                 user_info = cursor.fetchone()
+                print(user_info)
 
                 # ここで返した辞書が、すべてのテンプレートのコンテキストに追加される
                 return dict(user_data=user_info)
 
         except mysql.connector.Error:
-            return  None
+            return dict(user_data=None)
     else:
         return dict(user_data=None)
 
@@ -557,33 +559,6 @@ def get_screens():
 ############################################################################
 ### パスの定義
 ############################################################################
-
-# ユーザーアイコン取得API（修正版）
-@app.route('/api/user_icon', methods=['GET'])
-def get_icon():
-    try:
-        Icon = getUserIcon(session.get('user_id'))
-
-        if Icon is None:
-            return jsonify({
-                'success': False,
-                'message': 'ユーザーが見つかりません',
-                'accountIcon': None
-            }), 404
-
-        return jsonify({
-            'success': True,
-            'accountIcon': Icon.get('accountIcon', None)
-        })
-
-    except Exception as e:
-        print(f"User icon error: {e}")
-        return jsonify({
-            'success': False,
-            'message': 'サーバーエラーが発生しました',
-            'accountIcon': None
-        }), 500
-
 
 #ログアウト
 @app.route('/logout')

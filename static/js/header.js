@@ -1,62 +1,49 @@
-// DOMが完全に読み込まれたら処理を開始
-document.addEventListener('DOMContentLoaded', async () => {
-    const userIconElement = document.getElementById('user-icon');
-    if (!userIconElement) return;
+// ユーザーメニューーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+document.addEventListener('DOMContentLoaded', function() {
+    const userIconWrapper = document.getElementById('user-icon-wrapper');
 
-    // キャッシュを保存するためのキーを定義
-    const CACHE_KEY = 'user_icon_url';
+    // アイコンのラッパー要素が存在するかチェック
+    if (userIconWrapper) {
+        
+        // userDataが存在する（ログイン済み）場合
+        if (userData) {
+            const dropdownMenu = document.getElementById('user-dropdown-menu');
+            
+            // Tippy.jsのツールチップ内容を更新
+            userIconWrapper.setAttribute('data-tippy-content', 'プロフィール');
 
-    
-    // 1. sessionStorageからキャッシュを確認
-    // const cachedIconUrl = sessionStorage.getItem(CACHE_KEY);
-    // console.log(cachedIconUrl);
+            if (dropdownMenu) {
+                // アイコンをクリックしたときの処理（メニュー表示/非表示）
+                userIconWrapper.addEventListener('click', function(event) {
+                    event.stopPropagation(); // 親要素へのイベント伝播を停止
+                    dropdownMenu.classList.toggle('show');
+                });
 
-    // 2. キャッシュがあれば、それを使って処理を終了
-    // if (cachedIconUrl) {
-    //     console.log('キャッシュからアイコンを読み込みました。');
-    //     userIconElement.src = cachedIconUrl;
-    //     return; // APIリクエストは不要なのでここで終了
-    // }
-    
+                // メニュー自身をクリックしても閉じないようにする
+                dropdownMenu.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                });
+            }
 
-    try {
-        // APIにGETリクエストを送信
-        const response = await fetch('/api/user_icon');
+            // ドキュメント全体をクリックしたらメニューを閉じる
+            window.addEventListener('click', function() {
+                if (dropdownMenu && dropdownMenu.classList.contains('show')) {
+                    dropdownMenu.classList.remove('show');
+                }
+            });
+        } 
+        // userDataがnull（未ログイン）の場合
+        else {
+            // Tippy.jsのツールチップ内容を「ログイン」に変更（親切設計）
+            userIconWrapper.setAttribute('data-tippy-content', 'ログイン');
 
-        // レスポンスが正常でない場合 (例: 404, 500エラー)
-        if (!response.ok) {
-            throw new Error(`APIエラー: ${response.status}`);
+            // アイコンをクリックしたらログインページにリダイレクト
+            userIconWrapper.addEventListener('click', function() {
+                window.location.href = '/login';
+            });
         }
-
-        // レスポンスのJSONをパース
-        const data = await response.json();
-
-        // データの構造を確認（新しいAPIレスポンス形式に対応）
-        const iconFileName = data.success ? data.accountIcon : (data.accountIcon || null);
-
-        // データとaccountIconプロパティが存在することを確認
-        if (iconFileName) {
-            const iconUrl = `/static/images/usericon/80x80/${iconFileName}`;
-
-            sessionStorage.setItem(CACHE_KEY, iconUrl);
-            console.log('アイコンURLをキャッシュに保存しました。');
-
-            // <img>要素のsrc属性を更新して画像を表示
-            userIconElement.src = iconUrl;
-        } else {
-            console.warn('APIから有効なアイコンパスが取得できませんでした。');
-            userIconElement.src = '/static/images/usericon/80x80/default.jpg';
-        }
-
-    } catch (error) {
-        // ネットワークエラーやJSONパースエラーなどをキャッチ
-        console.error('アイコンの取得に失敗しました:', error);
-        // エラー時もデフォルト画像を表示
-        userIconElement.src = '/static/images/usericon/80x80/default.jpg';
     }
 });
-
-
 // スマホ用ハンバーガーメニューーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 
 // DOMが読み込まれたら実行
