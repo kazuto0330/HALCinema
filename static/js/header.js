@@ -8,15 +8,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     
     // 1. sessionStorageからキャッシュを確認
-    const cachedIconUrl = sessionStorage.getItem(CACHE_KEY);
-    console.log(cachedIconUrl);
+    // const cachedIconUrl = sessionStorage.getItem(CACHE_KEY);
+    // console.log(cachedIconUrl);
 
     // 2. キャッシュがあれば、それを使って処理を終了
-    if (cachedIconUrl) {
-        console.log('キャッシュからアイコンを読み込みました。');
-        userIconElement.src = cachedIconUrl;
-        return; // APIリクエストは不要なのでここで終了
-    }
+    // if (cachedIconUrl) {
+    //     console.log('キャッシュからアイコンを読み込みました。');
+    //     userIconElement.src = cachedIconUrl;
+    //     return; // APIリクエストは不要なのでここで終了
+    // }
     
 
     try {
