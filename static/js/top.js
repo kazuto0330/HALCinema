@@ -1,232 +1,222 @@
-document.addEventListener('DOMContentLoaded', function () {
+// =============================================================================
+// 機能定義エリア
+// 各機能の初期化関数をここで定義します。
+// =============================================================================
+
+/**
+ * 1. スライドショー機能
+ * 無限ループのスライドショーを初期化します。
+ */
+function initSlideshow() {
     const wrapper = document.querySelector('.slideshow-wrapper');
+    // スライドショーの要素がなければ処理を中断
+    if (!wrapper) return;
+
     const originalSlides = Array.from(wrapper.children);
     const prevButton = document.querySelector('.prev-button');
     const nextButton = document.querySelector('.next-button');
 
-    if (originalSlides.length === 0) return;
+    // 必要な要素が揃っていない場合は処理を中断
+    if (originalSlides.length === 0 || !prevButton || !nextButton) return;
 
     const slideCount = originalSlides.length;
     let currentIndex = 0;
     const ANIMATION_DURATION = 300;
     const SLIDE_INTERVAL = 4000;
-    let autoPlayTimer; // タイマーIDを保持する変数
+    let autoPlayTimer;
 
+    // 無限ループのためのクローンを生成・配置
     const lastClone = originalSlides[slideCount - 1].cloneNode(true);
     wrapper.insertBefore(lastClone, originalSlides[0]);
     const firstClone = originalSlides[0].cloneNode(true);
     wrapper.appendChild(firstClone);
     
     const allSlides = document.querySelectorAll('.slide-item');
-    const CLONE_COUNT_AHEAD = 1;
+    const CLONE_COUNT_AHEAD = 1; // 先頭に追加したクローンの数
 
-    // --- 関数の定義 ---
-
+    // スライドの位置とアクティブ状態を更新する関数
     function updateSlider(withAnimation = true) {
-        if (withAnimation) {
-            wrapper.style.transition = `transform ${ANIMATION_DURATION}ms ease-in-out`;
-        } else {
-            wrapper.style.transition = 'none';
-        }
+        wrapper.style.transition = withAnimation ? `transform ${ANIMATION_DURATION}ms ease-in-out` : 'none';
 
         const slideWidth = allSlides[CLONE_COUNT_AHEAD].offsetWidth;
-        // 画面全体の幅から現在のスライドの幅を引いて2で割り、正確な中央配置のためのオフセットを計算
+        // スライドを画面中央に配置するためのオフセットを計算
         const offset = (window.innerWidth - slideWidth) / 2;
-
         const transformValue = -((slideWidth * (currentIndex + CLONE_COUNT_AHEAD))) + offset;
         wrapper.style.transform = `translateX(${transformValue}px)`;
 
+        // アクティブなスライドに 'active' クラスを付与
         allSlides.forEach((slide, index) => {
-            if (index === currentIndex + CLONE_COUNT_AHEAD) {
-                slide.classList.add('active');
-            } else {
-                slide.classList.remove('active');
-            }
+            slide.classList.toggle('active', index === currentIndex + CLONE_COUNT_AHEAD);
         });
     }
 
-    // 次のスライドへ
-    function slideToNext() {
+    // 次のスライドへ移動
+    const slideToNext = () => {
         currentIndex++;
         updateSlider();
-    }
+    };
 
-    // 前のスライドへ
-    function slideToPrev() {
+    // 前のスライドへ移動
+    const slideToPrev = () => {
         currentIndex--;
         updateSlider();
-    }
+    };
     
-    // 自動再生を開始/リセットする関数
-    function startAutoPlay() {
-        clearInterval(autoPlayTimer); // 既存のタイマーをクリア
+    // 自動再生を開始またはリセット
+    const startAutoPlay = () => {
+        clearInterval(autoPlayTimer);
         autoPlayTimer = setInterval(slideToNext, SLIDE_INTERVAL);
-    }
+    };
 
-    // アニメーション完了時のループ処理
+    // アニメーション完了後のループ処理
     wrapper.addEventListener('transitionend', () => {
-        // 最後のスライド（＝最初の画像のクローン）に到達した場合
         if (currentIndex >= slideCount) {
             currentIndex = 0;
-            updateSlider(false);
+            updateSlider(false); // アニメーションなしで最初のスライドに移動
         }
-        // 最初のスライド（=最後の画像のクローン）に到達した場合
         if (currentIndex < 0) {
             currentIndex = slideCount - 1;
-            updateSlider(false);
+            updateSlider(false); // アニメーションなしで最後のスライドに移動
         }
     });
 
-    // --- イベントリスナーの設定 ---
-
-    // 次へボタンがクリックされた時
+    // ボタンのクリックイベント
     nextButton.addEventListener('click', () => {
         slideToNext();
-        startAutoPlay(); // タイマーをリセットして再開
+        startAutoPlay();
     });
 
-    // 前へボタンがクリックされた時
     prevButton.addEventListener('click', () => {
         slideToPrev();
-        startAutoPlay(); // タイマーをリセットして再開
+        startAutoPlay();
     });
     
-    // ウィンドウサイズが変更されたとき
-    window.addEventListener('resize', () => {
-        updateSlider(false);
-    });
+    // ウィンドウリサイズ時に位置を再計算
+    window.addEventListener('resize', () => updateSlider(false));
 
-    // --- 初期化処理 ---
+    // 初期化
     updateSlider(false);
-    startAutoPlay(); // 最初の自動再生を開始
-});
-
-
-
-
-
-// コンテンツスクロールとボタン操作 (ユーザー提供のコードをそのまま残します)
-document.addEventListener('DOMContentLoaded', () => {
-    const contentContainers = document.querySelectorAll('.ContentContainer');
-
-    contentContainers.forEach(contentContainer => {
-        const scrollContainer = contentContainer.querySelector('.ScrollContainer.JsScroll');
-        const leftButton = contentContainer.querySelector('.LeftButton');
-        const rightButton = contentContainer.querySelector('.RightButton');
-
-        if (scrollContainer && leftButton && rightButton) {
-            const scrollAmount = scrollContainer.clientWidth-15;
-
-            rightButton.addEventListener('click', () => {
-                scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-            });
-
-            leftButton.addEventListener('click', () => {
-                scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-            });
-        }
-    });
-});
-
-
-// ボタンのホバー表示/非表示
-// 定数：ビューポートのはみ出し判定の閾値（左右の余白）
-const OUT_OF_BOUNDS_THRESHOLD = 35;
-
-/**
- * 指定された画像要素のビューポート内での位置に基づき、
- * 'darken' クラスを適用または削除する関数。
- * はみ出している場合に 'darken' を適用し、はみ出していない場合に削除します。
- * @param {HTMLElement} img - 処理対象の画像要素（.ContentImg）
- */
-function updateImageDarkenState(img) {
-    const rect = img.getBoundingClientRect(); // 要素のビューポートに対する位置とサイズを取得
-    const viewportWidth = window.innerWidth;
-    if (viewportWidth<481){
-        return;
-    }
-
-    // はみ出し判定
-    const isOutOfBounds =
-        rect.left < OUT_OF_BOUNDS_THRESHOLD ||             // 左にはみ出し
-        rect.right > viewportWidth - OUT_OF_BOUNDS_THRESHOLD; // 右にはみ出し
-
-    // はみ出している場合のみ 'darken' クラスを追加し、CSSでフィルターを適用。
-    // はみ出していない場合は 'darken' クラスを削除します (toggleの第二引数がfalseの場合)。
-    img.classList.toggle('darken', isOutOfBounds);
+    startAutoPlay();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // --- クラス名ScrollContainerの要素にスクロールイベントを追加 ---
-    // すべてのScrollContainer要素を取得
-    const scrollContainers = document.querySelectorAll('.ScrollContainer');
+/**
+ * 2. コンテンツスクローラー機能
+ * ボタンによるスクロールと、画像のダークン効果を初期化します。
+ */
+function initContentScrollers() {
+    const contentContainers = document.querySelectorAll('.ContentContainer');
+    if (contentContainers.length === 0) return;
 
-    if (scrollContainers.length > 0) { // ScrollContainerが存在する場合のみ処理
-        scrollContainers.forEach(container => {
-            // 各ScrollContainerにスクロールイベントリスナーを追加
-            container.addEventListener('scroll', () => {
-                // スクロールするたびに、ページ内のすべての.ContentImg要素をチェックし、状態を更新
-                const allContentImgs = document.querySelectorAll('.ContentImg');
-                allContentImgs.forEach(img => {
-                    updateImageDarkenState(img);
-                });
-            });
-        });
+    // --- 定数定義 ---
+    const OUT_OF_BOUNDS_THRESHOLD = 35; // はみ出し判定の閾値 (px)
+    const MOBILE_BREAKPOINT = 481;      // ダークン効果を無効にする画面幅 (px)
+    const SCROLL_OFFSET = 15;           // ボタンクリック時のスクロール量の調整値 (px)
 
-        // ページがロードされた初期状態でも一度実行し、画像の状態を正しく反映させる
-        // (例: ページリロード時に既にスクロールされている場合など)
-        const allContentImgs = document.querySelectorAll('.ContentImg');
-        allContentImgs.forEach(img => {
-            updateImageDarkenState(img);
-        });
+    /**
+     * 画像がビューポートの端からはみ出しているか判定し、'darken'クラスを適用/削除する
+     * @param {HTMLElement} img - 対象の画像要素 (.ContentImg)
+     */
+    function updateImageDarkenState(img) {
+        if (window.innerWidth < MOBILE_BREAKPOINT) {
+            img.classList.remove('darken');
+            return;
+        }
+        const rect = img.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const isOutOfBounds = rect.left < OUT_OF_BOUNDS_THRESHOLD || rect.right > viewportWidth - OUT_OF_BOUNDS_THRESHOLD;
+        img.classList.toggle('darken', isOutOfBounds);
     }
 
-    // --- 既存のホバーイベント処理の調整 ---
-    const contentContainers = document.querySelectorAll('.ContentContainer');
-
+    // --- 各コンテナにイベントを設定 ---
     contentContainers.forEach(container => {
+        const scrollContainer = container.querySelector('.ScrollContainer.JsScroll');
+        const leftButton = container.querySelector('.LeftButton');
+        const rightButton = container.querySelector('.RightButton');
         const scrollImgs = container.querySelectorAll('.ContentImg');
 
-        // ホバーで実行（マウスが乗った時）
-        container.addEventListener('mouseenter', () => {
-            scrollImgs.forEach(img => {
-                // ホバーしたコンテナ内の画像に対して、はみ出し判定とクラス適用を行う
-                updateImageDarkenState(img);
+        // a) スクロールボタンの操作
+        if (scrollContainer && leftButton && rightButton) {
+            const scrollAmount = () => scrollContainer.clientWidth - SCROLL_OFFSET;
+            rightButton.addEventListener('click', () => {
+                scrollContainer.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
             });
-        });
+            leftButton.addEventListener('click', () => {
+                scrollContainer.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+            });
+        }
 
-        // ホバー解除で実行（マウスが離れた時）
-        container.addEventListener('mouseleave', () => {
-            scrollImgs.forEach(img => {
-                // ホバー解除時は常に 'darken' クラスを削除し、フィルターをリセット
-                // これにより、マウスが離れたら必ずホバーによる効果が消える
-                img.classList.remove('darken');
+        // b) 画像のダークン効果
+        if (scrollContainer && scrollImgs.length > 0) {
+            // スクロール時にコンテナ内の画像を更新
+            scrollContainer.addEventListener('scroll', () => {
+                scrollImgs.forEach(updateImageDarkenState);
             });
+        }
+        // ホバー時にコンテナ内の画像を更新
+        container.addEventListener('mouseenter', () => {
+            scrollImgs.forEach(updateImageDarkenState);
+        });
+        // ホバー解除時はダークン効果をすべて解除
+        container.addEventListener('mouseleave', () => {
+            scrollImgs.forEach(img => img.classList.remove('darken'));
         });
     });
-});
 
+    // --- ページ全体に適用するイベント ---
+    const updateAllImagesOnPage = () => {
+        document.querySelectorAll('.ContentImg').forEach(updateImageDarkenState);
+    };
+    
+    // リサイズ時に全画像の表示を更新
+    window.addEventListener('resize', updateAllImagesOnPage);
+    // 初期ロード時にも実行して現在の状態を反映
+    updateAllImagesOnPage();
+}
 
-// ------------------------公開日付の処理--------------------------------------
-document.addEventListener('DOMContentLoaded', () => {
-    const targetSelector = '.ImageWrapper a div';
-    const yearPattern = /\b20\d{2}年\b/g;
-    const breakpoint = 1000;
+/**
+ * 3. 公開日付のレスポンシブ表示機能
+ * 画面幅に応じて日付の「年」の表示/非表示を切り替えます。
+ */
+function initDateDisplay() {
+    const TARGET_SELECTOR = '.ImageWrapper a div';
+    const dateElements = document.querySelectorAll(TARGET_SELECTOR);
+    if (dateElements.length === 0) return;
 
+    const YEAR_PATTERN = /\b20\d{2}年\b/g; // "20xx年" の形式にマッチ
+    const BREAKPOINT = 1000; // 年表示を切り替える画面幅 (px)
+
+    /**
+     * 要素のinnerHTMLから年表示を削除または復元する
+     * @param {HTMLElement} element - 対象の要素
+     * @param {boolean} hide - trueなら年を隠し、falseなら表示する
+     */
     function toggleYearDisplay(element, hide) {
+        // 元のHTMLを初回のみdatasetに保存
         if (!element.dataset.originalHtml) {
             element.dataset.originalHtml = element.innerHTML;
         }
-        element.innerHTML = hide ? element.dataset.originalHtml.replace(yearPattern, '') : element.dataset.originalHtml;
+        // 画面幅に応じて年を削除、または元のHTMLに戻す
+        element.innerHTML = hide ? element.dataset.originalHtml.replace(YEAR_PATTERN, '') : element.dataset.originalHtml;
     }
 
+    // 表示を更新するメインの関数
     function handleResize() {
-        const hideYear = window.innerWidth <= breakpoint;
-        document.querySelectorAll(targetSelector).forEach(element => {
-            toggleYearDisplay(element, hideYear);
-        });
+        const shouldHideYear = window.innerWidth <= BREAKPOINT;
+        dateElements.forEach(element => toggleYearDisplay(element, shouldHideYear));
     }
 
+    // 初期表示とリサイズ時に実行
     handleResize();
     window.addEventListener('resize', handleResize);
+}
+
+
+// =============================================================================
+// イベントリスナー登録エリア
+// ページの読み込み完了時に、定義済みの各機能を初期化します。
+// =============================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    initSlideshow();
+    initContentScrollers();
+    initDateDisplay();
 });
