@@ -11,6 +11,8 @@ from functools import wraps
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from urllib.parse import urlparse, urljoin
+
 app = Flask(__name__)
 
 # セッションの暗号化
@@ -93,15 +95,14 @@ def format_datetime(value, format='%Y年%m月%d日'):
 app.jinja_env.filters['strftime'] = format_datetime
 
 
-#ログインしているか確認する関数
+# ログインしているか確認する関数
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # セッションに 'user_id' が存在しない場合
+        session["url"] = request.url
         if 'user_id' not in session:
-            # /login のURLにリダイレクト
             return redirect(url_for('login'))
-        # 存在する場合は、元の関数（マイページ表示など）を実行
+            
         return f(*args, **kwargs)
     return decorated_function
 
@@ -1052,7 +1053,11 @@ def login():
                 'points': user[5]
             }
             session['user_id'] = user[0]
-            return redirect('/')
+            
+            if "url" in session:
+                return redirect(session.pop('url',None))
+            
+            return redirect(url_for('index')) 
         else:
             error = "メールアドレスまたはパスワードが正しくありません。"
             return render_template('login.html', error=error)
