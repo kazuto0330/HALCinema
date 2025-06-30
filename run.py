@@ -1090,6 +1090,7 @@ def pay():
 
 # 支払い処理のメインルート（修正版）
 # 支払い処理のメインルート（修正版）
+# 支払い処理のメインルート（デバッグ版）
 @app.route('/process_payment', methods=['POST'])
 def process_payment():
     try:
@@ -1103,6 +1104,7 @@ def process_payment():
             print(f"Warning: ユーザーがログインしていません。テスト用ユーザーID {user_id} を使用します。")
 
         data = request.get_json()
+        print(f"受信データ: {data}")
 
         if not data:
             return jsonify({
@@ -1111,7 +1113,33 @@ def process_payment():
             }), 400
 
         payment_method = data.get('payment_method')
-        amount = data.get('amount', 1800)  # デフォルト金額
+
+        # セッションから料金情報を取得（フロントエンドからの値より優先）
+        amount = session.get('total_amount')
+        seats = session.get('selected_seats', [])
+
+        print(f"セッション情報:")
+        print(f"  - total_amount: {amount}")
+        print(f"  - selected_seats: {seats}")
+        print(f"  - showing_id: {session.get('showing_id')}")
+
+        if not amount:
+            # セッションに料金情報がない場合はフロントエンドの値を使用
+            amount = data.get('amount', 1800)
+            print(f"Warning: セッションに料金情報がないため、フロントエンドの値を使用: {amount}円")
+        else:
+            print(f"セッションから料金情報を取得: {amount}円")
+
+        # 料金の妥当性再チェック
+        expected_amount = len(seats) * 1800 if seats else 1800
+        print(f"料金検証: 期待値={expected_amount}円, セッション={amount}円")
+
+        if seats and amount != expected_amount:
+            print(f"Warning: 料金不整合 - 座席数{len(seats)}席 × 1800円 = {expected_amount}円 ≠ {amount}円")
+            # セッションの料金を正しい値に修正
+            amount = expected_amount
+            session['total_amount'] = amount
+            print(f"料金を修正: {amount}円")
 
         if not payment_method:
             return jsonify({
@@ -1194,6 +1222,10 @@ def process_payment():
 
         # 支払い情報をデータベースに保存
         payment_data['status'] = payment_status
+        payment_data['amount'] = amount  # 正しい金額を追加
+        payment_data['seat_count'] = len(seats)  # 座席数も保存
+
+        print(f"データベース保存: user_id={user_id}, method={payment_method}, amount={amount}円")
         payment_id = save_payment_info(user_id, payment_method, payment_data, amount)
 
         if not payment_id:
@@ -1209,8 +1241,12 @@ def process_payment():
             'status': payment_status,
             'data': payment_data,
             'message': message,
-            'amount': amount
+            'amount': amount,  # セッションから取得した正しい金額を保存
+            'total_amount': amount,  # 明示的に total_amount も設定
+            'seat_count': len(seats)
         }
+
+        print(f"支払い処理完了: ID={payment_id}, 金額={amount}円, ステータス={payment_status}")
 
         return jsonify({
             'success': True,
@@ -1218,6 +1254,7 @@ def process_payment():
             'payment_id': payment_id,
             'payment_method': payment_method,
             'status': payment_status,
+            'amount': amount,
             'data': payment_data
         })
 
@@ -1255,9 +1292,20 @@ def pay_comp():
 
             # 料金の整合性をチェック
             expected_amount = len(seats) * 1800 if seats else 0
-            if total_amount != expected_amount:
-                print(f"料金の不整合: 期待値={expected_amount}, 実際={total_amount}")
-                payment_info['warning_message'] = f"料金に不整合があります。期待値: {expected_amount}円"
+            actual_amount = payment_info.get('amount', 0)
+
+            print(
+                f"料金チェック: 期待値={expected_amount}, 支払い情報の金額={actual_amount}, セッション金額={total_amount}")
+
+            # 支払い情報の金額を正しい値に更新
+            if total_amount and total_amount == expected_amount:
+                payment_info['amount'] = total_amount
+                payment_info['total_amount'] = total_amount
+                print(f"料金を修正: {total_amount}円")
+            elif actual_amount != expected_amount and expected_amount > 0:
+                print(f"料金の不整合: 期待値={expected_amount}, 実際={actual_amount}")
+                payment_info[
+                    'warning_message'] = f"料金に不整合があります。期待値: {expected_amount}円, 支払い済み: {actual_amount}円"
 
             # 座席情報と上映情報が揃っている場合のみ予約処理を実行
             if seats and showing_id and accountId:
