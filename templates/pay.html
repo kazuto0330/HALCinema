@@ -10,11 +10,26 @@
     {% include '_header.html' %}
 
     <main>
-        <h1>支払い方法を選択してください</h1>
-
-        <div class="payment-summary">
-            <h3>お支払い金額: ¥<span id="payment-amount">1,800</span></h3>
+        <div class="ticket">
+            <div class="ticket-header">
+                <h2>HAL CINEMA</h2>
+            </div>
+            <div class="ticket-body">
+                <h3>{{ showing_info.movieTitle }}</h3>
+                <p>スクリーン :  {{ showing_info.screenId }}</p>
+                <p>日時 :  {{ showing_info.scheduledScreeningDate.strftime('%Y/%m/%d') }} {{ showing_info.screeningStartTime }} ~</p>
+                <p>座席 :  {{ seats }}</p>
+            </div>
+            <div class="ticket-footer">
+                <p>上映ID: {{ showing_info.scheduledShowingId }}</p>
+            </div>
         </div>
+
+        <div class="confirmation-message">
+            <p>上記の内容でよろしければ、お支払い方法を選択してください。</p>
+        </div>
+
+        <h1>支払い方法を選択してください</h1>
 
         <form id="payment-form" class="payment-container">
             <div class="payment-method">

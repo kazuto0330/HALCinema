@@ -81,20 +81,65 @@ h1 {
     margin-bottom: 30px;
 }
 
-/* 支払い金額サマリー */
-.payment-summary {
-    background-color: #e8f5e8;
-    border: 1px solid #4caf50;
-    border-radius: 8px;
+/* チケット */
+.ticket {
+    width: 500px; /* 幅を広げる */
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin: 30px auto;
+    margin-bottom: 100px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #ddd;
+}
+
+.ticket-header {
+    background: #333;
+    color: #fff;
     padding: 15px;
-    margin-bottom: 30px;
     text-align: center;
 }
 
-.payment-summary h3 {
+.ticket-header h2 {
     margin: 0;
-    color: #2e7d32;
     font-size: 1.5em;
+    letter-spacing: 2px;
+}
+
+.ticket-body {
+    padding: 20px;
+    border-bottom: 1px dashed #ccc;
+}
+
+.ticket-body h3 {
+    font-size: 1.5em; /* 少し小さくしてバランスをとる */
+    margin-top: 0;
+    margin-bottom: 15px; /* 少しマージンを増やす */
+    color: #000; /* 黒にしてコントラストを強く */
+    font-weight: bold;
+    white-space: nowrap; /* テキストを1行に保つ */
+    overflow: hidden; /* はみ出した部分を隠す */
+    text-overflow: ellipsis; /* 省略記号(...)を表示 */
+}
+
+.ticket-body p {
+    margin: 10px 0; /* マージンを増やす */
+    font-size: 1.2em; /* 少し大きく */
+    color: #333;
+    font-weight: bold; /* 太字に */
+}
+
+.ticket-footer {
+    padding: 15px 20px;
+    background: #f5f5f5;
+    text-align: right;
+}
+
+.ticket-footer p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #777;
 }
 
 .payment-container {
@@ -397,4 +442,12 @@ label {
     margin: 20px 0;
     color: #2e7d32;
     font-size: 14px;
+}
+
+.confirmation-message {
+    text-align: center;
+    margin: -80px 0 30px;
+    font-size: 1.1em;
+    color: #333;
+    font-weight: bold;
 }
