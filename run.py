@@ -1015,17 +1015,18 @@ def pay():
 
 
 # 支払い処理のメインルート（修正版）
+# 支払い処理のメインルート（修正版）
 @app.route('/process_payment', methods=['POST'])
 def process_payment():
     try:
-        # セッションからユーザーIDを取得（テスト用に固定値も設定）
-        user_id = session.get('user_id', 2)
+        # セッションからユーザーIDを取得
+        user_id = session.get('user_id')
 
+        # ログインチェックを緩和（開発・テスト用）
         if not user_id:
-            return jsonify({
-                'success': False,
-                'message': 'ログインが必要です'
-            }), 401
+            # テスト用のデフォルトユーザーIDを設定
+            user_id = 2
+            print(f"Warning: ユーザーがログインしていません。テスト用ユーザーID {user_id} を使用します。")
 
         data = request.get_json()
 

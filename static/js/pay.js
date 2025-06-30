@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
-    // 支払い処理
+    // 支払い処理（改善版のエラーハンドリング）
     function processPayment() {
         const selectedMethod = document.querySelector('input[name="payment-method"]:checked').value;
         const amount = parseInt(document.getElementById('payment-amount').textContent.replace(',', ''));
@@ -407,10 +407,29 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(paymentData)
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(async response => {
+            const data = await response.json();
+
             hideLoadingOverlay();
             setButtonLoading(false);
+
+            // レスポンスのステータスコードをチェック
+            if (!response.ok) {
+                console.error('HTTP Error:', response.status, response.statusText);
+                console.error('Response data:', data);
+
+                if (response.status === 401) {
+                    // 認証エラーの場合
+                    showGeneralError('ログインが必要です。ログインページに移動してください。');
+                    // 必要に応じてログインページへリダイレクト
+                    // setTimeout(() => { window.location.href = '/login'; }, 2000);
+                    return;
+                } else if (response.status >= 500) {
+                    // サーバーエラーの場合
+                    showGeneralError('サーバーでエラーが発生しました。管理者に連絡してください。');
+                    return;
+                }
+            }
 
             if (data.success) {
                 // 支払い成功時の処理
@@ -423,8 +442,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             hideLoadingOverlay();
             setButtonLoading(false);
-            console.error('Error:', error);
-            showGeneralError('通信エラーが発生しました。しばらく後でもう一度お試しください。');
+            console.error('Network Error:', error);
+            showGeneralError('通信エラーが発生しました。インターネット接続を確認してからもう一度お試しください。');
         });
     }
 
