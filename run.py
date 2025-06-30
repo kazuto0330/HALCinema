@@ -797,7 +797,7 @@ def update_profile():
 
 @app.route('/movie_information/<int:movie_id>')
 def movie_information(movie_id):
-    try:
+
         with get_db_cursor() as cursor:
             if cursor is None:
                 return "サーバー接続に失敗しました", 500
@@ -844,9 +844,7 @@ def movie_information(movie_id):
                                    movie=movie,
                                    schedule=schedule_by_day)
 
-    except Exception as e:
-        print(f"Error in movie_information: {e}")
-        return "内部エラー", 500
+
 
 
 
