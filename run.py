@@ -802,36 +802,51 @@ def movie_information(movie_id):
             if cursor is None:
                 return "サーバー接続に失敗しました", 500
 
+            # 映画情報を取得
             cursor.execute("""
-                SELECT *
-                FROM t_movies
-                WHERE moviesId = %s
-            """, (movie_id,))
+                           SELECT moviesId,
+                                  movieTitle,
+                                  movieReleaseDate,
+                                  movieEndDate,
+                                  movieRunningTime,
+                                  movieSynopsis,
+                                  movieImage,
+                                  movieAudienceCount
+                           FROM t_movies
+                           WHERE moviesId = %s
+                           """, (movie_id,))
             movie = cursor.fetchone()
 
             if not movie:
                 return "映画が見つかりません", 404
 
+            # スケジュール情報を取得
             cursor.execute("""
-                SELECT screenId, scheduledScreeningDate, screeningStartTime
-                FROM t_scheduledShowing
-                WHERE moviesId = %s
-                ORDER BY scheduledScreeningDate ASC, screeningStartTime ASC
-            """, (movie_id,))
+                           SELECT ss.scheduledShowingId, ss.screenId, ss.scheduledScreeningDate, ss.screeningStartTime
+                           FROM t_scheduledShowing ss
+                           WHERE ss.moviesId = %s
+                           ORDER BY ss.scheduledScreeningDate ASC, ss.screeningStartTime ASC
+                           """, (movie_id,))
             schedules = cursor.fetchall()
 
+            # スケジュールを日付ごとにグループ化
             from collections import defaultdict
             schedule_by_day = defaultdict(list)
-            for s in schedules:
-                day = s['scheduledScreeningDate'].strftime('%Y-%m-%d (%a)')
-                schedule_by_day[day].append(s)
 
-            return render_template("movie_information.html", movie=movie, schedule=schedule_by_day)
+            for s in schedules:
+                # 日付を文字列形式で作成（例：2025-01-15 (Wed)）
+                date_str = s['scheduledScreeningDate'].strftime('%Y-%m-%d')
+                weekday = s['scheduledScreeningDate'].strftime('%a')
+                day_key = f"{date_str} ({weekday})"
+                schedule_by_day[day_key].append(s)
+
+            return render_template("movie_information.html",
+                                   movie=movie,
+                                   schedule=schedule_by_day)
 
     except Exception as e:
         print(f"Error in movie_information: {e}")
         return "内部エラー", 500
-
 
 
 
