@@ -55,7 +55,7 @@
                     {% set hours = (total_seconds // 3600)|int %}
                     {% set minutes = ((total_seconds % 3600) // 60)|int %}
                     <span class="time">{{ "%02d:%02d" % (hours, minutes) }}</span>
-                    <span class="status">○</span>
+                    <span class="status">{{ slot.reservationStatus }}</span>
                     <button type="button" class="submit-btn" onclick="location.href='/seat_reservation/{{ slot.scheduledShowingId }}'">予約</button>
                 </div>
                 {% endfor %}

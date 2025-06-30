@@ -796,52 +796,93 @@ def update_profile():
 
 @app.route('/movie_information/<int:movie_id>')
 def movie_information(movie_id):
+    from collections import defaultdict
 
-        with get_db_cursor() as cursor:
-            if cursor is None:
-                return "サーバー接続に失敗しました", 500
+    with get_db_cursor() as cursor:
+        if cursor is None:
+            return "サーバー接続に失敗しました", 500
 
-            # 映画情報を取得
-            cursor.execute("""
-                           SELECT moviesId,
-                                  movieTitle,
-                                  movieReleaseDate,
-                                  movieEndDate,
-                                  movieRunningTime,
-                                  movieSynopsis,
-                                  movieImage,
-                                  movieAudienceCount
-                           FROM t_movies
-                           WHERE moviesId = %s
-                           """, (movie_id,))
-            movie = cursor.fetchone()
+        # 映画情報を取得
+        cursor.execute("""
+                       SELECT moviesId,
+                              movieTitle,
+                              movieReleaseDate,
+                              movieEndDate,
+                              movieRunningTime,
+                              movieSynopsis,
+                              movieImage,
+                              movieAudienceCount
+                       FROM t_movies
+                       WHERE moviesId = %s
+                       """, (movie_id,))
+        movie = cursor.fetchone()
 
-            if not movie:
-                return "映画が見つかりません", 404
+        if not movie:
+            return "映画が見つかりません", 404
 
-            # スケジュール情報を取得
-            cursor.execute("""
-                           SELECT ss.scheduledShowingId, ss.screenId, ss.scheduledScreeningDate, ss.screeningStartTime
-                           FROM t_scheduledShowing ss
-                           WHERE ss.moviesId = %s
-                           ORDER BY ss.scheduledScreeningDate ASC, ss.screeningStartTime ASC
-                           """, (movie_id,))
-            schedules = cursor.fetchall()
+        # スケジュール情報を取得（screenId を取得）
+        cursor.execute("""
+                       SELECT ss.scheduledShowingId,
+                              ss.screenId,
+                              ss.scheduledScreeningDate,
+                              ss.screeningStartTime
+                       FROM t_scheduledShowing ss
+                       WHERE ss.moviesId = %s
+                       ORDER BY ss.scheduledScreeningDate ASC, ss.screeningStartTime ASC
+                       """, (movie_id,))
+        schedules = cursor.fetchall()
 
-            # スケジュールを日付ごとにグループ化
-            from collections import defaultdict
-            schedule_by_day = defaultdict(list)
+        # 各上映予定の予約数を取得
+        cursor.execute("""
+            SELECT scheduledShowingId, COUNT(*) AS reservedCount
+            FROM t_seatReservation
+            GROUP BY scheduledShowingId
+        """)
+        reserved_map = {row['scheduledShowingId']: row['reservedCount'] for row in cursor.fetchall()}
 
-            for s in schedules:
-                # 日付を文字列形式で作成（例：2025-01-15 (Wed)）
-                date_str = s['scheduledScreeningDate'].strftime('%Y-%m-%d')
-                weekday = s['scheduledScreeningDate'].strftime('%a')
-                day_key = f"{date_str} ({weekday})"
-                schedule_by_day[day_key].append(s)
+        # スクリーンIDごとの座席数を定義
+        seat_capacity_by_screen = {
+            1: 100,
+            2: 100,
+            3: 50,
+            4: 50,
+            5: 30,
+            6: 30
+        }
 
-            return render_template("movie_information.html",
-                                   movie=movie,
-                                   schedule=schedule_by_day)
+        # スケジュールを日付ごとにグループ化
+        schedule_by_day = defaultdict(list)
+
+        for s in schedules:
+            show_id = s['scheduledShowingId']
+            screen_id = s['screenId']
+            reserved = reserved_map.get(show_id, 0)
+            total_seats = seat_capacity_by_screen.get(screen_id, 0)
+
+            # 予約ステータスの判定
+            if total_seats == 0:
+                status = '?'
+            elif reserved >= total_seats:
+                status = '×'
+            elif reserved >= total_seats * 0.8:
+                status = '△'
+            else:
+                status = '○'
+
+            s['reservationStatus'] = status
+
+            # 日付キー（例：2025-01-15 (Wed)）
+            date_str = s['scheduledScreeningDate'].strftime('%Y-%m-%d')
+            weekday = s['scheduledScreeningDate'].strftime('%a')
+            day_key = f"{date_str} ({weekday})"
+
+            schedule_by_day[day_key].append(s)
+
+        return render_template("movie_information.html",
+                               movie=movie,
+                               schedule=schedule_by_day)
+
+
 
 
 
