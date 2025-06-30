@@ -7,14 +7,125 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pay_comp.css') }}">
 </head>
 <body>
-    <div class="container">
-        <div class="check-icon"></div>
-        <h1 class="title">支払いが完了しました</h1>
-        <p class="subtitle">
-            お支払いが正常に処理されました。<br>
-            ありがとうございました。
-        </p>
-        <button type="button" class="complete-button" onclick="location.href='/'">完了</button>
+    <div class="container {% if error_message %}error-container{% elif payment_info and payment_info.warning_message %}warning-container{% endif %}">
+
+        {% if error_message %}
+            <div class="check-icon error-icon"></div>
+            <h1 class="title">エラーが発生しました</h1>
+            <p class="subtitle">
+                申し訳ございません。<br>
+                処理中にエラーが発生しました。
+            </p>
+            <div class="error-message">
+                {{ error_message }}
+            </div>
+
+        {% elif payment_info %}
+            {% if payment_info.status == 'completed' %}
+                {% if payment_info.warning_message %}
+                    <div class="check-icon warning-icon"></div>
+                    <h1 class="title">支払いは完了しました</h1>
+                    <p class="subtitle">
+                        お支払いは正常に処理されましたが、<br>
+                        一部の処理で注意が必要です。
+                    </p>
+                    <div class="warning-message">
+                        {{ payment_info.warning_message }}
+                    </div>
+                {% else %}
+                    <div class="check-icon"></div>
+                    <h1 class="title">支払いが完了しました</h1>
+                    <p class="subtitle">
+                        お支払いが正常に処理されました。<br>
+                        ありがとうございました。
+                    </p>
+                {% endif %}
+
+                <div class="payment-details">
+                    <div class="detail-row">
+                        <span class="detail-label">支払い方法:</span>
+                        <span class="detail-value">
+                            {% if payment_info.payment_method == 'credit-card' %}
+                                クレジットカード
+                            {% elif payment_info.payment_method == 'convenience' %}
+                                コンビニ払い
+                            {% elif payment_info.payment_method == 'paypay' %}
+                                PayPay
+                            {% else %}
+                                {{ payment_info.payment_method }}
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">金額:</span>
+                        <span class="detail-value">¥{{ "{:,}".format(payment_info.amount) }}</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="detail-label">支払いID:</span>
+                        <span class="detail-value">{{ payment_info.payment_id }}</span>
+                    </div>
+
+                    {% if payment_info.payment_method == 'convenience' and payment_info.data.payment_number %}
+                        <div class="detail-row">
+                            <span class="detail-label">支払い番号:</span>
+                            <span class="detail-value">{{ payment_info.data.payment_number }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if payment_info.reserved_seats %}
+                    <div class="seats-info">
+                        <div class="detail-label">予約座席</div>
+                        <div class="seats-list">
+                            {% for seat in payment_info.reserved_seats %}
+                                <span class="seat-badge">{{ seat.row }}-{{ seat.seatNumber }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if payment_info.reservation_ids %}
+                    <div class="payment-details">
+                        <div class="detail-row">
+                            <span class="detail-label">予約番号:</span>
+                            <span class="detail-value">
+                                {% for id in payment_info.reservation_ids %}
+                                    {{ id }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+                    </div>
+                {% endif %}
+
+            {% else %}
+                <div class="check-icon error-icon"></div>
+                <h1 class="title">支払いが未完了です</h1>
+                <p class="subtitle">
+                    支払い処理に問題が発生しました。<br>
+                    再度お試しください。
+                </p>
+                <div class="error-message">
+                    支払い状況: {{ payment_info.status }}<br>
+                    {{ payment_info.message or "支払い処理が完了していません。" }}
+                </div>
+            {% endif %}
+
+        {% else %}
+            <div class="check-icon error-icon"></div>
+            <h1 class="title">支払い情報が見つかりません</h1>
+            <p class="subtitle">
+                支払い情報を取得できませんでした。<br>
+                最初から操作をやり直してください。
+            </p>
+        {% endif %}
+
+        {% if payment_info and payment_info.status == 'completed' %}
+            <button type="button" class="complete-button" onclick="location.href='/'">トップページに戻る</button>
+        {% else %}
+            <button type="button" class="complete-button" onclick="location.href='/pay'">支払いページに戻る</button>
+        {% endif %}
     </div>
 
     <script src="{{ url_for('static', filename='js/pay_comp.js') }}"></script>
