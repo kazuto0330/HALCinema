@@ -1091,6 +1091,7 @@ def pay():
 # 支払い処理のメインルート（修正版）
 # 支払い処理のメインルート（修正版）
 # 支払い処理のメインルート（デバッグ版）
+# 支払い処理のメインルート（デバッグ版）
 @app.route('/process_payment', methods=['POST'])
 def process_payment():
     try:
@@ -1171,13 +1172,17 @@ def process_payment():
                 }
 
                 # 実際の決済処理のシミュレーション
-                import random
-                if random.random() > 0.1:  # 90%の確率で成功
-                    payment_status = 'completed'
-                    message = 'クレジットカード決済が完了しました'
-                else:
-                    payment_status = 'failed'
-                    message = 'クレジットカード決済に失敗しました'
+                # import random
+                # if random.random() > 0.1:  # 90%の確率で成功
+                #     payment_status = 'completed'
+                #     message = 'クレジットカード決済が完了しました'
+                # else:
+                #     payment_status = 'failed'
+                #     message = 'クレジットカード決済に失敗しました'
+
+                # テスト用に常に成功にする
+                payment_status = 'completed'
+                message = 'クレジットカード決済が完了しました'
 
         elif payment_method == 'convenience':
             phone_number = data.get('phone_number', '')
