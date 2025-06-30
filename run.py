@@ -1174,8 +1174,16 @@ def pay_comp():
             accountId = session.get('user_id')  # 'accountId'ではなく'user_id'を使用
             seats = session.get('selected_seats', [])
             showing_id = session.get('showing_id')
+            total_amount = session.get('total_amount', 0)
 
-            print(f"予約処理開始: accountId={accountId}, seats={seats}, showing_id={showing_id}")
+            print(
+                f"予約処理開始: accountId={accountId}, seats={seats}, showing_id={showing_id}, total_amount={total_amount}")
+
+            # 料金の整合性をチェック
+            expected_amount = len(seats) * 1800 if seats else 0
+            if total_amount != expected_amount:
+                print(f"料金の不整合: 期待値={expected_amount}, 実際={total_amount}")
+                payment_info['warning_message'] = f"料金に不整合があります。期待値: {expected_amount}円"
 
             # 座席情報と上映情報が揃っている場合のみ予約処理を実行
             if seats and showing_id and accountId:
@@ -1222,10 +1230,12 @@ def pay_comp():
                     # 登録成功したらセッションの座席情報をクリア
                     session.pop('selected_seats', None)
                     session.pop('showing_id', None)
+                    session.pop('total_amount', None)
 
                     # 予約情報を支払い情報に追加
                     payment_info['reservation_ids'] = reservation_ids
                     payment_info['reserved_seats'] = seats
+                    payment_info['total_amount'] = total_amount
 
                 except mysql.connector.Error as db_error:
                     if conn:
@@ -1263,7 +1273,6 @@ def pay_comp():
         return render_template("pay_comp.html",
                                payment_info=session.get('last_payment'),
                                error_message="ページの表示中にエラーが発生しました。")
-
 
 
 # 支払い状況確認API
