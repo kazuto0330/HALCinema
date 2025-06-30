@@ -169,8 +169,6 @@ function initContentScrollers() {
     
     // リサイズ時に全画像の表示を更新
     window.addEventListener('resize', updateAllImagesOnPage);
-    // 初期ロード時にも実行して現在の状態を反映
-    updateAllImagesOnPage();
 }
 
 /**
@@ -217,6 +215,16 @@ function initDateDisplay() {
 // =============================================================================
 document.addEventListener('DOMContentLoaded', () => {
     initSlideshow();
-    initContentScrollers();
     initDateDisplay();
 });
+
+window.addEventListener('load', () => {
+    initContentScrollers();
+});
+
+// =============================================================================
+// 補足
+// - 各機能は独立しており、HTML構造に依存する部分があります。
+//   HTMLを変更した際は、このスクリプトのセレクタ等も合わせて修正が必要です。
+// - エラーハンドリングは最小限です。本番環境ではより堅牢なチェックを推奨します。
+// =============================================================================
