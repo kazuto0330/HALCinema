@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingOverlay = document.getElementById('loading-overlay');
     const generalErrorsDiv = document.getElementById('general-errors');
 
+    // セッションストレージから料金情報を取得して表示を更新
+    updatePaymentAmount();
+
     // 支払い方法の切り替え処理
     paymentMethods.forEach(method => {
         method.addEventListener('change', function() {
@@ -376,15 +379,20 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
-    // 支払い処理
+    // 支払い処理（改善版のエラーハンドリング）
     function processPayment() {
         const selectedMethod = document.querySelector('input[name="payment-method"]:checked').value;
-        const amount = parseInt(document.getElementById('payment-amount').textContent.replace(',', ''));
+
+        // セッションから料金を取得（サーバー側で再度チェックされる）
+        const amount = sessionStorage.getItem('totalAmount');
+        const amountNum = amount ? parseInt(amount) : 1800;
 
         let paymentData = {
-            payment_method: selectedMethod,
-            amount: amount
+            payment_method: selectedMethod
+            // 料金はサーバー側のセッションから取得するため送信しない
         };
+
+        console.log(`支払い処理開始: 方法=${selectedMethod}, 金額=${amountNum}円`);
 
         // 支払い方法別のデータ収集
         if (selectedMethod === 'credit-card') {
@@ -407,10 +415,29 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(paymentData)
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(async response => {
+            const data = await response.json();
+
             hideLoadingOverlay();
             setButtonLoading(false);
+
+            // レスポンスのステータスコードをチェック
+            if (!response.ok) {
+                console.error('HTTP Error:', response.status, response.statusText);
+                console.error('Response data:', data);
+
+                if (response.status === 401) {
+                    // 認証エラーの場合
+                    showGeneralError('ログインが必要です。ログインページに移動してください。');
+                    // 必要に応じてログインページへリダイレクト
+                    // setTimeout(() => { window.location.href = '/login'; }, 2000);
+                    return;
+                } else if (response.status >= 500) {
+                    // サーバーエラーの場合
+                    showGeneralError('サーバーでエラーが発生しました。管理者に連絡してください。');
+                    return;
+                }
+            }
 
             if (data.success) {
                 // 支払い成功時の処理
@@ -423,8 +450,8 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             hideLoadingOverlay();
             setButtonLoading(false);
-            console.error('Error:', error);
-            showGeneralError('通信エラーが発生しました。しばらく後でもう一度お試しください。');
+            console.error('Network Error:', error);
+            showGeneralError('通信エラーが発生しました。インターネット接続を確認してからもう一度お試しください。');
         });
     }
 
@@ -509,5 +536,64 @@ document.addEventListener('DOMContentLoaded', function() {
 
         generalErrorsDiv.appendChild(errorDiv);
         generalErrorsDiv.style.display = 'block';
+    }
+
+    // セッションストレージから料金情報を取得して表示を更新する関数
+    function updatePaymentAmount() {
+        try {
+            const totalAmount = sessionStorage.getItem('totalAmount');
+            const selectedSeats = sessionStorage.getItem('selectedSeats');
+
+            if (totalAmount) {
+                const amount = parseInt(totalAmount);
+                const paymentAmountElement = document.getElementById('payment-amount');
+
+                if (paymentAmountElement) {
+                    paymentAmountElement.textContent = amount.toLocaleString();
+                    console.log('支払い金額を更新:', amount);
+                }
+
+                // 座席情報も表示に追加
+                if (selectedSeats) {
+                    const seats = JSON.parse(selectedSeats);
+                    addSeatInfoToPayment(seats, amount);
+                }
+            } else {
+                console.warn('セッションストレージに料金情報がありません');
+            }
+        } catch (error) {
+            console.error('料金情報の取得に失敗:', error);
+        }
+    }
+
+    // 座席情報を支払い画面に追加する関数
+    function addSeatInfoToPayment(seats, totalAmount) {
+        const paymentSummary = document.querySelector('.payment-summary');
+
+        // 既存の座席情報があれば削除
+        const existingSeatInfo = document.getElementById('seat-info');
+        if (existingSeatInfo) {
+            existingSeatInfo.remove();
+        }
+
+        const seatInfoDiv = document.createElement('div');
+        seatInfoDiv.id = 'seat-info';
+        seatInfoDiv.innerHTML = `
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #dee2e6;">
+                <h4 style="margin: 0 0 10px 0; color: #495057; font-size: 14px;">選択座席</h4>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+                    ${seats.map(seat => 
+                        `<span style="background: #007bff; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold;">
+                            ${seat.row}-${seat.seatNumber}
+                        </span>`
+                    ).join('')}
+                </div>
+                <div style="font-size: 12px; color: #6c757d;">
+                    ${seats.length}席 × ¥1,800 = ¥${totalAmount.toLocaleString()}
+                </div>
+            </div>
+        `;
+
+        paymentSummary.appendChild(seatInfoDiv);
     }
 });

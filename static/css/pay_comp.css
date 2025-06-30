@@ -1,4 +1,4 @@
-<!-- style.css -->
+/* pay_comp.css - 強化版 */
 * {
     margin: 0;
     padding: 0;
@@ -21,9 +21,20 @@ body {
     padding: 50px 40px;
     text-align: center;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
+    max-width: 500px;
     width: 100%;
     animation: slideUp 0.6s ease-out;
+}
+
+/* エラー・警告時のコンテナスタイル */
+.error-container {
+    background: #ffebee;
+    border: 2px solid #f44336;
+}
+
+.warning-container {
+    background: #fff8e1;
+    border: 2px solid #ff9800;
 }
 
 @keyframes slideUp {
@@ -49,6 +60,15 @@ body {
     animation: checkPop 0.8s ease-out 0.2s both;
 }
 
+/* エラー・警告アイコンのスタイル */
+.error-icon {
+    background: #f44336;
+}
+
+.warning-icon {
+    background: #ff9800;
+}
+
 @keyframes checkPop {
     0% {
         transform: scale(0);
@@ -68,6 +88,20 @@ body {
     font-weight: bold;
 }
 
+.error-icon::after {
+    content: '✕';
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.warning-icon::after {
+    content: '⚠';
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+}
+
 .title {
     font-size: 28px;
     color: #333;
@@ -82,6 +116,82 @@ body {
     line-height: 1.5;
 }
 
+/* 支払い詳細情報 */
+.payment-details {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 14px;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.detail-label {
+    font-weight: bold;
+    color: #333;
+}
+
+.detail-value {
+    color: #666;
+}
+
+/* エラー・警告メッセージ */
+.error-message, .warning-message {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    font-size: 14px;
+    text-align: left;
+}
+
+.error-message {
+    background: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* 座席情報 */
+.seats-info {
+    background: #e3f2fd;
+    border: 1px solid #2196f3;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.seats-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    justify-content: center;
+}
+
+.seat-badge {
+    background: #2196f3;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
 .complete-button {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -93,6 +203,7 @@ body {
     transition: all 0.3s ease;
     font-weight: 600;
     min-width: 150px;
+    margin-top: 20px;
 }
 
 .complete-button:hover {
@@ -104,9 +215,47 @@ body {
     transform: translateY(0);
 }
 
+/* パルスアニメーション */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(76, 175, 80, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    }
+}
+
+/* 動的に追加される案内情報のスタイル */
+.instructions-container {
+    background: #f0f7ff;
+    border: 1px solid #2196f3;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.instructions-title {
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #1976d2;
+}
+
+.instructions-content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* レスポンシブデザイン */
 @media (max-width: 480px) {
     .container {
         padding: 40px 30px;
+        max-width: 90%;
     }
 
     .title {
@@ -115,5 +264,35 @@ body {
 
     .subtitle {
         font-size: 14px;
+    }
+
+    .detail-row {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .payment-details {
+        padding: 15px;
+    }
+
+    .check-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .check-icon::after,
+    .error-icon::after,
+    .warning-icon::after {
+        font-size: 30px;
+    }
+
+    .seats-list {
+        justify-content: flex-start;
+    }
+
+    .complete-button {
+        padding: 12px 30px;
+        font-size: 14px;
+        min-width: 120px;
     }
 }

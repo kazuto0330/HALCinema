@@ -111,7 +111,6 @@ def login_required(f):
 #ヘッダーに表示するデータを取得
 @app.context_processor
 def inject_user():
-    # session['user_id'] = 111
     if 'user_id' in session:
         user_id = session.get('user_id')
         sql = """
@@ -1008,24 +1007,100 @@ def login():
     return render_template('login.html')
 
 
+
+def inject_useraaaaa():
+    if 'user_id' in session:
+        user_id = session.get('user_id')
+        sql = """
+                SELECT
+                    accountName,
+                    emailAddress,
+                    accountIcon
+                FROM
+                    t_account
+                WHERE
+                    accountId = %s;
+        """
+        user_info = []
+        try:
+            with get_db_cursor() as cursor:
+                if cursor is None:
+                    print("カーソルの取得に失敗しました。")
+                    return []
+                
+                cursor.execute(sql, (user_id,))
+                user_info = cursor.fetchone()
+                print(user_info)
+
+                # ここで返した辞書が、すべてのテンプレートのコンテキストに追加される
+                return dict(user_data=user_info)
+
+        except mysql.connector.Error:
+            return dict(user_data=None)
+    else:
+        return dict(user_data=None)
+
+
 # pay画面
 @app.route('/pay')
 def pay():
-    return render_template("pay.html")
+    session['selected_seats'] = "A12"
+    session['showing_id'] = 1
+    seats = session['selected_seats']
+    showing_id = session['showing_id']
+    
+    sql = """
+        SELECT
+            ss.scheduledShowingId,
+            ss.moviesId,
+            ss.screenId,
+            ss.scheduledScreeningDate,
+            ss.screeningStartTime,
+            m.movieTitle,
+            m.movieImage,
+            m.movieRunningTime,
+            s.screenType
+        FROM
+            t_scheduledshowing AS ss
+        JOIN
+            t_movies AS m ON ss.moviesId = m.moviesId
+        JOIN
+            t_screen AS s ON ss.screenId = s.screenId
+        WHERE
+            ss.scheduledShowingId = %s;
+        """
+    showing_info = []
+    try:
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                return []
+            
+            cursor.execute(sql, (showing_id,))
+            showing_info = cursor.fetchone()
+            print(showing_info)
+            return render_template("pay.html",seats=seats,showing_info=showing_info)
+
+    except mysql.connector.Error:
+        return render_template("pay.html",seats=seats,showing_id=showing_id)
+
+    
+    # return render_template("pay.html",seats=seats,showing_id=showing_id)
 
 
+# 支払い処理のメインルート（修正版）
 # 支払い処理のメインルート（修正版）
 @app.route('/process_payment', methods=['POST'])
 def process_payment():
     try:
-        # セッションからユーザーIDを取得（テスト用に固定値も設定）
-        user_id = session.get('user_id', 2)
+        # セッションからユーザーIDを取得
+        user_id = session.get('user_id')
 
+        # ログインチェックを緩和（開発・テスト用）
         if not user_id:
-            return jsonify({
-                'success': False,
-                'message': 'ログインが必要です'
-            }), 401
+            # テスト用のデフォルトユーザーIDを設定
+            user_id = 2
+            print(f"Warning: ユーザーがログインしていません。テスト用ユーザーID {user_id} を使用します。")
 
         data = request.get_json()
 
@@ -1156,58 +1231,122 @@ def process_payment():
 
 @app.route('/pay_comp')
 def pay_comp():
-    # セッションから支払い情報を取得
-    payment_info = session.get('last_payment')
-    print("アクセス")
+    try:
+        # セッションから支払い情報を取得
+        payment_info = session.get('last_payment')
+        print("支払い完了ページにアクセス")
+        print(f"Payment info: {payment_info}")
 
-    if not payment_info:
-        # 支払い情報がない場合は支払いページにリダイレクト
-        return redirect(url_for('pay'))
+        if not payment_info:
+            # 支払い情報がない場合は支払いページにリダイレクト
+            print("支払い情報が見つかりません。支払いページにリダイレクトします。")
+            return redirect(url_for('pay'))
 
-    # 支払いステータスが完了なら予約確定処理を実行
-    if payment_info.get('status') == 'completed':
-        accountId = session.get('accountId')
-        seats = session.get('selected_seats', [])
-        showing_id = session.get('showing_id')
+        # 支払いステータスが完了なら予約確定処理を実行
+        if payment_info.get('status') == 'completed':
+            # セッションから正しいキーでユーザーIDを取得
+            accountId = session.get('user_id')  # 'accountId'ではなく'user_id'を使用
+            seats = session.get('selected_seats', [])
+            showing_id = session.get('showing_id')
+            total_amount = session.get('total_amount', 0)
 
-        if seats and showing_id:
-            conn = conn_db()
-            cursor = conn.cursor()
+            print(
+                f"予約処理開始: accountId={accountId}, seats={seats}, showing_id={showing_id}, total_amount={total_amount}")
 
-            try:
-                cursor.execute("SELECT MAX(seatReservationId) FROM t_seatReservation")
-                max_id = cursor.fetchone()[0]
-                next_id = int(max_id) + 1 if max_id else 1
+            # 料金の整合性をチェック
+            expected_amount = len(seats) * 1800 if seats else 0
+            if total_amount != expected_amount:
+                print(f"料金の不整合: 期待値={expected_amount}, 実際={total_amount}")
+                payment_info['warning_message'] = f"料金に不整合があります。期待値: {expected_amount}円"
 
-                for seat in seats:
-                    seat_label = f"{seat.get('row')}-{seat.get('seatNumber')}"
-                    seatReservationId = f"{next_id:05}"
-                    next_id += 1
-                    print(f"予約登録: seatReservationId={seatReservationId}, showing_id={showing_id}, accountId={accountId}, seat_label={seat_label}")
+            # 座席情報と上映情報が揃っている場合のみ予約処理を実行
+            if seats and showing_id and accountId:
+                conn = None
+                cursor = None
+                try:
+                    conn = conn_db()
+                    if conn is None:
+                        print("データベース接続に失敗しました")
+                        return render_template("pay_comp.html",
+                                               payment_info=payment_info,
+                                               error_message="データベース接続エラーが発生しました")
 
-                    cursor.execute("""
-                        INSERT INTO t_seatReservation (seatReservationId, scheduledShowingId, accountId, seatNumber)
-                        VALUES (%s, %s, %s, %s)
-                    """, (seatReservationId, showing_id, accountId, seat_label))
+                    cursor = conn.cursor()
 
-                conn.commit()
+                    # 最大IDを取得（数値として）
+                    cursor.execute("SELECT MAX(CAST(seatReservationId AS UNSIGNED)) FROM t_seatReservation")
+                    result = cursor.fetchone()
+                    max_id = result[0] if result[0] is not None else 0
+                    next_id = max_id + 1
 
-                # 登録成功したらセッションの座席情報をクリア
-                session.pop('selected_seats', None)
-                session.pop('showing_id', None)
+                    print(f"最大予約ID: {max_id}, 次のID: {next_id}")
 
-            except Exception as e:
-                conn.rollback()
-                print("予約DB登録失敗:", e)
-                # ここでエラーメッセージを画面に渡しても良い
-                return "予約処理でエラーが発生しました。管理者に連絡してください。", 500
+                    # 各座席の予約を登録
+                    reservation_ids = []
+                    for seat in seats:
+                        seat_label = f"{seat.get('row')}-{seat.get('seatNumber')}"
+                        seatReservationId = f"{next_id:05d}"  # 5桁の文字列として保存
 
-            finally:
-                cursor.close()
-                conn.close()
+                        print(
+                            f"予約登録: seatReservationId={seatReservationId}, showing_id={showing_id}, accountId={accountId}, seat_label={seat_label}")
 
-    return render_template("pay_comp.html", payment_info=payment_info)
+                        cursor.execute("""
+                                       INSERT INTO t_seatReservation (seatReservationId, scheduledShowingId, accountId, seatNumber)
+                                       VALUES (%s, %s, %s, %s)
+                                       """, (seatReservationId, showing_id, accountId, seat_label))
 
+                        reservation_ids.append(seatReservationId)
+                        next_id += 1
+
+                    conn.commit()
+                    print(f"予約登録完了: {reservation_ids}")
+
+                    # 登録成功したらセッションの座席情報をクリア
+                    session.pop('selected_seats', None)
+                    session.pop('showing_id', None)
+                    session.pop('total_amount', None)
+
+                    # 予約情報を支払い情報に追加
+                    payment_info['reservation_ids'] = reservation_ids
+                    payment_info['reserved_seats'] = seats
+                    payment_info['total_amount'] = total_amount
+
+                except mysql.connector.Error as db_error:
+                    if conn:
+                        conn.rollback()
+                    print(f"予約DB登録失敗: {db_error}")
+                    return render_template("pay_comp.html",
+                                           payment_info=payment_info,
+                                           error_message="予約処理でエラーが発生しました。カスタマーサポートに連絡してください。")
+
+                except Exception as e:
+                    if conn:
+                        conn.rollback()
+                    print(f"予約処理で予期しないエラー: {e}")
+                    return render_template("pay_comp.html",
+                                           payment_info=payment_info,
+                                           error_message="予約処理で予期しないエラーが発生しました。")
+
+                finally:
+                    if cursor:
+                        cursor.close()
+                    if conn and conn.is_connected():
+                        conn.close()
+            else:
+                print(
+                    f"予約に必要な情報が不足: seats={bool(seats)}, showing_id={bool(showing_id)}, accountId={bool(accountId)}")
+                # 座席情報がない場合でも支払い完了画面は表示
+                if not seats or not showing_id:
+                    payment_info['warning_message'] = "座席予約情報が見つかりませんでした。支払いは完了していますが、座席予約の確認はカスタマーサポートまでお問い合わせください。"
+
+        return render_template("pay_comp.html", payment_info=payment_info)
+
+    except Exception as e:
+        print(f"pay_comp関数で予期しないエラー: {e}")
+        # エラーが発生した場合でも、最低限の情報で画面を表示
+        return render_template("pay_comp.html",
+                               payment_info=session.get('last_payment'),
+                               error_message="ページの表示中にエラーが発生しました。")
 
 
 # 支払い状況確認API
