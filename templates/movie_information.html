@@ -12,29 +12,30 @@
     {% include '_header.html' %}
     <main>
         <section class="movieCard">
-            <img src="{{ url_for('static', filename='images/' ~ movie.poster_filename) }}"
-            alt="{{ movie.title }} のポスター"
+            <img src="{{ url_for('static', filename='images/movie/200h/' ~ movie.movieImage) }}"
+            alt="{{ movie.movieTitle }} のポスター"
             class="moviePoster">
 
             <div class="movieInfo">
-                <h2 class="movieTitle">{{ movie.title }}</h2>
-                <p class="movieRelease">公開日: {{ movie.release_date }}</p>
-                <p class="movieDescription">{{ movie.description }}</p>
-                <p class="movieTime">上映時間; {{ movie.duration }}分</p>
+                <h2 class="movieTitle">{{ movie.movieTitle }}</h2>
+                <p class="movieRelease">公開日: {{ movie.movieReleaseDate|strftime('%Y年%m月%d日') }}</p>
+                <p class="movieRelease">終了日: {{ movie.movieEndDate|strftime('%Y年%m月%d日') }}</p>
+                <p class="movieDescription">{{ movie.movieSynopsis }}</p>
+                <p class="movieTime">上映時間: {{ movie.movieRunningTime }}分</p>
             </div>
         </section>
 
         <section class="scheduleSection">
             <h2>上映スケジュール</h2>
             <div class="scheduleGrid">
-            {% for day in ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] %}
-                <div class="dayCard {{ day }}">
+            {% for day, schedules in schedule.items() %}
+                <div class="dayCard" onclick="showSchedule('{{ day }}')">
                     <div class="date">
-                        <span class="month">{{ schedule_by_day[day][0].date.strftime('%m/') if schedule_by_day[day] else '' }}</span>
-                        <span class="day">{{ schedule_by_day[day][0].date.strftime('%d') if schedule_by_day[day] else '' }}</span>
+                        <span class="month">{{ day.split(' ')[0].split('-')[1] }}/</span>
+                        <span class="day">{{ day.split(' ')[0].split('-')[2] }}</span>
                     </div>
                     <div class="weekdayBox">
-                        {{ day }}
+                        {{ day.split(' ')[1].strip('()') }}
                     </div>
                 </div>
             {% endfor %}
@@ -43,16 +44,19 @@
 
         <section>
             <!-- スケジュール一覧（曜日順で動的に出力） -->
-            {% for week, info in schedule.items() %}
-            <div class="reservationSchedule hidden" id="schedule-{{ week }}">
-                <h2>{{ info.month }}/{{ info.day }}({{ info.week }})　　　　　　　　　　　　　　　　　予約状況</h2>
+            {% for day, schedules in schedule.items() %}
+            <div class="reservationSchedule hidden" id="schedule-{{ loop.index }}">
+                <h2>{{ day }}　予約状況</h2>
                 <hr>
-                {% for slot in info.slots %}
+                {% for slot in schedules %}
                 <div class="slot">
-                    <span class="label">{{ slot.label }}</span>
-                    <span class="time">{{ slot.time }}</span>
-                    <span class="status">{{ slot.status }}</span>
-                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation'">予約</button>
+                    <span class="label">{{ slot.screenId }}</span>
+                    {% set total_seconds = slot.screeningStartTime.total_seconds() %}
+                    {% set hours = (total_seconds // 3600)|int %}
+                    {% set minutes = ((total_seconds % 3600) // 60)|int %}
+                    <span class="time">{{ "%02d:%02d" % (hours, minutes) }}</span>
+                    <span class="status">{{ slot.reservationStatus }}</span>
+                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation/{{ slot.scheduledShowingId }}'">予約</button>
                 </div>
                 {% endfor %}
             </div>
@@ -66,7 +70,22 @@
     {% include '_footer.html' %}
 </body>
 
-<script src="{{ url_for('static', filename='js/movie_information.js') }}"></script>
+<script>
+function showSchedule(day) {
+    // 全てのスケジュールを非表示
+    const schedules = document.querySelectorAll('.reservationSchedule');
+    schedules.forEach(schedule => schedule.classList.add('hidden'));
 
+    // 選択された日のスケジュールを表示
+    const dayIndex = Array.from(document.querySelectorAll('.dayCard')).findIndex(card =>
+        card.onclick.toString().includes(day)
+    ) + 1;
+
+    const targetSchedule = document.getElementById(`schedule-${dayIndex}`);
+    if (targetSchedule) {
+        targetSchedule.classList.remove('hidden');
+    }
+}
+</script>
 
 </html>
