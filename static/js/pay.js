@@ -551,6 +551,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (paymentAmountElement) {
                     paymentAmountElement.textContent = amount.toLocaleString();
                     console.log('支払い金額を更新:', amount);
+                } else {
+                    console.warn('payment-amount要素が見つかりません');
                 }
 
                 // 座席情報も表示に追加
@@ -559,7 +561,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     addSeatInfoToPayment(seats, amount);
                 }
             } else {
-                console.warn('セッションストレージに料金情報がありません');
+                console.warn('セッションストレージに料金情報がありません。デフォルト値(1800円)を使用します。');
+                const paymentAmountElement = document.getElementById('payment-amount');
+                if (paymentAmountElement && paymentAmountElement.textContent === '1,800') {
+                    // デフォルト値がすでに設定されている場合はそのまま使用
+                    console.log('デフォルト値を使用: 1,800円');
+                }
             }
         } catch (error) {
             console.error('料金情報の取得に失敗:', error);
@@ -569,6 +576,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // 座席情報を支払い画面に追加する関数
     function addSeatInfoToPayment(seats, totalAmount) {
         const paymentSummary = document.querySelector('.payment-summary');
+
+        if (!paymentSummary) {
+            console.warn('payment-summary要素が見つかりません');
+            return;
+        }
 
         // 既存の座席情報があれば削除
         const existingSeatInfo = document.getElementById('seat-info');
