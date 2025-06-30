@@ -12,6 +12,7 @@ from functools import wraps
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 from urllib.parse import urlparse, urljoin
 
 app = Flask(__name__)
@@ -807,116 +808,45 @@ def update_profile():
             conn.close()
 
 
-# movie_information画面
 @app.route('/movie_information/<int:movie_id>')
 def movie_information(movie_id):
-    movie_db = {
-        1: {
-            "title": "名探偵コナン<br>隻眼の残像",
-            "release": "2025年6月1日",
-            "poster": "images/conan.png",
-            "description": (
-            "敢助の左眼をかすめ、大きな地響きとともに雪崩が発生。そのまま敢助を飲み込んでしまい......。"
-            "10カ月後。国立天文台野辺山の施設研究員が何者かに襲われたという通報を受け、"
-            "雪崩から奇跡的に生還した敢助と、上原由衣が現場へ駆けつけた。"
-            ),
-            "duration": "110分",
-            "schedule": {
-                "Mon": {
-                    "month": "11",
-                    "day": "11",
-                    "week": "Mon",
-                    "slots": [
-                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "B", "time": "11:00〜13:00", "status": "✕"},
-                        {"label": "D", "time": "10:00〜12:00", "status": "△"},
-                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "E", "time": "10:00〜12:00", "status": "✕"},
-                    ]
-                },
-                "Tue": {
-                    "month": "11",
-                    "day": "12",
-                    "week": "Tue",
-                    "slots": [
-                        {"label": "A", "time": "10:00〜12:00", "status": "△"},
-                        {"label": "B", "time": "11:00〜13:00", "status": "✕"},
-                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
-                    ]
-                },
-                "Wed": {
-                    "month": "11",
-                    "day": "13",
-                    "week": "Wed",
-                    "slots": [
-                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "B", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
-                    ]
-                },
-                "Thu": {
-                    "month": "11",
-                    "day": "14",
-                    "week": "Thu",
-                    "slots": [
-                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "B", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
-                    ]
-                },
-                "Fri": {
-                    "month": "11",
-                    "day": "15",
-                    "week": "Fri",
-                    "slots": [
-                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "B", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
-                    ]
-                },
-                "Sat": {
-                    "month": "11",
-                    "day": "16",
-                    "week": "Sat",
-                    "slots": [
-                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "B", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
-                    ]
-                },
-                "Sun": {
-                    "month": "11",
-                    "day": "17",
-                    "week": "Sun",
-                    "slots": [
-                        {"label": "A", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "B", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "D", "time": "10:00〜12:00", "status": "〇"},
-                        {"label": "C", "time": "11:00〜13:00", "status": "〇"},
-                        {"label": "E", "time": "10:00〜12:00", "status": "〇"},
-                    ]
-                },
-            }
-        }
-    }
+    try:
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                return "サーバー接続に失敗しました", 500
 
-    def get_movie_by_id(movie_id):
-        return movie_db.get(movie_id)
+            cursor.execute("""
+                SELECT *
+                FROM t_movies
+                WHERE moviesId = %s
+            """, (movie_id,))
+            movie = cursor.fetchone()
 
-    movie = get_movie_by_id(movie_id)
-    if movie is None:
-        return "映画が見つかりません", 404
-    return render_template("movie_information.html", movie=movie)
+            if not movie:
+                return "映画が見つかりません", 404
+
+            cursor.execute("""
+                SELECT screenId, scheduledScreeningDate, screeningStartTime
+                FROM t_scheduledShowing
+                WHERE moviesId = %s
+                ORDER BY scheduledScreeningDate ASC, screeningStartTime ASC
+            """, (movie_id,))
+            schedules = cursor.fetchall()
+
+            from collections import defaultdict
+            schedule_by_day = defaultdict(list)
+            for s in schedules:
+                day = s['scheduledScreeningDate'].strftime('%Y-%m-%d (%a)')
+                schedule_by_day[day].append(s)
+
+            return render_template("movie_information.html", movie=movie, schedule=schedule_by_day)
+
+    except Exception as e:
+        print(f"Error in movie_information: {e}")
+        return "内部エラー", 500
+
+
+
 
 
 # guide画面

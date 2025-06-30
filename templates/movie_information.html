@@ -12,36 +12,42 @@
     {% include '_header.html' %}
     <main>
         <section class="movieCard">
-            <img src="{{ url_for('static', filename=movie.poster) }}" alt="{{ movie.title }}のポスター" class="moviePoster">
+            <img src="{{ url_for('static', filename='images/' ~ movie.poster_filename) }}"
+            alt="{{ movie.title }} のポスター"
+            class="moviePoster">
+
             <div class="movieInfo">
-                <h2 class="movieTitle">{{ movie.title|safe }}</h2>
-                <p class="movieRelease">公開日: {{ movie.release }}</p>
+                <h2 class="movieTitle">{{ movie.title }}</h2>
+                <p class="movieRelease">公開日: {{ movie.release_date }}</p>
                 <p class="movieDescription">{{ movie.description }}</p>
-                <p class="movieTime">上映時間 : {{ movie.duration }}</p>
+                <p class="movieTime">上映時間; {{ movie.duration }}分</p>
             </div>
         </section>
 
         <section class="scheduleSection">
             <h2>上映スケジュール</h2>
             <div class="scheduleGrid">
-                {% for day_key, day_info in movie.schedule.items() %}
-                <div class="dayCard {{ day_key }}">
+            {% for day in ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] %}
+                <div class="dayCard {{ day }}">
                     <div class="date">
-                        <span class="month">{{ day_info.month }}/</span><span class="day">{{ day_info.day }}</span>
+                        <span class="month">{{ schedule_by_day[day][0].date.strftime('%m/') if schedule_by_day[day] else '' }}</span>
+                        <span class="day">{{ schedule_by_day[day][0].date.strftime('%d') if schedule_by_day[day] else '' }}</span>
                     </div>
-                    <div class="weekdayBox">{{ day_info.week }}</div>
+                    <div class="weekdayBox">
+                        {{ day }}
+                    </div>
                 </div>
-                {% endfor %}
+            {% endfor %}
             </div>
         </section>
 
-
         <section>
-            {% for day_key, day_info in movie.schedule.items() %}
-            <div class="reservationSchedule hidden" id="schedule-{{ day_key }}">
-                <h2>{{ day_info.month }}/{{ day_info.day }}({{ day_info.week }})　　　　　　　　　　　　　　　　　予約状況</h2>
+            <!-- スケジュール一覧（曜日順で動的に出力） -->
+            {% for week, info in schedule.items() %}
+            <div class="reservationSchedule hidden" id="schedule-{{ week }}">
+                <h2>{{ info.month }}/{{ info.day }}({{ info.week }})　　　　　　　　　　　　　　　　　予約状況</h2>
                 <hr>
-                {% for slot in day_info.slots %}
+                {% for slot in info.slots %}
                 <div class="slot">
                     <span class="label">{{ slot.label }}</span>
                     <span class="time">{{ slot.time }}</span>
