@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('pay.js loaded');
+
     // DOM要素の取得
     const paymentForm = document.getElementById('payment-form');
     const paymentMethods = document.querySelectorAll('input[name="payment-method"]');
@@ -58,131 +60,130 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 有効期限のフォーマット処理（デバッグ＆確実版）
-    const expiryDateInput = document.getElementById('expiry-date');
-    if (expiryDateInput) {
-        // 既存のイベントリスナーを全て削除
-        const newInput = expiryDateInput.cloneNode(true);
-        expiryDateInput.parentNode.replaceChild(newInput, expiryDateInput);
+    // 有効期限のフォーマット処理（完全リセット版）
+    const originalExpiryInput = document.getElementById('expiry-date');
+    if (originalExpiryInput) {
+        console.log('有効期限フィールドを初期化中...');
 
-        // 新しい要素を取得
-        const input = document.getElementById('expiry-date');
+        // 完全に新しい要素を作成
+        const newExpiryInput = document.createElement('input');
+        newExpiryInput.type = 'text';
+        newExpiryInput.id = 'expiry-date';
+        newExpiryInput.placeholder = 'MM/YY';
+        newExpiryInput.maxLength = '5';
+        newExpiryInput.required = true;
 
-        // デバッグ用ログ
-        function log(message, value) {
-            console.log(`[ExpiryDate] ${message}:`, value);
-        }
+        // 元の要素のスタイルをコピー
+        newExpiryInput.className = originalExpiryInput.className;
 
-        // 単純なアプローチ：数字のみ許可 + 手動フォーマット
-        input.addEventListener('input', function(e) {
-            log('Input event triggered', e.target.value);
+        // 親要素から元の要素を削除し、新しい要素を追加
+        const parent = originalExpiryInput.parentNode;
+        parent.removeChild(originalExpiryInput);
+        parent.insertBefore(newExpiryInput, parent.querySelector('.error-message'));
 
-            // 現在のカーソル位置を保存
-            const cursorPos = e.target.selectionStart;
+        console.log('新しい有効期限フィールドを作成');
 
-            // 元の値から数字のみ抽出
-            const originalValue = e.target.value;
-            const numbersOnly = originalValue.replace(/\D/g, '');
-            log('Numbers only', numbersOnly);
+        // 入力イベント
+        newExpiryInput.addEventListener('input', function(e) {
+            console.log('=== INPUT EVENT ===');
+            console.log('元の値:', e.target.value);
+
+            // 数字のみ抽出
+            let value = e.target.value.replace(/\D/g, '');
+            console.log('数字のみ:', value);
 
             // 4桁制限
-            const limitedNumbers = numbersOnly.substring(0, 4);
-
-            // フォーマット適用
-            let newValue = '';
-            if (limitedNumbers.length === 0) {
-                newValue = '';
-            } else if (limitedNumbers.length === 1) {
-                newValue = limitedNumbers;
-            } else if (limitedNumbers.length === 2) {
-                newValue = limitedNumbers;
-            } else if (limitedNumbers.length === 3) {
-                newValue = limitedNumbers.substring(0, 2) + '/' + limitedNumbers.substring(2);
-            } else if (limitedNumbers.length === 4) {
-                newValue = limitedNumbers.substring(0, 2) + '/' + limitedNumbers.substring(2);
+            if (value.length > 4) {
+                value = value.substring(0, 4);
+                console.log('4桁制限後:', value);
             }
 
-            log('New formatted value', newValue);
-
-            // 値を更新
-            if (e.target.value !== newValue) {
-                e.target.value = newValue;
-
-                // カーソル位置の計算
-                let newCursorPos = Math.min(cursorPos, newValue.length);
-
-                // 特別な場合：2文字目の後に「/」が挿入された場合
-                if (limitedNumbers.length >= 3 && cursorPos === 2) {
-                    newCursorPos = 3;
-                }
-
-                log('Setting cursor position', newCursorPos);
-
-                // カーソル位置を設定
-                requestAnimationFrame(() => {
-                    e.target.setSelectionRange(newCursorPos, newCursorPos);
-                });
+            // フォーマット
+            if (value.length >= 3) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+                console.log('フォーマット後:', value);
             }
+
+            // 値を設定
+            e.target.value = value;
+            console.log('最終値:', e.target.value);
 
             // バリデーション
-            if (newValue.length === 5) {
-                validateExpiryDate(newValue);
+            if (value.length === 5) {
+                validateExpiryDate(value);
             } else {
                 clearError('expiry-date-error');
             }
+            console.log('===================');
         });
 
-        // Backspace/Deleteの特別処理
-        input.addEventListener('keydown', function(e) {
+        // キーダウンイベント
+        newExpiryInput.addEventListener('keydown', function(e) {
+            console.log('=== KEYDOWN EVENT ===');
+            console.log('押されたキー:', e.key);
+            console.log('カーソル位置:', e.target.selectionStart);
+            console.log('現在の値:', e.target.value);
+
             if (e.key === 'Backspace') {
-                const cursorPos = e.target.selectionStart;
+                const pos = e.target.selectionStart;
                 const value = e.target.value;
 
-                log('Backspace pressed', { cursorPos, value });
+                console.log('バックスペース検出');
+                console.log('位置:', pos, '値:', value);
 
-                // 「/」の直後（position 3）でBackspaceが押された場合
-                if (cursorPos === 3 && value.charAt(2) === '/') {
+                // スラッシュの直後（位置3）でバックスペース
+                if (pos === 3 && value.charAt(2) === '/') {
+                    console.log('スラッシュ位置でのバックスペース検出');
                     e.preventDefault();
-                    log('Preventing backspace at slash position');
 
-                    // 数字のみ抽出して1文字削除
-                    const numbers = value.replace(/\D/g, '');
-                    const newNumbers = numbers.substring(0, numbers.length - 1);
+                    // 月の部分の最後の桁を削除
+                    const monthPart = value.substring(0, 2);
+                    if (monthPart.length > 0) {
+                        const newValue = monthPart.substring(0, monthPart.length - 1);
+                        console.log('新しい値:', newValue);
 
-                    // フォーマットして設定
-                    if (newNumbers.length <= 2) {
-                        input.value = newNumbers;
-                        input.setSelectionRange(newNumbers.length, newNumbers.length);
-                    } else {
-                        const formatted = newNumbers.substring(0, 2) + '/' + newNumbers.substring(2);
-                        input.value = formatted;
-                        input.setSelectionRange(formatted.length, formatted.length);
+                        e.target.value = newValue;
+
+                        // カーソル位置を設定
+                        setTimeout(() => {
+                            e.target.setSelectionRange(newValue.length, newValue.length);
+                            console.log('カーソル位置設定:', newValue.length);
+                        }, 0);
                     }
-
-                    log('After backspace processing', input.value);
-                    return;
                 }
             }
+
+            // 数字以外の入力を防ぐ
+            if (!/\d/.test(e.key) &&
+                !['Backspace', 'Delete', 'Tab', 'Enter', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key) &&
+                !e.ctrlKey && !e.metaKey) {
+                console.log('無効なキーをブロック:', e.key);
+                e.preventDefault();
+            }
+            console.log('====================');
         });
 
         // ペースト処理
-        input.addEventListener('paste', function(e) {
+        newExpiryInput.addEventListener('paste', function(e) {
             e.preventDefault();
+
             const pastedData = (e.clipboardData || window.clipboardData).getData('text');
             const numbersOnly = pastedData.replace(/\D/g, '').substring(0, 4);
 
-            log('Paste event', { pastedData, numbersOnly });
+            console.log('ペースト:', pastedData, '数字のみ:', numbersOnly);
 
             if (numbersOnly.length <= 2) {
-                input.value = numbersOnly;
+                e.target.value = numbersOnly;
             } else {
-                input.value = numbersOnly.substring(0, 2) + '/' + numbersOnly.substring(2);
+                e.target.value = numbersOnly.substring(0, 2) + '/' + numbersOnly.substring(2);
             }
 
-            input.setSelectionRange(input.value.length, input.value.length);
+            setTimeout(() => {
+                e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+            }, 0);
         });
 
-        log('Event listeners attached successfully');
+        console.log('有効期限フィールドの初期化完了');
     }
 
     // セキュリティコードの入力制限
@@ -202,6 +203,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (phoneNumberInput) {
         phoneNumberInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/[^0-9-]/g, '');
+            e.target.value = value;
+        });
+    }
+
+    // カード名義の大文字変換処理
+    const cardNameInput = document.getElementById('card-name');
+    if (cardNameInput) {
+        cardNameInput.addEventListener('input', function(e) {
+            let value = e.target.value;
+            // 英字を大文字に変換、スペースは保持
+            value = value.replace(/[a-z]/g, function(match) {
+                return match.toUpperCase();
+            });
             e.target.value = value;
         });
     }
@@ -234,6 +248,9 @@ document.addEventListener('DOMContentLoaded', function() {
             isValid = validateCreditCardForm();
         } else if (selectedMethod === 'convenience') {
             isValid = validateConvenienceForm();
+        } else if (selectedMethod === 'paypay') {
+            // PayPayは特別なバリデーションは不要
+            isValid = true;
         }
 
         return isValid;
@@ -267,10 +284,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function validateConvenienceForm() {
-        const phoneNumber = document.getElementById('phone-number').value;
+        const phoneNumber = document.getElementById('phone-number').value.trim();
 
         // 電話番号は任意なので、入力されている場合のみバリデーション
-        if (phoneNumber && !validatePhoneNumber(phoneNumber)) {
+        if (phoneNumber && phoneNumber.length > 0 && !validatePhoneNumber(phoneNumber)) {
             return false;
         }
 
@@ -351,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const phoneClean = phoneNumber.replace(/[-\s()]/g, '');
 
         if (!/^0\d{9,10}$/.test(phoneClean)) {
-            showError('phone-number-error', '正しい電話番号を入力してください');
+            showError('phone-number-error', '正しい電話番号を入力してください（例：090-1234-5678）');
             return false;
         }
 
