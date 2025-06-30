@@ -101,6 +101,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log("送信する座席情報:", selectedSeats);
 
+    // 料金を計算（1席1800円として）
+    const totalAmount = selectedSeats.length * 1800;
+
+    // セッションストレージにも保存（JavaScriptでの利用のため）
+    sessionStorage.setItem('selectedSeats', JSON.stringify(selectedSeats));
+    sessionStorage.setItem('totalAmount', totalAmount.toString());
+    sessionStorage.setItem('showingId', showingId);
+
+    console.log("セッションストレージに保存:", {
+      seats: selectedSeats,
+      amount: totalAmount,
+      showing: showingId
+    });
+
     fetch(`/seat_reservation/${showingId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -111,10 +125,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return response.json();
       })
       .then(data => {
+        console.log("サーバーレスポンス:", data);
         window.location.href = '/pay';
       })
       .catch(err => {
         alert('通信エラー: ' + err.message);
+        console.error("エラー詳細:", err);
       });
   });
 });

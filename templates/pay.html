@@ -16,9 +16,10 @@
             </div>
             <div class="ticket-body">
                 <h3>{{ showing_info.movieTitle }}</h3>
-                <p>スクリーン :  {{ showing_info.screenId }}</p>
-                <p>日時 :  {{ showing_info.scheduledScreeningDate.strftime('%Y/%m/%d') }} {{ showing_info.screeningStartTime }} ~</p>
-                <p>座席 :  {{ seats }}</p>
+                <p>スクリーン : {{ showing_info.screenId }}</p>
+                <p>日時 : {{ showing_info.scheduledScreeningDate.strftime('%Y/%m/%d') }} {{ showing_info.screeningStartTime }} ~</p>
+                <p>座席 : {{ seats }}</p>
+                <p>料金 : ¥{{ total_amount|default(1800) }}</p>
             </div>
             <div class="ticket-footer">
                 <p>上映ID: {{ showing_info.scheduledShowingId }}</p>
@@ -113,6 +114,18 @@
 
     {% include '_footer.html' %}
 
+    <!-- データを JavaScript に渡すためのスクリプト -->
+    <script>
+        // 座席情報をJavaScriptで利用可能にする
+        window.selectedSeats = {{ seats_list|tojson if seats_list else '[]'|safe }};
+        window.totalAmount = {{ total_amount|default(1800) }};
+
+        // セッションストレージにも保存（必要に応じて）
+        if (window.selectedSeats && window.selectedSeats.length > 0) {
+            sessionStorage.setItem('selectedSeats', JSON.stringify(window.selectedSeats));
+            sessionStorage.setItem('totalAmount', window.totalAmount.toString());
+        }
+    </script>
     <script src="{{ url_for('static', filename='js/pay.js') }}"></script>
 </body>
 </html>
