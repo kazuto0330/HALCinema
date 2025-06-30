@@ -979,13 +979,8 @@ def register():
         phoneNumber = request.form.get('phoneNumber')
         birthDate = request.form.get('birthDate')
 
-<<<<<<< HEAD
         # 必填项检查
         if not all([accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
-=======
-        if not all(
-                [accountId, accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
->>>>>>> f6d23c56b11f0d5ea59394001c0dee67095630eb
             error = "すべての必須項目を入力してください。"
             return render_template('register.html', error=error)
 
