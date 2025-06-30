@@ -51,7 +51,10 @@
                 {% for slot in schedules %}
                 <div class="slot">
                     <span class="label">{{ slot.screenId }}</span>
-                    <span class="time">{{ slot.screeningStartTime.strftime('%H:%M') }}</span>
+                    {% set total_seconds = slot.screeningStartTime.total_seconds() %}
+                    {% set hours = (total_seconds // 3600)|int %}
+                    {% set minutes = ((total_seconds % 3600) // 60)|int %}
+                    <span class="time">{{ "%02d:%02d" % (hours, minutes) }}</span>
                     <span class="status">○</span>
                     <button type="button" class="submit-btn" onclick="location.href='/seat_reservation/{{ slot.scheduledShowingId }}'">予約</button>
                 </div>
