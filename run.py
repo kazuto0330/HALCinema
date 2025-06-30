@@ -1083,54 +1083,85 @@ def inject_useraaaaa():
 
 
 # pay画面
+# pay画面の修正版
 @app.route('/pay')
+@login_required  # ログインが必要
 def pay():
-    session['selected_seats'] = "A12"
-    session['showing_id'] = 1
-    seats = session['selected_seats']
-    showing_id = session['showing_id']
-    
+    # セッションから座席情報と上映情報を取得
+    seats = session.get('selected_seats')
+    showing_id = session.get('showing_id')
+
+    # 座席情報がない場合は座席選択ページにリダイレクト
+    if not seats or not showing_id:
+        return redirect(url_for('index'))  # または適切なページにリダイレクト
+
+    # 料金計算（1席1800円として）
+    total_amount = len(seats) * 1800
+    session['total_amount'] = total_amount
+
+    # 上映情報を取得
     sql = """
-        SELECT
-            ss.scheduledShowingId,
-            ss.moviesId,
-            ss.screenId,
-            ss.scheduledScreeningDate,
-            ss.screeningStartTime,
-            m.movieTitle,
-            m.movieImage,
-            m.movieRunningTime,
-            s.screenType
-        FROM
-            t_scheduledshowing AS ss
-        JOIN
-            t_movies AS m ON ss.moviesId = m.moviesId
-        JOIN
-            t_screen AS s ON ss.screenId = s.screenId
-        WHERE
-            ss.scheduledShowingId = %s;
-        """
-    showing_info = []
+          SELECT ss.scheduledShowingId, \
+                 ss.moviesId, \
+                 ss.screenId, \
+                 ss.scheduledScreeningDate, \
+                 ss.screeningStartTime, \
+                 m.movieTitle, \
+                 m.movieImage, \
+                 m.movieRunningTime, \
+                 s.screenType
+          FROM t_scheduledshowing AS ss \
+                   JOIN \
+               t_movies AS m ON ss.moviesId = m.moviesId \
+                   JOIN \
+               t_screen AS s ON ss.screenId = s.screenId
+          WHERE ss.scheduledShowingId = %s; \
+          """
+
+    showing_info = None
     try:
         with get_db_cursor() as cursor:
             if cursor is None:
                 print("カーソルの取得に失敗しました。")
-                return []
-            
+                return redirect(url_for('index'))
+
             cursor.execute(sql, (showing_id,))
             showing_info = cursor.fetchone()
-            print(showing_info)
-            return render_template("pay.html",seats=seats,showing_info=showing_info)
 
-    except mysql.connector.Error:
-        return render_template("pay.html",seats=seats,showing_id=showing_id)
+            if not showing_info:
+                print("上映情報が見つかりません。")
+                return redirect(url_for('index'))
 
+            # 座席番号を文字列形式に変換（表示用）
+            seat_labels = []
+            for seat in seats:
+                if isinstance(seat, dict):
+                    # 辞書形式の場合（{'row': 'A', 'seatNumber': 1}）
+                    seat_label = f"{seat.get('row')}-{seat.get('seatNumber')}"
+                else:
+                    # 文字列形式の場合（'A-1'）
+                    seat_label = str(seat)
+                seat_labels.append(seat_label)
+
+            seats_display = ', '.join(seat_labels)
+
+            return render_template("pay.html",
+                                   seats=seats_display,
+                                   seats_list=seats,  # JavaScriptで使用
+                                   total_amount=total_amount,
+                                   showing_info=showing_info)
+
+    except mysql.connector.Error as e:
+        print(f"データベースエラー: {e}")
+        return redirect(url_for('index'))
     
     # return render_template("pay.html",seats=seats,showing_id=showing_id)
 
 
 # 支払い処理のメインルート（修正版）
 # 支払い処理のメインルート（修正版）
+# 支払い処理のメインルート（デバッグ版）
+# 支払い処理のメインルート（デバッグ版）
 @app.route('/process_payment', methods=['POST'])
 def process_payment():
     try:
@@ -1144,6 +1175,7 @@ def process_payment():
             print(f"Warning: ユーザーがログインしていません。テスト用ユーザーID {user_id} を使用します。")
 
         data = request.get_json()
+        print(f"受信データ: {data}")
 
         if not data:
             return jsonify({
@@ -1152,7 +1184,33 @@ def process_payment():
             }), 400
 
         payment_method = data.get('payment_method')
-        amount = data.get('amount', 1800)  # デフォルト金額
+
+        # セッションから料金情報を取得（フロントエンドからの値より優先）
+        amount = session.get('total_amount')
+        seats = session.get('selected_seats', [])
+
+        print(f"セッション情報:")
+        print(f"  - total_amount: {amount}")
+        print(f"  - selected_seats: {seats}")
+        print(f"  - showing_id: {session.get('showing_id')}")
+
+        if not amount:
+            # セッションに料金情報がない場合はフロントエンドの値を使用
+            amount = data.get('amount', 1800)
+            print(f"Warning: セッションに料金情報がないため、フロントエンドの値を使用: {amount}円")
+        else:
+            print(f"セッションから料金情報を取得: {amount}円")
+
+        # 料金の妥当性再チェック
+        expected_amount = len(seats) * 1800 if seats else 1800
+        print(f"料金検証: 期待値={expected_amount}円, セッション={amount}円")
+
+        if seats and amount != expected_amount:
+            print(f"Warning: 料金不整合 - 座席数{len(seats)}席 × 1800円 = {expected_amount}円 ≠ {amount}円")
+            # セッションの料金を正しい値に修正
+            amount = expected_amount
+            session['total_amount'] = amount
+            print(f"料金を修正: {amount}円")
 
         if not payment_method:
             return jsonify({
@@ -1184,13 +1242,17 @@ def process_payment():
                 }
 
                 # 実際の決済処理のシミュレーション
-                import random
-                if random.random() > 0.1:  # 90%の確率で成功
-                    payment_status = 'completed'
-                    message = 'クレジットカード決済が完了しました'
-                else:
-                    payment_status = 'failed'
-                    message = 'クレジットカード決済に失敗しました'
+                # import random
+                # if random.random() > 0.1:  # 90%の確率で成功
+                #     payment_status = 'completed'
+                #     message = 'クレジットカード決済が完了しました'
+                # else:
+                #     payment_status = 'failed'
+                #     message = 'クレジットカード決済に失敗しました'
+
+                # テスト用に常に成功にする
+                payment_status = 'completed'
+                message = 'クレジットカード決済が完了しました'
 
         elif payment_method == 'convenience':
             phone_number = data.get('phone_number', '')
@@ -1235,6 +1297,10 @@ def process_payment():
 
         # 支払い情報をデータベースに保存
         payment_data['status'] = payment_status
+        payment_data['amount'] = amount  # 正しい金額を追加
+        payment_data['seat_count'] = len(seats)  # 座席数も保存
+
+        print(f"データベース保存: user_id={user_id}, method={payment_method}, amount={amount}円")
         payment_id = save_payment_info(user_id, payment_method, payment_data, amount)
 
         if not payment_id:
@@ -1250,8 +1316,12 @@ def process_payment():
             'status': payment_status,
             'data': payment_data,
             'message': message,
-            'amount': amount
+            'amount': amount,  # セッションから取得した正しい金額を保存
+            'total_amount': amount,  # 明示的に total_amount も設定
+            'seat_count': len(seats)
         }
+
+        print(f"支払い処理完了: ID={payment_id}, 金額={amount}円, ステータス={payment_status}")
 
         return jsonify({
             'success': True,
@@ -1259,6 +1329,7 @@ def process_payment():
             'payment_id': payment_id,
             'payment_method': payment_method,
             'status': payment_status,
+            'amount': amount,
             'data': payment_data
         })
 
@@ -1296,9 +1367,20 @@ def pay_comp():
 
             # 料金の整合性をチェック
             expected_amount = len(seats) * 1800 if seats else 0
-            if total_amount != expected_amount:
-                print(f"料金の不整合: 期待値={expected_amount}, 実際={total_amount}")
-                payment_info['warning_message'] = f"料金に不整合があります。期待値: {expected_amount}円"
+            actual_amount = payment_info.get('amount', 0)
+
+            print(
+                f"料金チェック: 期待値={expected_amount}, 支払い情報の金額={actual_amount}, セッション金額={total_amount}")
+
+            # 支払い情報の金額を正しい値に更新
+            if total_amount and total_amount == expected_amount:
+                payment_info['amount'] = total_amount
+                payment_info['total_amount'] = total_amount
+                print(f"料金を修正: {total_amount}円")
+            elif actual_amount != expected_amount and expected_amount > 0:
+                print(f"料金の不整合: 期待値={expected_amount}, 実際={actual_amount}")
+                payment_info[
+                    'warning_message'] = f"料金に不整合があります。期待値: {expected_amount}円, 支払い済み: {actual_amount}円"
 
             # 座席情報と上映情報が揃っている場合のみ予約処理を実行
             if seats and showing_id and accountId:
