@@ -2,6 +2,7 @@ import json
 import os
 import uuid
 import re
+import random
 from datetime import date, datetime, timedelta
 
 import mysql.connector
@@ -342,6 +343,18 @@ def load_users():
 def save_users(users):
     with open(USER_FILE, 'w') as f:
         json.dump(users, f)
+
+# id(random)
+def generate_unique_account_id():
+    conn = conn_db()
+    cursor = conn.cursor(buffered=True)
+    while True:
+        accountId = random.randint(100000, 999999)  # 生成6位随机数字
+        cursor.execute("SELECT accountId FROM t_account WHERE accountId = %s", (accountId,))
+        if not cursor.fetchone():
+            cursor.close()
+            conn.close()
+            return accountId
 
 
 # 支払い処理用の関数
@@ -916,7 +929,7 @@ def member_login():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        accountId = request.form.get('accountId')
+        accountId = generate_unique_account_id()
         accountName = request.form.get('accountName')
         emailAddress = request.form.get('emailAddress')
         password = request.form.get('password')
@@ -925,33 +938,32 @@ def register():
         phoneNumber = request.form.get('phoneNumber')
         birthDate = request.form.get('birthDate')
 
-        if not all([accountId, accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
+        # 必填项检查
+        if not all([accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
             error = "すべての必須項目を入力してください。"
             return render_template('register.html', error=error)
 
+        # 密码一致性检查
         if password != confirm_password:
             error = "パスワードが一致しません。"
             return render_template('register.html', error=error)
 
+        # 邮箱格式检查
         if '@' not in emailAddress or '.' not in emailAddress:
             error = "メールアドレスの形式が正しくありません。"
             return render_template('register.html', error=error)
 
+        # 电话格式检查
         if not re.match(r"^[0-9\s\+\-]+$", phoneNumber):
             error = "電話番号の形式が正しくありません。"
             return render_template('register.html', error=error)
 
+        # 密码加密
         hashed_password = generate_password_hash(password)
 
+        # 插入数据库
         conn = conn_db()
         cursor = conn.cursor(buffered=True)
-        cursor.execute("SELECT accountId FROM t_account WHERE accountId = %s", (accountId,))
-        if cursor.fetchone():
-            cursor.close()
-            conn.close()
-            error = "このユーザーIDは既に使用されています。"
-            return render_template('register.html', error=error)
-
         sql = """
             INSERT INTO t_account (
                 accountId, accountName, emailAddress, password,
@@ -969,11 +981,13 @@ def register():
         cursor.close()
         conn.close()
 
+        # 保存 session
         session['user'] = {
             'accountId': accountId,
             'accountName': accountName,
             'emailAddress': emailAddress
         }
+
         return redirect('/success')
 
     return render_template('register.html')
