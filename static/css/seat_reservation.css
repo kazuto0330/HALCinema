@@ -90,43 +90,22 @@ select#hallSelector:hover {
 .reservation:active {
   transform: scale(0.98);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-}
-
-
-.submit-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 15px 40px;
-    font-size: 16px;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    min-width: 150px;
-}
-
-.submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-}
-
-.submit-btn:active {
-    transform: translateY(0);
-}
-
-
-
-
-
+}    
 footer {
   margin-top: 30px;
   font-size: 0.8em;
   color: #999;
 }
   
+.seat.reserved {
+  background-color: #999;
+  cursor: not-allowed;
+}
 
-
+.seat.user-reserved {
+  background-color: #4CAF50;
+  color: white;
+}
 
 
 

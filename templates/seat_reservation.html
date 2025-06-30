@@ -579,3 +579,27 @@
 </body>
 
 </html>
+
+<script>
+        const reservedSeats = JSON.parse('{{ reserved_seats | tojson | safe }}');
+        const userSeats = JSON.parse('{{ user_reserved_seats | tojson | safe }}');
+    
+        document.querySelectorAll('.seat').forEach((seat, index) => {
+            const row = seat.closest('.row');
+            const label = row.querySelector('.label')?.textContent?.trim();
+            if (!label) return;
+    
+            const seatIndex = Array.from(row.children).filter(el => el.classList.contains('seat')).indexOf(seat);
+            const seatNumber = `${label}${seatIndex + 1}`;
+    
+            if (reservedSeats.includes(seatNumber)) {
+                seat.classList.add('reserved');
+                seat.disabled = true;
+            }
+    
+            if (userSeats.includes(seatNumber)) {
+                seat.classList.add('user-reserved');
+            }
+        });
+    </script>
+    
