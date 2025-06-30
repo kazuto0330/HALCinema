@@ -111,7 +111,6 @@ def login_required(f):
 #ヘッダーに表示するデータを取得
 @app.context_processor
 def inject_user():
-    # session['user_id'] = 111
     if 'user_id' in session:
         user_id = session.get('user_id')
         sql = """
@@ -1010,10 +1009,85 @@ def login():
     return render_template('login.html')
 
 
+
+def inject_useraaaaa():
+    if 'user_id' in session:
+        user_id = session.get('user_id')
+        sql = """
+                SELECT
+                    accountName,
+                    emailAddress,
+                    accountIcon
+                FROM
+                    t_account
+                WHERE
+                    accountId = %s;
+        """
+        user_info = []
+        try:
+            with get_db_cursor() as cursor:
+                if cursor is None:
+                    print("カーソルの取得に失敗しました。")
+                    return []
+                
+                cursor.execute(sql, (user_id,))
+                user_info = cursor.fetchone()
+                print(user_info)
+
+                # ここで返した辞書が、すべてのテンプレートのコンテキストに追加される
+                return dict(user_data=user_info)
+
+        except mysql.connector.Error:
+            return dict(user_data=None)
+    else:
+        return dict(user_data=None)
+
+
 # pay画面
 @app.route('/pay')
 def pay():
-    return render_template("pay.html")
+    session['selected_seats'] = "A12"
+    session['showing_id'] = 1
+    seats = session['selected_seats']
+    showing_id = session['showing_id']
+    
+    sql = """
+        SELECT
+            ss.scheduledShowingId,
+            ss.moviesId,
+            ss.screenId,
+            ss.scheduledScreeningDate,
+            ss.screeningStartTime,
+            m.movieTitle,
+            m.movieImage,
+            m.movieRunningTime,
+            s.screenType
+        FROM
+            t_scheduledshowing AS ss
+        JOIN
+            t_movies AS m ON ss.moviesId = m.moviesId
+        JOIN
+            t_screen AS s ON ss.screenId = s.screenId
+        WHERE
+            ss.scheduledShowingId = %s;
+        """
+    showing_info = []
+    try:
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                return []
+            
+            cursor.execute(sql, (showing_id,))
+            showing_info = cursor.fetchone()
+            print(showing_info)
+            return render_template("pay.html",seats=seats,showing_info=showing_info)
+
+    except mysql.connector.Error:
+        return render_template("pay.html",seats=seats,showing_id=showing_id)
+
+    
+    # return render_template("pay.html",seats=seats,showing_id=showing_id)
 
 
 # 支払い処理のメインルート（修正版）
