@@ -588,8 +588,6 @@ document.addEventListener('DOMContentLoaded', function() {
             existingSeatInfo.remove();
         }
 
-        console.log('表示する座席情報:', seats);
-
         const seatInfoDiv = document.createElement('div');
         seatInfoDiv.id = 'seat-info';
         seatInfoDiv.innerHTML = `
