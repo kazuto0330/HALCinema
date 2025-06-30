@@ -14,6 +14,8 @@
             <div class="ticket-header">
                 <h2>HAL CINEMA</h2>
             </div>
+
+            {% if showing_info %}
             <div class="ticket-body">
                 <h3>{{ showing_info.movieTitle }}</h3>
                 <p>スクリーン :  {{ showing_info.screenId }}</p>
@@ -23,13 +25,21 @@
             <div class="ticket-footer">
                 <p>上映ID: {{ showing_info.scheduledShowingId }}</p>
             </div>
+            {% endif %}
+
+            {% if error_message %}
+            <div class="ticket-body">
+                    <p>{{ error_message }}</p>
+            </div>
+            {% endif %}
         </div>
+        
 
         <div class="confirmation-message">
             <p>上記の内容でよろしければ、お支払い方法を選択してください。</p>
         </div>
 
-        <h1>支払い方法を選択してください</h1>
+        <h1>支払い方法を選択</h1>
 
         <form id="payment-form" class="payment-container">
             <div class="payment-method">
@@ -93,7 +103,9 @@
                 </div>
             </div>
 
-            <div class="error-messages" id="general-errors"></div>
+            <div class="error-messages" id="general-errors">
+
+        </div>
 
             <button type="submit" class="submit-btn" id="submit-payment">
                 <span class="btn-text">支払いを確定する</span>

@@ -1009,45 +1009,13 @@ def login():
     return render_template('login.html')
 
 
-
-def inject_useraaaaa():
-    if 'user_id' in session:
-        user_id = session.get('user_id')
-        sql = """
-                SELECT
-                    accountName,
-                    emailAddress,
-                    accountIcon
-                FROM
-                    t_account
-                WHERE
-                    accountId = %s;
-        """
-        user_info = []
-        try:
-            with get_db_cursor() as cursor:
-                if cursor is None:
-                    print("カーソルの取得に失敗しました。")
-                    return []
-                
-                cursor.execute(sql, (user_id,))
-                user_info = cursor.fetchone()
-                print(user_info)
-
-                # ここで返した辞書が、すべてのテンプレートのコンテキストに追加される
-                return dict(user_data=user_info)
-
-        except mysql.connector.Error:
-            return dict(user_data=None)
-    else:
-        return dict(user_data=None)
-
-
 # pay画面
 @app.route('/pay')
 def pay():
+    # テストデータ挿入
     session['selected_seats'] = "A12"
-    session['showing_id'] = 1
+    session['showing_id'] = 100
+    
     seats = session['selected_seats']
     showing_id = session['showing_id']
     
@@ -1081,13 +1049,15 @@ def pay():
             cursor.execute(sql, (showing_id,))
             showing_info = cursor.fetchone()
             print(showing_info)
+            if showing_info == None:
+                print("aaaaaadwdadw")
+                return render_template("pay.html", seats=seats, error_message="チケット情報の取得中にエラーが発生しました。")
             return render_template("pay.html",seats=seats,showing_info=showing_info)
 
-    except mysql.connector.Error:
-        return render_template("pay.html",seats=seats,showing_id=showing_id)
+    except Exception as e:
+        print(f"Error in pay function: {e}")
+        return render_template("pay.html", seats=seats, showing_info=showing_info, error_message="チケット情報の取得中にエラーが発生しました。")
 
-    
-    # return render_template("pay.html",seats=seats,showing_id=showing_id)
 
 
 # 支払い処理のメインルート（修正版）
