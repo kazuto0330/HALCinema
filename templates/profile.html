@@ -127,16 +127,10 @@
                         {% if user_history %}
                             {% for record in user_history %}
                                 <div class="movie-card">
-                                    {# staticフォルダ内のimagesフォルダに映画画像があると仮定 #}
-                                    {# movieImageはDBから取得したファイル名を使用 #}
-                                    <img src="{{ url_for('static', filename='images/' + record.movieImage) }}" alt="{{ record.movieTitle }}">
+                                    <img src="{{ url_for('static', filename='images/movie/200h/' + record.movieImage) }}" alt="{{ record.movieTitle }}">
                                     <div class="movie-info">
                                         <h4>{{ record.movieTitle }}</h4>
-                                        {# 日付はdatetime.dateオブジェクトなので、strftimeフィルターでフォーマット #}
-                                        {# 現在は時間情報がないため、日付のみを表示します。 #}
-                                        {# もし時間情報も必要なら、DBに時刻カラムを追加し、SQLで取得してここに表示します #}
-                                        <p>{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}</p>
-                                        {# シアター情報と座席番号を表示 #}
+                                        <p>{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}　{{ record.screeningStartTime }} ~</p>
                                         <span class="theater">シアター{{ record.screenId }} (座席: {{ record.seatNumber }})</span>
                                     </div>
                                 </div>
