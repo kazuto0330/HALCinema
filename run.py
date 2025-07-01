@@ -340,21 +340,20 @@ def getUserIcon(user_id):
 def watchHistory(user_id):
     """指定したIDの視聴履歴を取得する関数"""
     sql = """
-          SELECT A.accountName             AS accountName, \
-                 M.movieTitle              AS movieTitle, \
-                 M.movieImage              AS movieImage, -- 映画の画像ファイル名を追加 \
-                 SS.scheduledScreeningDate AS scheduledScreeningDate, \
-                 SR.seatNumber             AS seatNumber, \
-                 SS.screenId               AS screenId    -- スクリーンIDを追加
-          FROM t_account AS A \
-                   JOIN \
-               t_seatreservation AS SR ON A.accountId = SR.accountId \
-                   JOIN \
-               t_scheduledshowing AS SS ON SR.scheduledShowingId = SS.scheduledShowingId \
-                   JOIN \
-               t_movies AS M ON SS.moviesId = M.moviesId
-          WHERE A.accountId = %s
-          ORDER BY SS.scheduledScreeningDate DESC, M.movieTitle ASC; \
+          SELECT
+              SR.*,
+              SS.*,
+              M.*
+          FROM
+              t_seatreservation AS SR
+          JOIN
+              t_scheduledshowing AS SS ON SR.scheduledShowingId = SS.scheduledShowingId
+          JOIN
+              t_movies AS M ON SS.moviesId = M.moviesId
+          WHERE
+              SR.accountId = %s
+          ORDER BY
+              SS.scheduledScreeningDate DESC, M.movieTitle ASC;
           """
     history_data = []  # 視聴履歴のリストを格納する変数
     try:
@@ -585,7 +584,7 @@ def event(event_id):
 @app.route('/profile')
 @login_required
 def profile():
-    user_id = session.get('user_id') 
+    user_id = session.get('user_id')
     userData = getUserData(user_id)
     History = watchHistory(user_id)
     return render_template("profile.html", userData=userData, user_history=History)
