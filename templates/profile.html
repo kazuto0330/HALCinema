@@ -28,6 +28,7 @@
 
     <main class="main">
         <div class="container">
+            <!-- アイコンとニックネーム、メールアドレス -->
             <div class="profile-header">
                 <div class="profile-avatar" data-tippy-content="アイコンの変更">
                     <img src="{{ url_for('static', filename='images/usericon/400x400/' + userData.accountIcon) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/usericon/400x400/default.jpg') }}';" alt="プロフィール画像" id="avatar-img">
@@ -44,7 +45,6 @@
 
             <!-- 画像ファイルを選択するための隠しinput要素 -->
             <input type="file" id="image-input" accept="image/png, image/jpeg" style="display: none;">
-
 
 
             <div class="profile-content">
@@ -105,7 +105,7 @@
 
                 <!-- ポイント -->
                 <div class="profile-section">
-                    <h3 class="section-title">ポイント・特典</h3>
+                    <h3 class="section-title">ポイント・ランク</h3>
                     <div class="points-section">
                         <div class="points-card">
                             <div class="points-info">
@@ -116,17 +116,44 @@
                                 <button class="use-points-btn">ポイント使用</button>
                             </div>
                         </div>
-                        <div class="benefits">
-                            <h4>会員特典</h4>
-                            <ul>
-                                <li>毎月1回無料鑑賞券</li>
-                                <li>ポップコーン・ドリンク10%オフ</li>
-                                <li>先行予約受付</li>
-                                <li>誕生日月特別割引</li>
-                            </ul>
+                        <div class="rank-container">
+                            {% set rank_points = user_history|length %}
+                            {% if rank_points < 3 %}
+                                {% set rank = 'ブロンズ' %}
+                                {% set rank_class = 'bronze' %}
+                                {% set next_rank = 'シルバー' %}
+                                {% set points_to_next = 3 - rank_points %}
+                                {% set progress = (rank_points / 3) * 100 %}
+                            {% elif rank_points < 7 %}
+                                {% set rank = 'シルバー' %}
+                                {% set rank_class = 'silver' %}
+                                {% set next_rank = 'ゴールド' %}
+                                {% set points_to_next = 7 - rank_points %}
+                                {% set progress = ((rank_points - 3) / 4) * 100 %}
+                            {% else %}
+                                {% set rank = 'ゴールド' %}
+                                {% set rank_class = 'gold' %}
+                                {% set progress = 100 %}
+                            {% endif %}
+
+                            <div class="rank-header">
+                                <span class="rank-title">会員ランク</span>
+                                <span class="current-rank {{ rank_class }}">{{ rank }}</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: {{ progress }}%;"></div>
+                            </div>
+                            <div class="rank-progress-info">
+                                {% if rank != 'ゴールド' %}
+                                    <span>あと{{ points_to_next }}回購入で{{ next_rank }}ランク</span>
+                                {% else %}
+                                    <span>あなたはゴールドランクです！</span>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
+
 
                 <!-- 購入履歴 -->
                 <div class="profile-section">
