@@ -325,4 +325,24 @@ document.addEventListener('DOMContentLoaded', () => {
             closeMovieModal();
         }
     });
+
+    // --- Collapsible Section Logic ---
+    const collapsibleHeader = document.querySelector('.collapsible-header');
+    const collapsibleContent = document.querySelector('.collapsible-content');
+    const toggleIcon = document.querySelector('.toggle-icon');
+    const infoChangeButton = document.getElementById('infoChangeButton');
+
+    // 初期状態では鉛筆アイコンを非表示
+    infoChangeButton.style.display = 'none';
+
+    if (collapsibleHeader) {
+        collapsibleHeader.addEventListener('click', (e) => {
+            // クリックされた要素が編集ボタンまたはその子要素でない場合のみトグル
+            if (!e.target.closest('#infoChangeButton')) {
+                const isOpen = collapsibleContent.classList.toggle('open');
+                toggleIcon.classList.toggle('open');
+                infoChangeButton.style.display = isOpen ? 'block' : 'none';
+            }
+        });
+    }
 });

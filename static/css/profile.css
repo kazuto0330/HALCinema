@@ -20,7 +20,7 @@ body {
 
 .profile-header {
     display: flex;
-    align-items: start;
+    align-items: center;
     gap: 1rem;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -179,9 +179,18 @@ body {
     transform: scale(1.1);
 }
 
-.profile-info h2 {
+.profile-info{
+    font-weight: bold;
+}
+
+.profile-name {
     font-size: 2rem;
     margin-bottom: 0.5rem;
+}
+
+.profile-mail{
+    font-size: 1.1rem;
+    text-indent: 0.3em;
 }
 
 .profile-member-info {
@@ -234,6 +243,7 @@ body {
 }
 
 .section-title {
+    width: 100%;
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
     color: #fff;
@@ -241,7 +251,7 @@ body {
     padding-bottom: 0.5rem;
 }
 .infoChangeButton{
-    position: absolute;
+    /* position: absolute; */
     top: 0;
     right: 5px;
 }
@@ -249,6 +259,43 @@ body {
     width: 3vw;
     min-width: 27px;
     max-width: 35px;
+}
+
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.header-controls {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.toggle-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+    padding: 0 1rem; /* 閉じた状態ではパディングを0に */
+}
+
+.collapsible-content.open {
+    padding: 1rem; /* 開いた状態のパディング */
+    max-height: 1000px; /* 十分な高さを設定 */
+}
+
+.toggle-icon.open {
+    transform: rotate(180deg);
 }
 
 .info-grid {

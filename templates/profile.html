@@ -36,7 +36,8 @@
                     </div>
                 </div>
                 <div class="profile-info">
-                    <h2 class="profile-name" id="profile-name">{{ userData.accountName }}</h2>
+                    <div class="profile-name" id="profile-name">{{ userData.accountName }}</div>
+                    <div class="profile-mail">{{ userData.emailAddress }}</div>
                 </div>
             </div>
 
@@ -47,55 +48,62 @@
 
 
             <div class="profile-content">
+                <!-- 基本情報 -->
                 <div class="profile-section">
-                    <div class="titleContainer">
+                    <div class="titleContainer collapsible-header">
                         <h3 class="section-title">基本情報</h3>
-                        <div id="infoChangeButton" class="infoChangeButton" onclick="toggleEditMode()" data-tippy-content="プロフィールを編集"><img src="{{ url_for('static', filename='images/pencil.png' ) }}" alt="鉛筆の画像"></div>
-                    </div>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>ニックネーム</label>
-                            <div class="info-display">
-                                <span id="display-nick">{{ userData.accountName }}</span>
-                                <input type="text" id="edit-nick" value="{{ userData.accountName }}" style="display: none;">
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <label>お名前</label>
-                            <div class="info-display">
-                                <span id="display-name">{{ userData.realName }}</span>
-                                <input type="text" id="edit-name" value="{{ userData.realName }}" style="display: none;">
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <label>メールアドレス</label>
-                            <div class="info-display">
-                                <span id="display-email">{{ userData.emailAddress }}</span>
-                                <input type="email" id="edit-email" value="{{ userData.emailAddress }}" style="display: none;">
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <label>電話番号</label>
-                            <div class="info-display">
-                                <span id="display-phone">{{ userData.phoneNumber }}</span>
-                                <input type="tel" id="edit-phone" value="{{ userData.phoneNumber }}" style="display: none;">
-                            </div>
-                        </div>
-                        <div class="info-item">
-                            <label>生年月日</label>
-                            <div class="info-display">
-                                <span id="display-birth">{{ userData.birthDate|strftime('%Y年%m月%d日') }}</span>
-                                <input type="date" id="edit-birth" value="{{ userData.birthDate|strftime('%Y-%m-%d') }}" style="display: none;">
-                            </div>
+                        <div class="header-controls">
+                            <div id="infoChangeButton" class="infoChangeButton" onclick="toggleEditMode()" data-tippy-content="プロフィールを編集"><img src="{{ url_for('static', filename='images/pencil.png' ) }}" alt="鉛筆の画像"></div>
+                            <span class="toggle-icon">▼</span>
                         </div>
                     </div>
-                    <div class="edit-actions" style="display: none;">
-                        <button class="save-btn" onclick="saveProfile()">保存</button>
-                        <button class="cancel-btn" onclick="cancelEdit()">キャンセル</button>
+                    <div class="collapsible-content">
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>ニックネーム</label>
+                                <div class="info-display">
+                                    <span id="display-nick">{{ userData.accountName }}</span>
+                                    <input type="text" id="edit-nick" value="{{ userData.accountName }}" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <label>お名前</label>
+                                <div class="info-display">
+                                    <span id="display-name">{{ userData.realName }}</span>
+                                    <input type="text" id="edit-name" value="{{ userData.realName }}" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <label>メールアドレス</label>
+                                <div class="info-display">
+                                    <span id="display-email">{{ userData.emailAddress }}</span>
+                                    <input type="email" id="edit-email" value="{{ userData.emailAddress }}" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <label>電話番号</label>
+                                <div class="info-display">
+                                    <span id="display-phone">{{ userData.phoneNumber }}</span>
+                                    <input type="tel" id="edit-phone" value="{{ userData.phoneNumber }}" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <label>生年月日</label>
+                                <div class="info-display">
+                                    <span id="display-birth">{{ userData.birthDate|strftime('%Y年%m月%d日') }}</span>
+                                    <input type="date" id="edit-birth" value="{{ userData.birthDate|strftime('%Y-%m-%d') }}" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="edit-actions" style="display: none;">
+                            <button class="save-btn" onclick="saveProfile()">保存</button>
+                            <button class="cancel-btn" onclick="cancelEdit()">キャンセル</button>
+                        </div>
                     </div>
                 </div>
 
 
+                <!-- ポイント -->
                 <div class="profile-section">
                     <h3 class="section-title">ポイント・特典</h3>
                     <div class="points-section">
@@ -120,6 +128,7 @@
                     </div>
                 </div>
 
+                <!-- 購入履歴 -->
                 <div class="profile-section">
                     <h3 class="section-title">購入履歴</h3>
                     <div class="movie-history">
