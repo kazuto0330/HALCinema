@@ -2,6 +2,7 @@ import json
 import os
 import uuid
 import re
+import random
 from datetime import date, datetime, timedelta
 
 import mysql.connector
@@ -938,10 +939,25 @@ def member_login():
 
 
 # register画面
+
+def generate_unique_account_id():
+    conn = conn_db()
+    cursor = conn.cursor()
+    while True:
+        account_id = random.randint(10000, 99999)
+        cursor.execute("SELECT COUNT(*) FROM t_account WHERE accountId = %s", (account_id,))
+        if cursor.fetchone()[0] == 0:
+            break
+    cursor.close()
+    conn.close()
+    return account_id
+
+import re
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        accountId = request.form.get('accountId')
+        accountId = generate_unique_account_id()
         accountName = request.form.get('accountName')
         emailAddress = request.form.get('emailAddress')
         password = request.form.get('password')
@@ -950,39 +966,43 @@ def register():
         phoneNumber = request.form.get('phoneNumber')
         birthDate = request.form.get('birthDate')
 
-        if not all(
-                [accountId, accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
-            error = "すべての必須項目を入力してください。"
-            return render_template('register.html', error=error)
+        errors = {}
 
+        # 必填项检查
+        if not all([accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
+            errors["general"] = "すべての必須項目を入力してください。"
+
+        # 密码格式检查
+        password_pattern = r"^(?=.*[a-zA-Z])(?=.*\d).{8,}$"
+        if not re.match(password_pattern, password):
+            errors["password"] = "パスワードは半角英数字を含む8文字以上で構成してください。"
+
+        # 密码一致性检查
         if password != confirm_password:
-            error = "パスワードが一致しません。"
-            return render_template('register.html', error=error)
+            errors["confirm_password"] = "パスワードが一致しません。"
 
+        # 邮箱格式检查
         if '@' not in emailAddress or '.' not in emailAddress:
-            error = "メールアドレスの形式が正しくありません。"
-            return render_template('register.html', error=error)
+            errors["emailAddress"] = "メールアドレスの形式が正しくありません。"
 
+        # 电话格式检查
         if not re.match(r"^[0-9\s\+\-]+$", phoneNumber):
-            error = "電話番号の形式が正しくありません。"
-            return render_template('register.html', error=error)
+            errors["phoneNumber"] = "電話番号の形式が正しくありません。"
 
+        if errors:
+            return render_template('register.html', error="\n".join(errors.values()))
+
+        # 密码加密
         hashed_password = generate_password_hash(password)
 
+        # 插入数据库
         conn = conn_db()
         cursor = conn.cursor(buffered=True)
-        cursor.execute("SELECT accountId FROM t_account WHERE accountId = %s", (accountId,))
-        if cursor.fetchone():
-            cursor.close()
-            conn.close()
-            error = "このユーザーIDは既に使用されています。"
-            return render_template('register.html', error=error)
-
         sql = """
-              INSERT INTO t_account (accountId, accountName, emailAddress, password, \
-                                     realName, phoneNumber, birthDate, \
-                                     accountIcon, points) \
-              VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) \
+              INSERT INTO t_account (accountId, accountName, emailAddress, password,
+                                     realName, phoneNumber, birthDate,
+                                     accountIcon, points)
+              VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
               """
         values = (
             accountId, accountName, emailAddress, hashed_password,
@@ -999,9 +1019,12 @@ def register():
             'accountName': accountName,
             'emailAddress': emailAddress
         }
+
         return redirect('/success')
 
     return render_template('register.html')
+
+
 
 
 @app.route('/success')
@@ -1048,6 +1071,30 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/reservation_status/<int:showing_id>')
+@login_required
+def reservation_status(showing_id):
+    user_id = session.get('user_id')
+    with get_db_cursor() as cursor:
+        cursor.execute("""
+            SELECT seatNumber, accountId
+            FROM t_seatReservation
+            WHERE scheduledShowingId = %s
+        """, (showing_id,))
+        reservations = cursor.fetchall()
+
+    user_seats = [r['seatNumber'] for r in reservations if r['accountId'] == user_id]
+    other_seats = [r['seatNumber'] for r in reservations if r['accountId'] != user_id]
+
+    # 假设座位是 A-J 行，每行 10 个座位
+    seat_rows = list("ABCDEFGHIJ")
+    seats_per_row = 10
+
+    return render_template("reservation_status.html",
+                           user_seats=user_seats,
+                           other_seats=other_seats,
+                           seat_rows=seat_rows,
+                           seats_per_row=seats_per_row)
 
 
 def inject_useraaaaa():
