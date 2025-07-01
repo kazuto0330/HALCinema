@@ -351,6 +351,26 @@ body {
 }
 
 /* Movie Detail Modal Styles */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.9); }
+    to { transform: scale(1); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes zoomOut {
+    from { transform: scale(1); }
+    to { transform: scale(0.9); }
+}
+
 .movie-modal-overlay {
     position: fixed;
     top: 0;
@@ -363,6 +383,11 @@ body {
     align-items: center;
     z-index: 1001;
     backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.movie-modal-overlay.closing {
+    animation: fadeOut 0.1s ease-out forwards;
 }
 
 .movie-modal-content {
@@ -375,6 +400,11 @@ body {
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: zoomIn 0.3s ease-out;
+}
+
+.movie-modal-overlay.closing .movie-modal-content {
+    animation: zoomOut 0.2s ease-out forwards;
 }
 
 .close-modal-btn {
@@ -416,6 +446,13 @@ body {
     margin-bottom: 0.8rem;
     line-height: 1.6;
     color: #ccc;
+}
+
+#modal-movie-link {
+    color: #3498db; /* 水色 */
+    text-indent: 0.8em;
+    margin-bottom: 0.8rem;
+    display: block;
 }
 
 #modal-screening-date,

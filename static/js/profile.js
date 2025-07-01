@@ -286,6 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     movieCards.forEach(card => {
         card.addEventListener('click', () => {
+            const movieId = card.dataset.movieId;
             const title = card.dataset.movieTitle;
             const image = card.dataset.movieImage;
             const screeningDate = card.dataset.screeningDate;
@@ -297,6 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const description = card.dataset.movieDescription;
 
             document.getElementById('modal-movie-title').textContent = title;
+            document.getElementById('modal-movie-link').href = "/movie_information/" + movieId;
             document.getElementById('modal-movie-image').src = image;
             document.getElementById('modal-screening-date').textContent = `上映日: ${screeningDate}`;
             document.getElementById('modal-screening-time').textContent = `上映時間: ${screeningTime} ~ (${runningTime}分)`;
@@ -309,7 +311,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const closeMovieModal = () => {
-        movieDetailModal.style.display = 'none';
+        movieDetailModal.classList.add('closing');
+        setTimeout(() => {
+            movieDetailModal.style.display = 'none';
+            movieDetailModal.classList.remove('closing');
+        }, 300); // アニメーションの時間と合わせる
     }
 
     closeModalBtn.addEventListener('click', closeMovieModal);

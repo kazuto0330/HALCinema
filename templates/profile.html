@@ -127,6 +127,7 @@
                         {% if user_history %}
                             {% for record in user_history %}
                                 <div class="movie-card"
+                                     data-movie-id="{{ record.moviesId }}"
                                      data-movie-title="{{ record.movieTitle }}"
                                      data-movie-image="{{ url_for('static', filename='images/movie/original/' + record.movieImage) }}"
                                      data-screening-date="{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}"
@@ -160,6 +161,7 @@
                             <img id="modal-movie-image" src="" alt="Movie Poster">
                             <div class="modal-movie-info">
                                 <h2 id="modal-movie-title"></h2>
+                                <a id="modal-movie-link" href="" target="_blank">作品詳細へ</a>
                                 <p id="modal-screening-date"></p>
                                 <p id="modal-screening-time"></p>
                                 <p id="modal-seat-info"></p>
