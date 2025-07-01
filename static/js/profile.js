@@ -278,4 +278,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     cancelBtn.addEventListener('click', closeModal);
+
+    // Movie Detail Modal Logic
+    const movieDetailModal = document.getElementById('movie-detail-modal');
+    const closeModalBtn = document.querySelector('.close-modal-btn');
+    const movieCards = document.querySelectorAll('.movie-card');
+
+    movieCards.forEach(card => {
+        card.addEventListener('click', () => {
+            const title = card.dataset.movieTitle;
+            const image = card.dataset.movieImage;
+            const screeningDate = card.dataset.screeningDate;
+            const screeningTime = card.dataset.screeningTime;
+            const runningTime = card.dataset.runningTime;
+            const screenId = card.dataset.screenId;
+            const seatNumber = card.dataset.seatNumber;
+            const seatReservationId = card.dataset.seatReservationId;
+            const description = card.dataset.movieDescription;
+
+            document.getElementById('modal-movie-title').textContent = title;
+            document.getElementById('modal-movie-image').src = image;
+            document.getElementById('modal-screening-date').textContent = `上映日: ${screeningDate}`;
+            document.getElementById('modal-screening-time').textContent = `上映時間: ${screeningTime} ~ (${runningTime}分)`;
+            document.getElementById('modal-seat-info').textContent = `シアター${screenId} (座席: ${seatNumber})`;
+            document.getElementById('modal-movie-description').textContent = description;
+            document.getElementById('modal-transaction-id').textContent = `取引ID: ${seatReservationId}`;
+
+            movieDetailModal.style.display = 'flex';
+        });
+    });
+
+    const closeMovieModal = () => {
+        movieDetailModal.style.display = 'none';
+    }
+
+    closeModalBtn.addEventListener('click', closeMovieModal);
+
+    movieDetailModal.addEventListener('click', (e) => {
+        if (e.target === movieDetailModal) {
+            closeMovieModal();
+        }
+    });
 });

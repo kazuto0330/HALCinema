@@ -123,10 +123,20 @@
                 <div class="profile-section">
                     <h3 class="section-title">購入履歴</h3>
                     <div class="movie-history">
-                        {# user_history が空でないかを確認し、ループ処理で各映画の情報を表示 #}
+
                         {% if user_history %}
                             {% for record in user_history %}
-                                <div class="movie-card">
+                                <div class="movie-card"
+                                     data-movie-title="{{ record.movieTitle }}"
+                                     data-movie-image="{{ url_for('static', filename='images/movie/original/' + record.movieImage) }}"
+                                     data-screening-date="{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}"
+                                     data-screening-time="{{ record.screeningStartTime }}"
+                                     data-running-time="{{ record.movieRunningTime }}"
+                                     data-screen-id="{{ record.screenId }}"
+                                     data-seat-number="{{ record.seatNumber }}"
+                                     data-seat-reservation-id="{{ record.seatReservationId }}"
+                                     data-movie-description="{{ record.movieDescription | e }}"
+                                     >
                                     <img src="{{ url_for('static', filename='images/movie/200h/' + record.movieImage) }}" alt="{{ record.movieTitle }}">
                                     <div class="movie-info">
                                         <h4>{{ record.movieTitle }}</h4>
@@ -135,9 +145,28 @@
                                     </div>
                                 </div>
                             {% endfor %}
+
                         {% else %}
                             <p class="no-history">購入履歴はありません。</p>
                         {% endif %}
+                    </div>
+                </div>
+
+                <!-- Movie Detail Modal -->
+                <div id="movie-detail-modal" class="movie-modal-overlay" style="display: none;">
+                    <div class="movie-modal-content">
+                        <span class="close-modal-btn">&times;</span>
+                        <div class="modal-movie-details">
+                            <img id="modal-movie-image" src="" alt="Movie Poster">
+                            <div class="modal-movie-info">
+                                <h2 id="modal-movie-title"></h2>
+                                <p id="modal-screening-date"></p>
+                                <p id="modal-screening-time"></p>
+                                <p id="modal-seat-info"></p>
+                                <p id="modal-movie-description"></p>
+                                <p id="modal-transaction-id" class="transaction-id"></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
