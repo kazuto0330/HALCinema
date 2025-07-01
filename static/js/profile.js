@@ -1,348 +1,373 @@
-let isEditMode = false;
-
-let origName,origemail,origphone,origbirth;
-
-origNick = document.getElementById('edit-nick').value;
-origName = document.getElementById('edit-name').value;
-origemail = document.getElementById('edit-email').value;
-origphone = document.getElementById('edit-phone').value;
-origbirth = document.getElementById('edit-birth').value;
-
-
-
-
-function toggleEditMode() {
-    isEditMode = !isEditMode;
-    const displays = document.querySelectorAll('.info-display span');
-    const inputs = document.querySelectorAll('.info-display input');
-    const editActions = document.querySelector('.edit-actions');
-
-    if (isEditMode) {
-        // 編集モードに切り替え
-        displays.forEach(span => span.style.display = 'none');
-        inputs.forEach(input => input.style.display = 'block');
-        editActions.style.display = 'flex';
-    
-    } else {
-        // 表示モードに切り替え
-        displays.forEach(span => span.style.display = 'inline');
-        inputs.forEach(input => input.style.display = 'none');
-        editActions.style.display = 'none';
-    }
-}
-
-function saveProfile() {
-    // 入力値を取得
-    const nick = document.getElementById('edit-nick').value;
-    const name = document.getElementById('edit-name').value;
-    const email = document.getElementById('edit-email').value;
-    const phone = document.getElementById('edit-phone').value;
-    const birth = document.getElementById('edit-birth').value;
-
-    // ★変更: accountId はJavaScriptから送る必要がなくなりました。
-    // Flask側でセッションから取得するため、この部分のコードは不要です。
-
-    // データをFlaskエンドポイントにPOST
-    fetch('/add_account', { // Flaskのルート名はそのまま
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            accountName: nick,
-            realName: name,       // JSのnameをrealNameとして送信
-            emailAddress: email,
-            phoneNumber: phone,
-            birthDate: birth,
-        })
-    })
-    .then(response => {
-        // HTTPステータスコードをチェックし、エラーの場合はJSON解析前に処理
-        if (!response.ok) {
-            // エラーレスポンスのJSONを解析して、具体的なエラーメッセージを表示
-            return response.json().then(errorData => {
-                throw new Error(errorData.message || `HTTPエラー: ${response.status}`);
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            // 成功時の処理 (前回のJSと同じ)
-            // 表示を更新
-            document.getElementById('display-nick').textContent = nick;
-            document.getElementById('display-name').textContent = name;
-            document.getElementById('display-email').textContent = email;
-            document.getElementById('display-phone').textContent = phone;
-
-            // 生年月日をフォーマット
-            const birthDate = new Date(birth);
-            // new Date() が不正な日付文字列を受け取ると Invalid Date になる可能性があるのでチェック
-            const formattedBirth = (isNaN(birthDate.getTime())) ? '' : `${birthDate.getFullYear()}年${birthDate.getMonth() + 1}月${birthDate.getDate()}日`;
-            document.getElementById('display-birth').textContent = formattedBirth;
-
-            // プロフィール名も更新
-            document.getElementById('profile-name').textContent = nick;
-
-            // 編集モードを終了
-            toggleEditMode();
-
-            // 保存完了メッセージ
-            showNotification('プロフィールを更新しました', 'success');
-
-        } else {
-            alert('エラーが発生しました: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('通信またはサーバーエラー:', error);
-        alert('プロフィールの更新中にエラーが発生しました: ' + error.message);
-    });
-}
-
-
-
-
-function cancelEdit() {
-    // 元のデータに戻す
-    document.getElementById('edit-name').value = origName;
-    document.getElementById('edit-email').value = origemail;
-    document.getElementById('edit-phone').value = origphone;
-    document.getElementById('edit-birth').value = origbirth;
-    
-    // 編集モードを終了
-    toggleEditMode();
-}
-
-function editAvatar() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('avatar-img').src = e.target.result;
-                showNotification('プロフィール画像を更新しました', 'success');
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-    input.click();
-}
-
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 20px;
-        background: ${type === 'success' ? '#27ae60' : '#3498db'};
-        color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        z-index: 1000;
-        animation: slideIn 0.3s ease;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
-
-// CSS アニメーション
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-`;
-document.head.appendChild(style);
-
+/**
+ * @file profile.js
+ * プロフィールページのインタラクションを管理するスクリプト
+ */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // HTML要素の取得
-    const plusButton = document.getElementById('avatar-plus-button');
-    const imageInput = document.getElementById('image-input');
-    const modal = document.getElementById('cropper-modal');
+    'use strict';
+
+    //================================================================
+    // DOM要素の取得
+    //================================================================
+
+    // --- プロフィール基本情報関連 ---
+    const infoChangeButton = document.getElementById('infoChangeButton');
+    const editActions = document.querySelector('.edit-actions');
+    const saveButton = document.querySelector('.save-btn');
+    const cancelButton = document.querySelector('.cancel-btn');
+
+    const displayElements = {
+        nick: document.getElementById('display-nick'),
+        name: document.getElementById('display-name'),
+        email: document.getElementById('display-email'),
+        phone: document.getElementById('display-phone'),
+        birth: document.getElementById('display-birth'),
+        profileName: document.getElementById('profile-name'),
+    };
+
+    const inputElements = {
+        nick: document.getElementById('edit-nick'),
+        name: document.getElementById('edit-name'),
+        email: document.getElementById('edit-email'),
+        phone: document.getElementById('edit-phone'),
+        birth: document.getElementById('edit-birth'),
+    };
+
+    // --- アバター（アイコン）関連 ---
+    const avatarPlusButton = document.getElementById('avatar-plus-button');
+    const avatarImageInput = document.getElementById('image-input');
+    const cropperModal = document.getElementById('cropper-modal');
     const imageToCrop = document.getElementById('image-to-crop');
-    const uploadBtn = document.getElementById('upload-crop-btn');
-    const cancelBtn = document.getElementById('cancel-crop-btn');
+    const uploadCropButton = document.getElementById('upload-crop-btn');
+    const cancelCropButton = document.getElementById('cancel-crop-btn');
+    const avatarImage = document.getElementById('avatar-img');
+    const headerUserIcon = document.querySelector('header #user-icon'); // ヘッダー内のアイコンを特定
 
-    const headerImg = document.getElementById("user-icon");
+    // --- 購入履歴モーダル関連 ---
+    const movieDetailModal = document.getElementById('movie-detail-modal');
+    const closeMovieModalButton = document.querySelector('.close-modal-btn');
+    const movieCards = document.querySelectorAll('.movie-card');
 
+    // --- 折りたたみセクション関連 ---
+    const collapsibleHeader = document.querySelector('.collapsible-header');
+    const collapsibleContent = document.querySelector('.collapsible-content');
+    const toggleIcon = document.querySelector('.toggle-icon');
+
+    //================================================================
+    // 状態管理変数
+    //================================================================
+
+    let isEditMode = false;
+    let originalProfileValues = {};
     let cropper = null;
 
-    // キャッシュを保存するためのキーを定義
-    const CACHE_KEY = 'user_icon_url';
 
-    sessionStorage.removeItem(CACHE_KEY);
+    //================================================================
+    // プロフィール編集機能
+    //================================================================
 
-    // 1. アイコンクリックで、ファイル入力
-    plusButton.addEventListener('click', () => {
-        imageInput.click();
-    });
+    /**
+     * プロフィール情報の表示/編集モードを切り替える
+     */
+    const toggleEditMode = () => {
+        isEditMode = !isEditMode;
+        const allDisplaySpans = document.querySelectorAll('.info-display span');
+        const allInputFields = document.querySelectorAll('.info-display input');
 
-    // 2. ファイルが選択されたら、モーダルを表示してCropperを初期化
-    imageInput.addEventListener('change', (e) => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                imageToCrop.src = reader.result;
-                modal.style.display = 'flex'; // モーダル表示
-
-                // Cropperインスタンスが既にあれば破棄
-                if (cropper) {
-                    cropper.destroy();
-                }
-                
-                // Cropper.jsの初期化
-                cropper = new Cropper(imageToCrop, {
-                    aspectRatio: 1 / 1, // アスペクト比を1:1 (正方形)に
-                    viewMode: 1,        // 切り抜きボックスを画像範囲内に制限
-                    dragMode: 'move',   // ドラッグで画像を移動
-                    background: false,  // グリッド背景を非表示
-                    autoCropArea: 0.8,  // 自動切り抜きエリアのサイズ
-                });
-            };
-            reader.readAsDataURL(files[0]);
-        }
-        // valueをリセットして同じファイルを選択してもchangeイベントが発火するようにする
-        e.target.value = '';
-    });
-
-    // 3. 「アップロード」ボタンがクリックされたら、画像をFlaskに送信
-    uploadBtn.addEventListener('click', () => {
-        if (!cropper) return;
-
-        const canvas = cropper.getCroppedCanvas({
-            width: 400,  // 高解像度でCanvasを生成（後でサーバー側でリサイズする元画像）
-            height: 400,
-        });
-
-        // CanvasをJPEG形式のBlobオブジェクトに変換 (品質90%)
-        canvas.toBlob((blob) => {
-            if (!blob) {
-                console.error('Blobの生成に失敗しました。');
-                return;
+        if (isEditMode) {
+            // 編集開始時に元の値を保存
+            for (const key in inputElements) {
+                originalProfileValues[key] = inputElements[key].value;
             }
-            
-            const formData = new FormData();
-            // ファイル名も .jpg にする
-            formData.append('croppedImage', blob, 'profile-image.jpg');
+            // 編集モードへ
+            allDisplaySpans.forEach(span => span.style.display = 'none');
+            allInputFields.forEach(input => input.style.display = 'block');
+            editActions.style.display = 'flex';
+        } else {
+            // 表示モードへ
+            allDisplaySpans.forEach(span => span.style.display = 'inline');
+            allInputFields.forEach(input => input.style.display = 'none');
+            editActions.style.display = 'none';
+        }
+    };
 
-            // Fetch APIでFlaskにPOSTリクエスト
-            fetch('/add_account_img', {
+    /**
+     * プロフィール情報をサーバーに保存する
+     */
+    const saveProfile = async () => {
+        const profileData = {
+            accountName: inputElements.nick.value,
+            realName: inputElements.name.value,
+            emailAddress: inputElements.email.value,
+            phoneNumber: inputElements.phone.value,
+            birthDate: inputElements.birth.value,
+        };
+
+        try {
+            const response = await fetch('/add_account', {
                 method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    // 成功したら、ページの画像を新しいURLに差し替える
-                    const avatarImg = document.getElementById('avatar-img');
-                    avatarImg.src = data.new_icon_url + '?t=' + new Date().getTime(); // キャッシュ対策
-                    headerImg.src = data.new_icon_url + '?t=' + new Date().getTime();  //ヘッダー用画像
-                    sessionStorage.removeItem(CACHE_KEY);
-                    closeModal();
-                } else {
-                    alert('エラーが発生しました: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Upload Error:', error);
-                alert('画像のアップロードに失敗しました。');
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(profileData),
             });
-        }, 'image/jpeg', 0.9); // MIMEタイプを 'image/jpeg' に、品質を0.9に指定
-    });
-    // キャンセルボタンとモーダルを閉じる処理
-    const closeModal = () => {
-        modal.style.display = 'none';
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || `HTTPエラー: ${response.status}`);
+            }
+
+            if (result.success) {
+                updateProfileDisplays(profileData);
+                toggleEditMode();
+                showNotification('プロフィールを更新しました', 'success');
+            } else {
+                throw new Error(result.message || 'サーバー側でエラーが発生しました。');
+            }
+        } catch (error) {
+            console.error('プロフィールの更新に失敗しました:', error);
+            showNotification(`更新エラー: ${error.message}`, 'error');
+        }
+    };
+
+    /**
+     * 画面上のプロフィール表示を更新する
+     * @param {object} data - 新しいプロフィールデータ
+     */
+    const updateProfileDisplays = (data) => {
+        displayElements.nick.textContent = data.accountName;
+        displayElements.profileName.textContent = data.accountName;
+        displayElements.name.textContent = data.realName;
+        displayElements.email.textContent = data.emailAddress;
+        displayElements.phone.textContent = data.phoneNumber;
+
+        const birthDate = new Date(data.birthDate);
+        // Invalid Dateでないことを確認
+        const formattedBirth = !isNaN(birthDate.getTime())
+            ? `${birthDate.getFullYear()}年${String(birthDate.getMonth() + 1).padStart(2, '0')}月${String(birthDate.getDate()).padStart(2, '0')}日`
+            : '未設定';
+        displayElements.birth.textContent = formattedBirth;
+    };
+
+    /**
+     * プロフィール編集をキャンセルし、元の値に戻す
+     */
+    const cancelEdit = () => {
+        for (const key in inputElements) {
+            inputElements[key].value = originalProfileValues[key];
+        }
+        toggleEditMode();
+    };
+
+
+    //================================================================
+    // アバター（アイコン）変更機能
+    //================================================================
+
+    /**
+     * Cropperモーダルを開く
+     * @param {Event} event - ファイル入力のchangeイベント
+     */
+    const openCropperModal = (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            imageToCrop.src = e.target.result;
+            cropperModal.style.display = 'flex';
+
+            if (cropper) cropper.destroy();
+
+            cropper = new Cropper(imageToCrop, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                background: false,
+                autoCropArea: 0.8,
+            });
+        };
+        reader.readAsDataURL(file);
+        event.target.value = ''; // 同じファイルを選択可能にする
+    };
+    
+    /** Cropperモーダルを閉じる */
+    const closeCropperModal = () => {
+        cropperModal.style.display = 'none';
         if (cropper) {
             cropper.destroy();
             cropper = null;
         }
     };
-    cancelBtn.addEventListener('click', closeModal);
 
-    // Movie Detail Modal Logic
-    const movieDetailModal = document.getElementById('movie-detail-modal');
-    const closeModalBtn = document.querySelector('.close-modal-btn');
-    const movieCards = document.querySelectorAll('.movie-card');
+    /**
+     * CanvasからBlobを非同期で取得するPromiseラッパー
+     * @returns {Promise<Blob>}
+     */
+    const getCanvasBlob = (canvas) => new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
 
-    movieCards.forEach(card => {
-        card.addEventListener('click', () => {
-            const movieId = card.dataset.movieId;
-            const title = card.dataset.movieTitle;
-            const image = card.dataset.movieImage;
-            const screeningDate = card.dataset.screeningDate;
-            const screeningTime = card.dataset.screeningTime;
-            const runningTime = card.dataset.runningTime;
-            const screenId = card.dataset.screenId;
-            const seatNumber = card.dataset.seatNumber;
-            const seatReservationId = card.dataset.seatReservationId;
-            const description = card.dataset.movieDescription;
+    /**
+     * トリミングした画像をアップロードする
+     */
+    const uploadCroppedImage = async () => {
+        if (!cropper) return;
 
-            document.getElementById('modal-movie-title').textContent = title;
-            document.getElementById('modal-movie-link').href = "/movie_information/" + movieId;
-            document.getElementById('modal-movie-image').src = image;
-            document.getElementById('modal-screening-date').textContent = `上映日: ${screeningDate}`;
-            document.getElementById('modal-screening-time').textContent = `上映時間: ${screeningTime} ~ (${runningTime}分)`;
-            document.getElementById('modal-seat-info').textContent = `シアター${screenId} (座席: ${seatNumber})`;
-            document.getElementById('modal-movie-description').textContent = description;
-            document.getElementById('modal-transaction-id').textContent = `取引ID: ${seatReservationId}`;
+        try {
+            const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
+            const blob = await getCanvasBlob(canvas);
+            if (!blob) throw new Error('画像の変換に失敗しました。');
 
-            movieDetailModal.style.display = 'flex';
-        });
-    });
+            const formData = new FormData();
+            formData.append('croppedImage', blob, 'profile-image.jpg');
 
+            const response = await fetch('/add_account_img', {
+                method: 'POST',
+                body: formData,
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                const newImageUrl = `${result.new_icon_url}?t=${new Date().getTime()}`; // キャッシュ対策
+                avatarImage.src = newImageUrl;
+                if (headerUserIcon) headerUserIcon.src = newImageUrl;
+                
+                closeCropperModal();
+                showNotification('アイコンを更新しました', 'success');
+            } else {
+                throw new Error(result.message || 'アップロードに失敗しました。');
+            }
+        } catch (error) {
+            console.error('Upload Error:', error);
+            showNotification(`アップロードエラー: ${error.message}`, 'error');
+        }
+    };
+
+
+    //================================================================
+    // 購入履歴モーダル機能
+    //================================================================
+
+    /**
+     * 購入履歴カードクリック時にモーダルを表示する
+     * @param {Event} event - クリックイベント
+     */
+    const showMovieDetailModal = (event) => {
+        const card = event.currentTarget;
+        const {
+            movieId, movieTitle, movieImage, screeningDate, screeningTime,
+            movieRunningTime, screenId, seatNumber, seatReservationId, movieDescription
+        } = card.dataset;
+
+        document.getElementById('modal-movie-title').textContent = movieTitle;
+        document.getElementById('modal-movie-link').href = `/movie_information/${movieId}`;
+        document.getElementById('modal-movie-image').src = movieImage;
+        document.getElementById('modal-screening-date').textContent = `上映日: ${screeningDate}`;
+        document.getElementById('modal-screening-time').textContent = `上映時間: ${screeningTime} ~ (${movieRunningTime}分)`;
+        document.getElementById('modal-seat-info').textContent = `シアター${screenId} (座席: ${seatNumber})`;
+        document.getElementById('modal-movie-description').textContent = movieDescription;
+        document.getElementById('modal-transaction-id').textContent = `取引ID: ${seatReservationId}`;
+
+        movieDetailModal.style.display = 'flex';
+    };
+
+    /** 購入履歴モーダルを閉じる */
     const closeMovieModal = () => {
         movieDetailModal.classList.add('closing');
         setTimeout(() => {
             movieDetailModal.style.display = 'none';
             movieDetailModal.classList.remove('closing');
-        }, 300); // アニメーションの時間と合わせる
-    }
+        }, 300); // CSSアニメーションのdurationと合わせる
+    };
 
-    closeModalBtn.addEventListener('click', closeMovieModal);
 
-    movieDetailModal.addEventListener('click', (e) => {
-        if (e.target === movieDetailModal) {
-            closeMovieModal();
+    //================================================================
+    // 折りたたみセクション機能
+    //================================================================
+    
+    /**
+     * 基本情報セクションの開閉を制御する
+     * @param {Event} event - クリックイベント
+     */
+    const toggleCollapsibleSection = (event) => {
+        if (event.target.closest('#infoChangeButton')) return;
+
+        const isOpen = collapsibleContent.classList.toggle('open');
+        toggleIcon.classList.toggle('open');
+        infoChangeButton.style.display = isOpen ? 'block' : 'none';
+
+        if (!isOpen && isEditMode) {
+            cancelEdit();
         }
-    });
+    };
 
-    // --- Collapsible Section Logic ---
-    const collapsibleHeader = document.querySelector('.collapsible-header');
-    const collapsibleContent = document.querySelector('.collapsible-content');
-    const toggleIcon = document.querySelector('.toggle-icon');
-    const infoChangeButton = document.getElementById('infoChangeButton');
 
-    // 初期状態では鉛筆アイコンを非表示
-    infoChangeButton.style.display = 'none';
+    //================================================================
+    // 汎用ヘルパー機能
+    //================================================================
 
-    if (collapsibleHeader) {
-        collapsibleHeader.addEventListener('click', (e) => {
-            // クリックされた要素が編集ボタンまたはその子要素でない場合のみトグル
-            if (!e.target.closest('#infoChangeButton')) {
-                const isOpen = collapsibleContent.classList.toggle('open');
-                toggleIcon.classList.toggle('open');
-                infoChangeButton.style.display = isOpen ? 'block' : 'none';
-            }
+    /**
+     * 画面右上に通知を表示する
+     * @param {string} message - 表示するメッセージ
+     * @param {'success'|'info'|'error'} type - 通知の種類
+     */
+    const showNotification = (message, type = 'info') => {
+        const notification = document.createElement('div');
+        const backgroundColor = {
+            success: '#27ae60', info: '#3498db', error: '#e74c3c'
+        }[type];
+
+        Object.assign(notification.style, {
+            position: 'fixed', top: '20px', right: '20px',
+            padding: '15px 20px', backgroundColor, color: 'white',
+            borderRadius: '8px', boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+            zIndex: '2000', transform: 'translateX(120%)', opacity: '0',
+            transition: 'transform 0.3s ease, opacity 0.3s ease'
+        });
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+            notification.style.opacity = '1';
+        }, 10);
+
+        setTimeout(() => {
+            notification.style.transform = 'translateX(120%)';
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    };
+
+
+    //================================================================
+    // イベントリスナーの設定
+    //================================================================
+
+    // --- プロフィール編集 ---
+    if (infoChangeButton) infoChangeButton.addEventListener('click', toggleEditMode);
+    if (saveButton) saveButton.addEventListener('click', saveProfile);
+    if (cancelButton) cancelButton.addEventListener('click', cancelEdit);
+
+    // --- アバター変更 ---
+    if (avatarPlusButton) avatarPlusButton.addEventListener('click', () => avatarImageInput.click());
+    if (avatarImageInput) avatarImageInput.addEventListener('change', openCropperModal);
+    if (uploadCropButton) uploadCropButton.addEventListener('click', uploadCroppedImage);
+    if (cancelCropButton) cancelCropButton.addEventListener('click', closeCropperModal);
+    
+    // --- 購入履歴モーダル ---
+    movieCards.forEach(card => card.addEventListener('click', showMovieDetailModal));
+    if (closeMovieModalButton) closeMovieModalButton.addEventListener('click', closeMovieModal);
+    if (movieDetailModal) {
+        movieDetailModal.addEventListener('click', (e) => {
+            if (e.target === movieDetailModal) closeMovieModal();
         });
     }
+
+    // --- 折りたたみセクション ---
+    if (collapsibleHeader) {
+        collapsibleHeader.addEventListener('click', toggleCollapsibleSection);
+        infoChangeButton.style.display = 'none'; // 初期状態は非表示
+    }
+
+    // ページ読み込み時にセッションストレージのキャッシュをクリア
+    sessionStorage.removeItem('user_icon_url');
 });
