@@ -1071,30 +1071,7 @@ def login():
 
     return render_template('login.html')
 
-@app.route('/reservation_status/<int:showing_id>')
-@login_required
-def reservation_status(showing_id):
-    user_id = session.get('user_id')
-    with get_db_cursor() as cursor:
-        cursor.execute("""
-            SELECT seatNumber, accountId
-            FROM t_seatReservation
-            WHERE scheduledShowingId = %s
-        """, (showing_id,))
-        reservations = cursor.fetchall()
 
-    user_seats = [r['seatNumber'] for r in reservations if r['accountId'] == user_id]
-    other_seats = [r['seatNumber'] for r in reservations if r['accountId'] != user_id]
-
-    # 假设座位是 A-J 行，每行 10 个座位
-    seat_rows = list("ABCDEFGHIJ")
-    seats_per_row = 10
-
-    return render_template("reservation_status.html",
-                           user_seats=user_seats,
-                           other_seats=other_seats,
-                           seat_rows=seat_rows,
-                           seats_per_row=seats_per_row)
 
 
 def inject_useraaaaa():
