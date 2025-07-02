@@ -28,26 +28,26 @@
 
     <main class="main">
         <div class="container">
-            <!-- アイコンとニックネーム、メールアドレス -->
-            <div class="profile-header">
-                <div class="profile-avatar" data-tippy-content="アイコンの変更">
-                    <img src="{{ url_for('static', filename='images/usericon/400x400/' + userData.accountIcon) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/usericon/400x400/default.jpg') }}';" alt="プロフィール画像" id="avatar-img">
-                    <div class="avatar-overlay" id="avatar-plus-button">
-                        <span>+</span>
+            <div class="leftContainer">
+                <!-- アイコンとニックネーム、メールアドレス -->
+                <div class="profile-header">
+                    <div class="profile-avatar" data-tippy-content="アイコンの変更">
+                        <img src="{{ url_for('static', filename='images/usericon/400x400/' + userData.accountIcon) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/usericon/400x400/default.jpg') }}';" alt="プロフィール画像" id="avatar-img">
+                        <div class="avatar-overlay" id="avatar-plus-button">
+                            <span>+</span>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-name" id="profile-name">{{ userData.accountName }}</div>
+                        <div class="profile-mail">{{ userData.emailAddress }}</div>
                     </div>
                 </div>
-                <div class="profile-info">
-                    <div class="profile-name" id="profile-name">{{ userData.accountName }}</div>
-                    <div class="profile-mail">{{ userData.emailAddress }}</div>
-                </div>
-            </div>
 
 
-            <!-- 画像ファイルを選択するための隠しinput要素 -->
-            <input type="file" id="image-input" accept="image/png, image/jpeg" style="display: none;">
+                <!-- 画像ファイルを選択するための隠しinput要素 -->
+                <input type="file" id="image-input" accept="image/png, image/jpeg" style="display: none;">
 
 
-            <div class="profile-content">
                 <!-- 基本情報 -->
                 <div class="profile-section">
                     <div class="titleContainer collapsible-header">
@@ -153,8 +153,10 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-
+            
+            <div class="rightContainer">
                 <!-- 購入履歴 -->
                 <div class="profile-section">
                     <h3 class="section-title">購入履歴</h3>
@@ -207,8 +209,6 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
         </div>
     </main>

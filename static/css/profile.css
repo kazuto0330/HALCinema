@@ -15,9 +15,22 @@ body {
 }
 
 .container {
-    max-width: 1000px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 1620px;
+    min-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+}
+
+.leftContainer{
+    width: 60%;
+    margin-right: 3vw;
+}
+
+.rightContainer{
+    width: 35%;
 }
 
 
@@ -581,21 +594,62 @@ body {
 /* ===================================
    メディアクエリ (レスポンシブ対応)
 ==================================== */
-@media (max-width: 768px) {
+/* --- 画面幅: 1440px以下 --- */
+@media (max-width: 1200px) {
     .container {
-        padding: 1rem;
-    }
-
-    .profile-header {
         flex-direction: column;
-        text-align: center;
+        width: 80%;
+        min-width: 670px;
     }
-
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .points-section {
-        grid-template-columns: 1fr;
+    
+    .leftContainer,
+    .rightContainer{
+        width: 100%;
     }
 }
+
+/* --- 画面幅: 769px以下 (タブレット) --- */
+@media (max-width: 769px) {
+    .profile-header {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .container {
+        width: 100%;
+        min-width: 0px;
+    }
+
+    .profile-avatar img {
+        width: max(15vw,85px);    
+        height: max(15vw,85px);
+    }
+
+    .profile-name {
+        font-size: max(4.3vw,24px);
+    }
+
+    .profile-mail {
+        font-size: max(2.3vw,13px);
+    }
+    
+    .profile-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* --- 画面幅: 666px以下 --- */
+@media (max-width: 666px) {
+    .points-section {
+        display: block;
+        padding: 5px 20px;
+    }
+
+    .points-card {
+        margin-bottom: 10px;
+    }
+}
+
+/* --- 画面幅: 480px以下 (スマートフォン) --- */
+@media (max-width: 480px) {}
