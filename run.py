@@ -371,6 +371,33 @@ def watchHistory(user_id):
         return []
 
 
+#ポイントを保存する関数(user_id,points)
+def savePoint(user_id, points):
+    """ポイントを保存する関数"""
+    try:
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                return False
+
+            # 現在のポイントを取得
+            select_sql = "SELECT points FROM t_account WHERE accountId = %s"
+            cursor.execute(select_sql, (user_id,))
+            result = cursor.fetchone()
+
+            current_points = result['points'] if result and result['points'] is not None else 0
+            new_points = current_points + points
+
+            # ポイントを更新
+            update_sql = "UPDATE t_account SET points = %s WHERE accountId = %s"
+            cursor.execute(update_sql, (new_points, user_id))
+            return True
+
+    except mysql.connector.Error as err:
+        print(f"ポイント保存エラー: {err}")
+        return False
+
+
 # ユーザーデータを読み込む
 def load_users():
     if not os.path.exists(USER_FILE):
@@ -1183,10 +1210,7 @@ def pay():
     # return render_template("pay.html",seats=seats,showing_id=showing_id)
 
 
-# 支払い処理のメインルート（修正版）
-# 支払い処理のメインルート（修正版）
-# 支払い処理のメインルート（デバッグ版）
-# 支払い処理のメインルート（デバッグ版）
+# 支払い処理のメインルート
 @app.route('/process_payment', methods=['POST'])
 def process_payment():
     try:
@@ -1327,6 +1351,9 @@ def process_payment():
 
         print(f"データベース保存: user_id={user_id}, method={payment_method}, amount={amount}円")
         payment_id = save_payment_info(user_id, payment_method, payment_data, amount)
+        #ポイントの保存
+        points = amount * 0.05#とりあえず5％
+        savePoint(user_id, points)
 
         if not payment_id:
             return jsonify({
