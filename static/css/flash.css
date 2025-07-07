@@ -1,0 +1,29 @@
+.flash-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+}
+
+.flash-message {
+  color: white;
+  padding: 15px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  margin: 5px 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* カテゴリごとの色分け */
+.flash-message.green {
+  background-color: #5fd763; /* 緑 */
+}
+
+.flash-message.yellow {
+  background-color: #cbdf1f; /* 黄 */
+}
+
+.flash-message.red {
+  background-color: #f44336; /* 赤 */
+}

@@ -9,7 +9,7 @@ import mysql.connector
 from contextlib import contextmanager
 from PIL import Image
 from functools import wraps
-from flask import Flask, render_template, request, session, redirect, url_for, jsonify
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -1735,6 +1735,9 @@ def add_movie():
         con.commit()
         con.close()
         cur.close()
+        
+        flash("映画を追加しました。", "green")
+        return redirect('/add_movie')
 
     return render_template("add_movie.html")
 
@@ -1840,6 +1843,9 @@ def add_event():
         con.commit()
         con.close()
         cur.close()
+        
+        flash("イベントを追加しました。", "green")
+        return redirect('/add_event')
 
     return render_template("add_event.html")
 
@@ -1863,47 +1869,71 @@ def add_screening():
         moviesId = request.form.get('moviesId')
         screenId = request.form.get('screenId')
         scheduledScreeningDate = request.form.get('scheduledScreeningDate')
-        screeningStartTime = request.form.get('screeningStartTime')
+        screeningStartTimes = request.form.getlist('screeningStartTimes')  # 複数受け取り
 
         errors = {}
 
-        # エラーがある場合はテンプレート再表示
+        if not screeningStartTimes:
+            errors['screeningStartTimes'] = '上映開始時刻を1つ以上選択してください'
+
+        # エラーあれば画面戻す
         if errors:
-            return render_template('add_event.html', errors=errors)
+            now_playing = fetch_movies(status='now_playing')
+            coming_soon = fetch_movies(status='coming_soon')
+            movies = now_playing + coming_soon
+            screens = get_screens()
+            return render_template(
+                'add_screening.html',
+                errors=errors,
+                movies=movies,
+                screens=screens,
+                movies_json=movies,
+                selected_moviesId=moviesId,
+                selected_screenId=screenId,
+                selected_date=scheduledScreeningDate,
+                selected_times=screeningStartTimes
+            )
 
-        # データの挿入
-        sql = """
-              INSERT INTO t_scheduledShowing (scheduledShowingId, \
-                                              moviesId, \
-                                              screenId, \
-                                              scheduledScreeningDate, \
-                                              screeningStartTime) \
-              VALUES (%(scheduledShowingId)s, \
-                      %(moviesId)s, \
-                      %(screenId)s, \
-                      %(scheduledScreeningDate)s, \
-                      %(screeningStartTime)s) \
-              """
-        data = {
-            'scheduledShowingId': scheduledShowingId,
-            'moviesId': moviesId,
-            'screenId': screenId,
-            'scheduledScreeningDate': scheduledScreeningDate,
-            'screeningStartTime': screeningStartTime
-        }
+        # 複数時刻分、レコードを分けて挿入
+        for start_time in screeningStartTimes:
+            sql = """
+                INSERT INTO t_scheduledShowing (
+                    scheduledShowingId, moviesId, screenId, scheduledScreeningDate, screeningStartTime
+                ) VALUES (
+                    %(scheduledShowingId)s, %(moviesId)s, %(screenId)s, %(scheduledScreeningDate)s, %(screeningStartTime)s
+                )
+            """
 
-        cur.execute(sql, data)
+            # IDはユニークなので、ループ毎にインクリメント（例）
+            # ※実務ではもっと安全なID管理をしてください
+            cur.execute("SELECT MAX(scheduledShowingId) FROM t_scheduledShowing")
+            max_id = cur.fetchone()[0]
+            if max_id:
+                scheduledShowingId = f"{int(max_id) + 1:05}"
+            else:
+                scheduledShowingId = "00001"
+
+            data = {
+                'scheduledShowingId': scheduledShowingId,
+                'moviesId': moviesId,
+                'screenId': screenId,
+                'scheduledScreeningDate': scheduledScreeningDate,
+                'screeningStartTime': start_time
+            }
+            cur.execute(sql, data)
 
         con.commit()
-        con.close()
         cur.close()
+        con.close()
 
-    # 映画情報の取得（現在上映中 + 近日公開）
+        # 登録成功後はリダイレクト推奨
+        flash("上映予定を追加しました。", "green")
+        return redirect('/add_screening')
+
+    # GET時の映画とスクリーン取得
     now_playing = fetch_movies(status='now_playing')
     coming_soon = fetch_movies(status='coming_soon')
     movies = now_playing + coming_soon
-
-    # スクリーン情報の取得
     screens = get_screens()
 
     return render_template("add_screening.html", movies=movies, screens=screens, movies_json=movies)

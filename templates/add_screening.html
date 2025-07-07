@@ -5,9 +5,33 @@
     <meta charset="UTF-8">
     <title>上映予定登録</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/add_movie.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
+    <style>
+        .checkbox-group {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px 10px !important;
+        margin-top: 5px !important;
+        width: 100% !important;
+        }
+        .checkbox-group label {
+        font-weight: normal !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        font-size: 14px !important;
+        white-space: nowrap !important;
+        }
+        .checkbox-group label input[type="checkbox"] {
+        margin-right: -40px;
+        margin-left: -50px;
+        }
+    </style>
+
 </head>
 
 <body>
+    {% include 'flash.html' %}
     <h1>上映予定登録フォーム</h1>
 
     <form action="/add_screening" method="post" enctype="multipart/form-data">
@@ -15,37 +39,46 @@
         <!-- 映画タイトルの選択 -->
         <label for="moviesId">映画タイトル</label>
         <select id="moviesId" name="moviesId" required>
-            <option value="" disabled selected>選択してください</option>
+            <option value="" disabled {% if not selected_moviesId %}selected{% endif %}>選択してください</option>
             {% for movie in movies %}
-            <option value="{{ movie.moviesId }}">{{ movie.movieTitle }}</option>
+            <option value="{{ movie.moviesId }}" {% if movie.moviesId == selected_moviesId %}selected{% endif %}>{{ movie.movieTitle }}</option>
             {% endfor %}
         </select>
+
 
         <!-- 上映スクリーンの選択 -->
         <label for="screenId">上映スクリーン</label>
         <select id="screenId" name="screenId" required>
-            <option value="" disabled selected>選択してください</option>
+            <option value="" disabled {% if not selected_screenId %}selected{% endif %}>選択してください</option>
             {% for screen in screens %}
-            <option value="{{ screen.screenId }}">スクリーン{{ screen.screenId }}</option>
+            <option value="{{ screen.screenId }}" {% if screen.screenId == selected_screenId %}selected{% endif %}>スクリーン{{ screen.screenId }}</option>
             {% endfor %}
         </select>
+
 
         <label for="scheduledScreeningDate">上映日</label>
         <select id="scheduledScreeningDate" name="scheduledScreeningDate" required>
             <option value="" disabled selected>選択してください</option>
         </select>
 
-        <label for="screeningStartTime">上映開始時刻</label>
-        <input type="time" id="screeningStartTime" name="screeningStartTime" required>
+        <label>上映開始時刻（複数選択可）</label>
+        <div class="checkbox-group">
+        {% for h in range(0, 24) %}
+            <label><input type="checkbox" name="screeningStartTimes" value="{{ "%02d:00" % h }}"> {{ "%02d:00" % h }}</label>
+            <label><input type="checkbox" name="screeningStartTimes" value="{{ "%02d:30" % h }}"> {{ "%02d:30" % h }}</label>
+        {% endfor %}
+        </div>
+        {% if errors and errors.screeningStartTimes %}
+            <p style="color:red; margin-top:5px;">{{ errors.screeningStartTimes }}</p>
+        {% endif %}
+
 
         <button type="submit">登録</button>
     </form>
 
+    <script src="{{ url_for('static', filename='js/flash.js') }}"></script>
     <script>
         const moviesData = {{ movies_json | tojson | safe }};
-        
-        console.log("script loaded");
-        console.log(moviesData);
 
         document.addEventListener('DOMContentLoaded', () => {
             const moviesSelect = document.getElementById('moviesId');
@@ -55,33 +88,38 @@
                 return date.toISOString().slice(0, 10);
             }
 
-            moviesSelect.addEventListener('change', () => {
-                console.log("change event fired");
-                dateSelect.innerHTML = '<option value="" disabled selected>選択してください</option>';
-
-                const selectedId = moviesSelect.value;
-                const movie = moviesData.find(m => String(m.moviesId) === selectedId);
-                console.log("selected movie:", movie);
-
+            function populateDates(movieId, selectedDate) {
+                dateSelect.innerHTML = '<option value="" disabled>選択してください</option>';
+                const movie = moviesData.find(m => String(m.moviesId) === movieId);
                 if (!movie) return;
 
                 const start = new Date(movie.movieReleaseDate);
                 const end = new Date(movie.movieEndDate);
 
-                if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-                    console.log('Invalid dates', movie.movieReleaseDate, movie.movieEndDate);
-                    return;
-                }
+                if (isNaN(start.getTime()) || isNaN(end.getTime())) return;
 
                 for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
                     const option = document.createElement('option');
                     option.value = formatDate(d);
                     option.textContent = formatDate(d);
+                    if (selectedDate === option.value) {
+                        option.selected = true;
+                    }
                     dateSelect.appendChild(option);
                 }
+            }
+
+            moviesSelect.addEventListener('change', () => {
+                populateDates(moviesSelect.value, null);
             });
+
+            // ページロード時に選択値があれば上映日もセットする
+            {% if selected_moviesId and selected_date %}
+            populateDates("{{ selected_moviesId }}", "{{ selected_date }}");
+            {% endif %}
         });
     </script>
+
 
 
 </body>

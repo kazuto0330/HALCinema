@@ -5,9 +5,11 @@
     <meta charset="UTF-8">
     <title>映画情報登録</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/add_movie.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
 </head>
 
 <body>
+    {% include 'flash.html' %}
     <h1>映画情報登録フォーム</h1>
 
     <!-- formタグを追加 -->
@@ -39,6 +41,7 @@
 
         <button type="submit">登録</button>
     </form>
+    <script src="{{ url_for('static', filename='js/flash.js') }}"></script>
 </body>
 
 </html>
