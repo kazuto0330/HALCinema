@@ -246,6 +246,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // 購入履歴モーダル機能
     //================================================================
 
+    //表示切替
+    const toggleButton = document.getElementById('point-rank');
+    const pointElement = document.getElementById('point');
+    const rankElement = document.getElementById('rank');
+
+    //初期表示
+    rankElement.classList.toggle('is-hidden');
+
+    toggleButton.addEventListener('click', () => {
+        // 3. point要素とrank要素の 'is-hidden' クラスをそれぞれ切り替えます
+        pointElement.classList.toggle('is-hidden');
+        rankElement.classList.toggle('is-hidden');
+    });
+
     /**
      * 購入履歴カードクリック時にモーダルを表示する
      * @param {Event} event - クリックイベント

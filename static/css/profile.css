@@ -255,6 +255,35 @@ body {
 /* ===================================
    ポイント・ランク セクション
 ==================================== */
+#point-rank{
+    cursor: pointer;
+    user-select: none;
+}
+
+.is-hidden {
+    display: none;
+}
+
+.explanation ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.explanation li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.explanation li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #27ae60;
+    font-weight: bold;
+}
+
 .points-section {
     display: grid;
     grid-template-columns: 1fr 1fr;

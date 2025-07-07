@@ -104,51 +104,77 @@
 
 
                 <!-- ポイント・ランク -->
-                <div class="profile-section">
+                <div id="point-rank" class="profile-section">
                     <h3 class="section-title">ポイント・ランク</h3>
-                    <div class="points-section">
-                        <div class="points-card">
-                            <div class="points-info">
-                                <h4>現在のポイント</h4>
-                                <span class="points-value">{{ userData.points}}ポイント</span>
+                    <div id="point">
+                        <div class="points-section">
+                            <div class="points-card">
+                                <div class="points-info">
+                                    <h4>現在のポイント</h4>
+                                    <span class="points-value">{{ userData.points }}ポイント</span>
+                                </div>
+                                <div class="points-actions">
+                                    <button class="use-points-btn">ポイント使用</button>
+                                </div>
                             </div>
-                            <div class="points-actions">
-                                <button class="use-points-btn">ポイント使用</button>
+                            <div class="explanation">
+                            <h4>ポイントはどこで使える？</h4>
+                            <ul>
+                                <li>無料鑑賞券 引き換え</li>
+                                <li>ポップコーン・ドリンク割引</li>
+                                <li>その他特典</li>
+                            </ul>
                             </div>
                         </div>
-                        <div class="rank-container">
-                            {% set rank_points = user_history|length %}
-                            {% if rank_points < 3 %}
-                                {% set rank = 'ブロンズ' %}
-                                {% set rank_class = 'bronze' %}
-                                {% set next_rank = 'シルバー' %}
-                                {% set points_to_next = 3 - rank_points %}
-                                {% set progress = (rank_points / 3) * 100 %}
-                            {% elif rank_points < 7 %}
-                                {% set rank = 'シルバー' %}
-                                {% set rank_class = 'silver' %}
-                                {% set next_rank = 'ゴールド' %}
-                                {% set points_to_next = 7 - rank_points %}
-                                {% set progress = ((rank_points - 3) / 4) * 100 %}
-                            {% else %}
-                                {% set rank = 'ゴールド' %}
-                                {% set rank_class = 'gold' %}
-                                {% set progress = 100 %}
-                            {% endif %}
+                    </div>
 
-                            <div class="rank-header">
-                                <span class="rank-title">会員ランク</span>
-                                <span class="current-rank {{ rank_class }}">{{ rank }}</span>
-                            </div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: {{ progress }}%;"></div>
-                            </div>
-                            <div class="rank-progress-info">
-                                {% if rank != 'ゴールド' %}
-                                    <span>あと{{ points_to_next }}回購入で{{ next_rank }}ランク</span>
+
+                    <div id="rank">
+                        <div class="points-section">
+                            <div class="rank-container">
+                                {% set rank_points = user_history|length %}
+                                {% if rank_points < 3 %}
+                                    {% set rank = 'ブロンズ' %}
+                                    {% set rank_class = 'bronze' %}
+                                    {% set next_rank = 'シルバー' %}
+                                    {% set points_to_next = 3 - rank_points %}
+                                    {% set progress = (rank_points / 3) * 100 %}
+                                {% elif rank_points < 7 %}
+                                    {% set rank = 'シルバー' %}
+                                    {% set rank_class = 'silver' %}
+                                    {% set next_rank = 'ゴールド' %}
+                                    {% set points_to_next = 7 - rank_points %}
+                                    {% set progress = ((rank_points - 3) / 4) * 100 %}
                                 {% else %}
-                                    <span>あなたはゴールドランクです！</span>
+                                    {% set rank = 'ゴールド' %}
+                                    {% set rank_class = 'gold' %}
+                                    {% set progress = 100 %}
                                 {% endif %}
+
+                                <div class="rank-header">
+                                    <span class="rank-title">会員ランク</span>
+                                    <span class="current-rank {{ rank_class }}">{{ rank }}</span>
+                                </div>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: {{ progress }}%;"></div>
+                                </div>
+                                <div class="rank-progress-info">
+                                    {% if rank != 'ゴールド' %}
+                                        <span>あと{{ points_to_next }}回購入で{{ next_rank }}ランク</span>
+                                    {% else %}
+                                        <span>あなたはゴールドランクです！</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="explanation">
+                                <h4>会員特典</h4>
+                                <ul>
+                                    <li>毎月1回無料鑑賞券</li>
+                                    <li>ポップコーン・ドリンク10%オフ</li>
+                                    <li>先行予約受付</li>
+                                    <li>誕生日月特別割引</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
