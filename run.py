@@ -1,6 +1,7 @@
 import json
 import os
 import uuid
+from pathlib import Path
 import re
 import random
 from datetime import date, datetime, timedelta
@@ -22,6 +23,7 @@ app.secret_key = 'qawsedrftgyhujikolp'
 # ユーザーデータの場所(とりあえず、次dbに)
 USER_FILE = 'users.json'
 
+IMAGE_SIZES = [(400, 400), (80, 80)]
 app.config['USER_ICON_UPLOAD_FOLDER'] = 'static/images/usericon'
 app.config['MOVIE_UPLOAD_FOLDER'] = 'static/images/movie'
 app.config['EVENT_UPLOAD_FOLDER'] = 'static/images/event'
@@ -116,9 +118,7 @@ def inject_user():
         user_id = session.get('user_id')
         sql = """
                 SELECT
-                    accountName,
-                    emailAddress,
-                    accountIcon
+                    accountName, emailAddress, accountIcon
                 FROM
                     t_account
                 WHERE
@@ -160,11 +160,8 @@ def fetch_movies(status='now_playing', limit=None):
 
         if status == 'now_playing':
             query = """
-                    SELECT moviesId,
-                           movieTitle,
-                           movieReleaseDate,
-                           movieEndDate,
-                           movieImage
+                    SELECT 
+                        moviesId, movieTitle, movieReleaseDate, movieEndDate, movieImage
                     FROM t_movies
                     WHERE movieEndDate >= %s
                       AND movieReleaseDate <= %s
@@ -173,14 +170,11 @@ def fetch_movies(status='now_playing', limit=None):
             params = (today, today)
         elif status == 'coming_soon':
             query = """
-                    SELECT moviesId,
-                           movieTitle,
-                           movieReleaseDate,
-                           movieEndDate,
-                           movieImage
+                    SELECT 
+                        moviesId, movieTitle, movieReleaseDate, movieEndDate, movieImage
                     FROM t_movies
                     WHERE movieReleaseDate > %s
-                    ORDER BY movieReleaseDate ASC \
+                    ORDER BY movieReleaseDate ASC
                     """
             params = (today,)
         else:
@@ -214,12 +208,11 @@ def fetch_events(limit: int = 10, random_order: bool = False):
         random_order (bool): Trueの場合、取得順序をランダムにする。デフォルトはFalse（固定順序）。
     """
     sql_base = """
-               SELECT eventInfoId,
-                      eventTitle,
-                      eventImage
+                SELECT 
+                    eventInfoId, eventTitle, eventImage
                FROM t_event
                WHERE eventStartDate <= %s
-                 AND eventEndDate >= %s \
+                 AND eventEndDate >= %s
                """
     events = []
     today = date.today()  # 今日の日付を取得
@@ -251,15 +244,10 @@ def fetch_events(limit: int = 10, random_order: bool = False):
 # 指定したIDのイベントの詳細情報を取得する関数（）
 def fetch_event_data(event_id):
     sql = """
-          SELECT eventInfoId,
-                 eventTitle,
-                 eventStartDate,
-                 eventEndDate,
-                 eventDescription,
-                 eventImage,
-                 eventUrl
+          SELECT 
+            eventInfoId, eventTitle, eventStartDate, eventEndDate, eventDescription, eventImage, eventUrl
           FROM t_event
-          WHERE eventInfoId = %s \
+          WHERE eventInfoId = %s
           """
     try:
         with get_db_cursor() as cursor:
@@ -279,17 +267,10 @@ def fetch_event_data(event_id):
 def getUserData(user_id):
     """指定したIDのイベントの詳細情報を取得する関数"""
     sql = """
-          SELECT accountId, \
-                 accountName, \
-                 emailAddress, \
-                 password, \
-                 accountIcon, \
-                 realName, \
-                 phoneNumber, \
-                 birthDate, \
-                 points
+          SELECT 
+            accountId, accountName, emailAddress, password, accountIcon, realName, phoneNumber, birthDate, points
           FROM t_account
-          WHERE accountId = %s; \
+          WHERE accountId = %s; 
           """
     userData = []
     try:
@@ -316,7 +297,7 @@ def getUserIcon(user_id):
     sql = """
           SELECT accountIcon
           FROM t_account
-          WHERE accountId = %s \
+          WHERE accountId = %s 
           """
     userIcon = None
 
@@ -337,14 +318,107 @@ def getUserIcon(user_id):
         return None
 
 
+# ユーザーアイコンを保存する関数
+def _save_icon_files(file_storage, base_upload_path: Path):
+    """アップロードされた画像をリサイズして各ディレクトリに保存する。"""
+    """
+    Args:
+        file_storage: FlaskのFileStorageオブジェクト。
+        base_upload_path: 保存先ディレクトリのベースパス(Pathオブジェクト)。
+
+    Returns:
+        str: 生成されたユニークなファイル名。
+    
+    Raises:
+        IOError: 画像処理またはファイル保存に失敗した場合。
+    """
+    try:
+        base_upload_path = Path(base_upload_path)
+        img = Image.open(file_storage.stream)
+        base_filename = f"{uuid.uuid4()}.jpg"
+
+        for width, height in IMAGE_SIZES:
+            dir_path = base_upload_path / f"{width}x{height}"
+            dir_path.mkdir(parents=True, exist_ok=True) # ディレクトリが存在しなければ作成
+            
+            resized_img = img.resize((width, height), Image.Resampling.LANCZOS)
+            save_path = dir_path / base_filename
+            resized_img.convert('RGB').save(save_path, 'JPEG', quality=95)
+        
+        return base_filename
+    except Exception as e:
+        print(f"画像保存中にエラーが発生しました: {e}")
+        raise IOError(f"画像ファイルの保存に失敗しました: {e}")
+
+
+# ユーザーアイコンをデータベースに登録する関数
+def _update_user_icon_in_db(account_id: int, new_filename: str):
+    """
+    データベースのユーザーアイコン情報を更新する。
+
+    Args:
+        account_id: 更新対象のユーザーID。
+        new_filename: 新しいアイコンのファイル名。
+
+    Raises:
+        mysql.connector.Error: データベース操作に失敗した場合。
+    """
+    conn = None
+    cursor = None
+    try:
+        conn = conn_db()
+        cursor = conn.cursor()
+        
+        sql = "UPDATE `t_account` SET `accountIcon` = %s WHERE `accountId` = %s"
+        cursor.execute(sql, (new_filename, account_id))
+        conn.commit()
+    
+    except mysql.connector.Error as err:
+        if conn:
+            conn.rollback()
+        print(f"データベース更新エラー: {err}")
+        raise # エラーを再送出して、呼び出し元で処理させる
+    
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+# ユーザーアイコンを削除する関数 
+def _delete_icon_files(filename: str, base_upload_path: Path):
+    """
+    指定されたファイル名の古いアイコン画像を全サイズ削除する。
+
+    Args:
+        filename: 削除するファイル名。
+        base_upload_path: 保存先ディレクトリのベースパス(Pathオブジェクト)。
+    """
+    if not filename:
+        return
+
+    base_upload_path = Path(base_upload_path)
+    print(f"古い画像ファイル {filename} の削除を開始します。")
+    for width, height in IMAGE_SIZES:
+        file_path = base_upload_path / f"{width}x{height}" / filename
+        try:
+            if file_path.exists():
+                file_path.unlink() # os.remove(file_path) と同じ
+                print(f"  - 削除成功: {file_path}")
+            else:
+                print(f"  - ファイルなし: {file_path}")
+        except OSError as e:
+            # 削除に失敗しても処理は続行するが、ログには残す
+            print(f"エラー: 古い画像の削除に失敗しました。 Path: {file_path}, Error: {e}")
+
+
 # 視聴履歴を取得する関数（user_id）
 def watchHistory(user_id):
     """指定したIDの視聴履歴を取得する関数"""
     sql = """
           SELECT
-              SR.*,
-              SS.*,
-              M.*
+            SR.*, SS.*, M.*
           FROM
               t_seatreservation AS SR
           JOIN
@@ -627,6 +701,7 @@ def update_profile_img():
     if not account_id:
         return jsonify({'success': False, 'message': 'ログインが必要です。'}), 401
 
+    # 画像がない場合
     if 'croppedImage' not in request.files:
         return jsonify({'status': 'error', 'message': 'ファイルがありません'}), 400
 
@@ -634,101 +709,48 @@ def update_profile_img():
     if file.filename == '':
         return jsonify({'status': 'error', 'message': 'ファイルが選択されていません'}), 400
 
-    if file:
-        try:
-            # 1. 保存先のディレクトリパスを準備
-            base_upload_path = app.config['USER_ICON_UPLOAD_FOLDER']
-            path_400 = os.path.join(base_upload_path, '400x400')
-            path_80 = os.path.join(base_upload_path, '80x80')
 
-            # 2. ディレクトリが存在しなければ作成
-            os.makedirs(path_400, exist_ok=True)
-            os.makedirs(path_80, exist_ok=True)
+    # 1. 保存先のディレクトリパスを準備
+    base_upload_path = app.config['USER_ICON_UPLOAD_FOLDER']
+    new_filename = None
 
-            # 3. Pillowで画像を開く
-            img = Image.open(file.stream)
+    try:
+        # 手順1: 新しい画像を先に保存する
+        new_filename = _save_icon_files(file, base_upload_path)
 
-            # 4. ユニークなファイル名を生成
-            base_filename = str(uuid.uuid4()) + '.jpg'
+        # 手順2: 古い画像のファイル名を取得 (削除はまだしない)
+        # ※getUserIconは既存の関数と仮定
+        user_data = getUserIcon(account_id)
+        old_filename = user_data.get('accountIcon') if user_data else None
+        
+        # 手順3: データベースを更新する
+        _update_user_icon_in_db(account_id, new_filename)
 
-            # 5. 古い画像があれば削除
-            userData = getUserIcon(account_id)
-            oldImg = userData['accountIcon']
-            if oldImg:
-                old_full_filename = oldImg
-                old_filepath_400 = os.path.join(path_400, old_full_filename)
-                old_filepath_80 = os.path.join(path_80, old_full_filename)
+        # 手順4: 全ての処理が成功した後、古い画像を削除する
+        if old_filename:
+            _delete_icon_files(old_filename, base_upload_path)
+            
+        # 8. 成功レスポンスを返す
+        new_icon_url = url_for('static', filename=f'images/usericon/400x400/{new_filename}')
+        return jsonify({'status': 'success', 'new_icon_url': new_icon_url})
+    
+    
+    except (IOError, mysql.connector.Error, Exception) as e:
+        # --- エラー発生時のロールバック処理 ---
+        # もし新しいファイルが作成された後でエラーが起きた場合、そのファイルを削除する
+        if new_filename:
+            print(f"エラー発生のため、ロールバック処理を実行します。作成されたファイル {new_filename} を削除します。")
+            _delete_icon_files(new_filename, base_upload_path)
+        
+        # ユーザーに返すエラーメッセージ
+        error_message = 'サーバーでエラーが発生しました。'
+        if isinstance(e, IOError):
+            error_message = '画像ファイルの処理中にエラーが発生しました。'
+        elif isinstance(e, mysql.connector.Error):
+            error_message = 'データベースの更新中にエラーが発生しました。'
+        
+        return jsonify({'status': 'error', 'message': error_message}), 500
 
-                if os.path.exists(old_filepath_400):  # 400x400 ディレクトリ内の古い画像を削除
-                    try:
-                        os.remove(old_filepath_400)
-                        print(f"古い画像 {old_filepath_400} を削除しました。")
-                    except OSError as e:
-                        print(f"エラー: 古い画像 {old_filepath_400} の削除中に問題が発生しました: {e}")
-                else:
-                    print(f"古い画像 {old_filepath_400} は存在しませんでした。")
-
-                if os.path.exists(old_filepath_80):  # 80x80 ディレクトリ内の古い画像を削除
-                    try:
-                        os.remove(old_filepath_80)
-                        print(f"古い画像 {old_filepath_80} を削除しました。")
-                    except OSError as e:
-                        print(f"エラー: 古い画像 {old_filepath_80} の削除中に問題が発生しました: {e}")
-                else:
-                    print(f"古い画像 {old_filepath_80} は存在しませんでした。")
-
-            # 6. 画像をリサイズして保存
-            img_400 = img.resize((400, 400), Image.Resampling.LANCZOS)
-            img_80 = img.resize((80, 80), Image.Resampling.LANCZOS)
-
-            img_400.convert('RGB').save(os.path.join(path_400, base_filename), 'JPEG', quality=95)
-            img_80.convert('RGB').save(os.path.join(path_80, base_filename), 'JPEG', quality=95)
-
-            # 7. データベースのユーザー情報を更新
-            conn = None
-            cursor = None
-            try:
-                # データベースに接続
-                conn = conn_db()
-                cursor = conn.cursor(dictionary=True)  # dictionary=True で辞書形式で結果が返る
-
-                sql = """
-                UPDATE `t_account`
-                SET`accountIcon` = %s
-                WHERE`accountId` = %s
-                """
-                values = (base_filename, account_id)
-
-                # SQLを実行
-                cursor.execute(sql, values)
-                conn.commit()  # 変更をコミット
-
-            except mysql.connector.Error as err:
-                print(f"データベースエラー: {err}")
-                if conn:
-                    conn.rollback()  # ロールバック
-                return jsonify({'success': False, 'message': f'データベースエラーが発生しました: {err}'}), 500
-            except Exception as e:
-                # その他の予期せぬエラーが発生した場合
-                print(f"予期せぬエラー: {e}")
-                return jsonify({'success': False, 'message': f'サーバーエラーが発生しました: {e}'}), 500
-
-            finally:
-                if cursor:
-                    cursor.close()
-                if conn:
-                    conn.close()
-
-            # 8. フロントエンドに返す新しい画像のURLを生成
-            new_icon_url = url_for('static', filename=f'images/usericon/400x400/{base_filename}')
-
-            return jsonify({'status': 'success', 'new_icon_url': new_icon_url})
-
-        except Exception as e:
-            print(f"Error during image processing: {e}")
-            return jsonify({'status': 'error', 'message': 'サーバーエラーが発生しました'}), 500
-
-    return jsonify({'status': 'error', 'message': '不明なエラー'}), 500
 
 
 # PROFILEのアップロード処理 (既存アカウントの更新)
