@@ -320,8 +320,7 @@ def getUserIcon(user_id):
 
 # ユーザーアイコンを保存する関数
 def _save_icon_files(file_storage, base_upload_path: Path):
-    """アップロードされた画像をリサイズして各ディレクトリに保存する。"""
-    """
+    """アップロードされた画像をリサイズして各ディレクトリに保存する。
     Args:
         file_storage: FlaskのFileStorageオブジェクト。
         base_upload_path: 保存先ディレクトリのベースパス(Pathオブジェクト)。
@@ -363,27 +362,19 @@ def _update_user_icon_in_db(account_id: int, new_filename: str):
     Raises:
         mysql.connector.Error: データベース操作に失敗した場合。
     """
-    conn = None
-    cursor = None
     try:
-        conn = conn_db()
-        cursor = conn.cursor()
-        
-        sql = "UPDATE `t_account` SET `accountIcon` = %s WHERE `accountId` = %s"
-        cursor.execute(sql, (new_filename, account_id))
-        conn.commit()
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                raise
+
+            sql = "UPDATE `t_account` SET `accountIcon` = %s WHERE `accountId` = %s"
+            cursor.execute(sql, (new_filename, account_id))
     
     except mysql.connector.Error as err:
-        if conn:
-            conn.rollback()
         print(f"データベース更新エラー: {err}")
         raise # エラーを再送出して、呼び出し元で処理させる
-    
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
+
 
 
 # ユーザーアイコンを削除する関数 
@@ -737,7 +728,7 @@ def update_profile_img():
     
     except (IOError, mysql.connector.Error, Exception) as e:
         # --- エラー発生時のロールバック処理 ---
-        # もし新しいファイルが作成された後でエラーが起きた場合、そのファイルを削除する
+        # 新しいファイルが作成された後でエラーが起きた場合、そのファイルを削除する
         if new_filename:
             print(f"エラー発生のため、ロールバック処理を実行します。作成されたファイル {new_filename} を削除します。")
             _delete_icon_files(new_filename, base_upload_path)
@@ -792,55 +783,47 @@ def update_profile():
     conn = None
     cursor = None
     try:
-        # データベースに接続
-        conn = conn_db()
-        cursor = conn.cursor(dictionary=True)  # dictionary=True で辞書形式で結果が返る
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                raise
+            
+            sql = """
+                UPDATE `t_account`
+                SET `accountName`  = %s,
+                    `emailAddress` = %s,
+                    `realName`     = %s,
+                    `phoneNumber`  = %s,
+                    `birthDate`    = %s
+                WHERE `accountId` = %s
+                """
+            values = (
+                account_Name,
+                email_address,
+                real_name,
+                phone_number,
+                birth_date,
+                account_id
+            )
+            
+            cursor.execute(sql, (values))
+            
+            # 更新された行数をチェック
+            if cursor.rowcount == 0:
+                # 指定されたaccountIdのアカウントが存在しない、または更新する変更がなかった場合
+                return jsonify(
+                    {'success': False, 'message': 'プロフィールが見つからないか、更新する変更がありませんでした。'}), 404
 
-        sql = """
-              UPDATE `t_account`
-              SET `accountName`  = %s,
-                  `emailAddress` = %s,
-                  `realName`     = %s,
-                  `phoneNumber`  = %s,
-                  `birthDate`    = %s
-              WHERE `accountId` = %s
-              """
-        values = (
-            account_Name,
-            email_address,
-            real_name,
-            phone_number,
-            birth_date,
-            account_id
-        )
-
-        # SQLを実行
-        cursor.execute(sql, values)
-        conn.commit()  # 変更をコミット
-
-        # 更新された行数をチェック
-        if cursor.rowcount == 0:
-            # 指定されたaccountIdのアカウントが存在しない、または更新する変更がなかった場合
-            return jsonify(
-                {'success': False, 'message': 'プロフィールが見つからないか、更新する変更がありませんでした。'}), 404
-
-        return jsonify({'success': True, 'message': 'プロフィールが正常に更新されました。'}), 200
-
+            return jsonify({'success': True, 'message': 'プロフィールが正常に更新されました。'}), 200
+    
+    
     except mysql.connector.Error as err:
         # データベースエラーが発生した場合
         print(f"データベースエラー: {err}")
-        if conn:
-            conn.rollback()  # エラー時はロールバック
         return jsonify({'success': False, 'message': f'データベースエラーが発生しました: {err}'}), 500
     except Exception as e:
         # その他の予期せぬエラーが発生した場合
         print(f"予期せぬエラー: {e}")
-        return jsonify({'success': False, 'message': f'サーバーエラーが発生しました: {e}'}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
 
 
 @app.route('/movie_information/<int:movie_id>')
@@ -1913,6 +1896,7 @@ def add_screening():
                 selected_moviesId=moviesId,
                 selected_screenId=screenId,
                 selected_date=scheduledScreeningDate,
+                
                 selected_times=screeningStartTimes
             )
 
