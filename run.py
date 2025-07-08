@@ -13,6 +13,7 @@ from functools import wraps
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from collections import defaultdict
 
 from urllib.parse import urlparse, urljoin
 
@@ -779,9 +780,7 @@ def update_profile():
     except ValueError:
         return jsonify(
             {'success': False, 'message': 'birthDate の形式が正しくありません。 (YYYY-MM-DD) 例: 1990-01-01'}), 400
-
-    conn = None
-    cursor = None
+        
     try:
         with get_db_cursor() as cursor:
             if cursor is None:
@@ -789,22 +788,15 @@ def update_profile():
                 raise
             
             sql = """
-                UPDATE `t_account`
-                SET `accountName`  = %s,
-                    `emailAddress` = %s,
-                    `realName`     = %s,
-                    `phoneNumber`  = %s,
-                    `birthDate`    = %s
-                WHERE `accountId` = %s
+                UPDATE t_account
+                SET accountName  = %s,
+                    emailAddress = %s,
+                    realName     = %s,
+                    phoneNumber  = %s,
+                    birthDate    = %s
+                WHERE accountId = %s
                 """
-            values = (
-                account_Name,
-                email_address,
-                real_name,
-                phone_number,
-                birth_date,
-                account_id
-            )
+            values = (account_Name, email_address, real_name, phone_number, birth_date, account_id)
             
             cursor.execute(sql, (values))
             
@@ -828,8 +820,6 @@ def update_profile():
 
 @app.route('/movie_information/<int:movie_id>')
 def movie_information(movie_id):
-    from collections import defaultdict
-
     with get_db_cursor() as cursor:
         if cursor is None:
             return "サーバー接続に失敗しました", 500
