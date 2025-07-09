@@ -431,6 +431,7 @@ def watchHistory(user_id):
 
             cursor.execute(sql, (user_id,))
             history_data = cursor.fetchall()  # 複数行の結果を取得するため fetchall()
+            print(history_data)
             return history_data
 
     except mysql.connector.Error:

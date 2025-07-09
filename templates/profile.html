@@ -201,6 +201,8 @@
                                      data-seat-number="{{ record.seatNumber }}"
                                      data-seat-reservation-id="{{ record.seatReservationId }}"
                                      data-movie-description="{{ record.movieDescription | e }}"
+                                     data-amount="{{record.amount}}円"
+                                     data-created-at="{{record.createdAt.strftime('%Y年%m月%d日  %H時%M分')}}"
                                      >
                                     <img src="{{ url_for('static', filename='images/movie/200h/' + record.movieImage) }}" alt="{{ record.movieTitle }}">
                                     <div class="movie-info">
@@ -229,6 +231,10 @@
                                 <p id="modal-screening-date"></p>
                                 <p id="modal-screening-time"></p>
                                 <p id="modal-seat-info"></p>
+
+                                <p id="modal-seat-amount"></p>
+                                <p id="modal-seat-createdAt"></p>
+                                
                                 <p id="modal-movie-description"></p>
                                 <p id="modal-transaction-id" class="transaction-id"></p>
                             </div>
