@@ -1462,9 +1462,9 @@ def pay_comp():
                             f"予約登録: seatReservationId={seatReservationId}, showing_id={showing_id}, accountId={accountId}, seat_label={seat_label}")
 
                         cursor.execute("""
-                                       INSERT INTO t_seatReservation (seatReservationId, scheduledShowingId, accountId, seatNumber)
-                                       VALUES (%s, %s, %s, %s)
-                                       """, (seatReservationId, showing_id, accountId, seat_label))
+                                       INSERT INTO t_seatReservation (seatReservationId, scheduledShowingId, accountId, seatNumber, amount)
+                                       VALUES (%s, %s, %s, %s, %s)
+                                       """, (seatReservationId, showing_id, accountId, seat_label, total_amount))
 
                         reservation_ids.append(seatReservationId)
                         next_id += 1
