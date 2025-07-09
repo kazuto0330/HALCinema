@@ -431,6 +431,7 @@ def watchHistory(user_id):
 
             cursor.execute(sql, (user_id,))
             history_data = cursor.fetchall()  # 複数行の結果を取得するため fetchall()
+            print(history_data)
             return history_data
 
     except mysql.connector.Error:
@@ -1461,9 +1462,9 @@ def pay_comp():
                             f"予約登録: seatReservationId={seatReservationId}, showing_id={showing_id}, accountId={accountId}, seat_label={seat_label}")
 
                         cursor.execute("""
-                                       INSERT INTO t_seatReservation (seatReservationId, scheduledShowingId, accountId, seatNumber)
-                                       VALUES (%s, %s, %s, %s)
-                                       """, (seatReservationId, showing_id, accountId, seat_label))
+                                       INSERT INTO t_seatReservation (seatReservationId, scheduledShowingId, accountId, seatNumber, amount)
+                                       VALUES (%s, %s, %s, %s, %s)
+                                       """, (seatReservationId, showing_id, accountId, seat_label, total_amount))
 
                         reservation_ids.append(seatReservationId)
                         next_id += 1

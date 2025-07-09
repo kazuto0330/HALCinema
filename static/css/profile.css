@@ -584,8 +584,18 @@ body {
 
 #modal-screening-date,
 #modal-screening-time,
-#modal-seat-info {
+#modal-seat-info,
+#modal-seat-amount,
+#modal-seat-createdAt {
     text-indent: 0.8em;
+}
+#modal-seat-amount,
+#modal-seat-createdAt{
+    font-size: 0.9rem;
+}
+
+#modal-seat-amount{
+    margin-top: 40px;
 }
 
 #modal-movie-description {

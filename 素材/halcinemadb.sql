@@ -42,7 +42,7 @@ CREATE TABLE `t_account` (
 
 LOCK TABLES `t_account` WRITE;
 /*!40000 ALTER TABLE `t_account` DISABLE KEYS */;
-INSERT INTO `t_account` VALUES (1,'john_doe','john.doe@example.com','hashedpassword123','John Doe','090-1234-5678','1985-05-15','https://example.com/icons/john.png',1500),(2,'jane_smith','jane.smith@example.com','securepassabc','Jane Smith','080-9876-5432','1992-11-20','200038e6-d84e-45c1-8c9b-1bd9b7d1c587.jpg',2300),(3,'alice_wonder','alice.w@example.com','passwordxyz','Alice Wonderland','070-1111-2222','2000-03-01',NULL,500),(4,'robert_j','robert.j@example.com','mysecretpass','Robert Johnson',NULL,'1970-07-25','https://example.com/icons/robert.gif',4000),(5,'maria_g','maria.g@example.com','anotherhashedpass','Maria Garcia','090-5555-6666','1995-01-01','https://example.com/icons/maria.webp',100),(111,'abc1234','abc123@gmail.com','scrypt:32768:8:1$MG0h56K6zz1iAwoK$8f6da6d60b29c84fdd259bc115728d0b18b4c56e0bbbb026822fa182f982ad8e51be42a59edc6fab6ade05468e5fbbdef283c72fa715fcaa72e436aeb4905112','abc123','123456','2000-02-02','bc39fd56-b10f-4baf-bb80-ad0d437d4429.jpg',0);
+INSERT INTO `t_account` VALUES (1,'john_doe','john.doe@example.com','hashedpassword123','John Doe','090-1234-5678','1985-05-15','https://example.com/icons/john.png',1500),(2,'jane_smith','jane.smith@example.com','securepassabc','Jane Smith','080-9876-5432','1992-11-20','200038e6-d84e-45c1-8c9b-1bd9b7d1c587.jpg',2300),(3,'alice_wonder','alice.w@example.com','passwordxyz','Alice Wonderland','070-1111-2222','2000-03-01',NULL,500),(4,'robert_j','robert.j@example.com','mysecretpass','Robert Johnson',NULL,'1970-07-25','https://example.com/icons/robert.gif',4000),(5,'maria_g','maria.g@example.com','anotherhashedpass','Maria Garcia','090-5555-6666','1995-01-01','https://example.com/icons/maria.webp',100),(111,'abc1234','abc123@gmail.com','scrypt:32768:8:1$MG0h56K6zz1iAwoK$8f6da6d60b29c84fdd259bc115728d0b18b4c56e0bbbb026822fa182f982ad8e51be42a59edc6fab6ade05468e5fbbdef283c72fa715fcaa72e436aeb4905112','abc123','123456','2000-02-02','bc39fd56-b10f-4baf-bb80-ad0d437d4429.jpg',490);
 /*!40000 ALTER TABLE `t_account` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,7 +148,7 @@ CREATE TABLE `t_payment` (
   `paymentStatus` varchar(20) NOT NULL DEFAULT 'pending',
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`paymentId`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,7 +157,7 @@ CREATE TABLE `t_payment` (
 
 LOCK TABLES `t_payment` WRITE;
 /*!40000 ALTER TABLE `t_payment` DISABLE KEYS */;
-INSERT INTO `t_payment` VALUES (1,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"USER\", \"expiry_date\": \"12/99\", \"status\": \"completed\"}',1800.00,'completed','2025-06-30 01:06:14'),(2,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"AAAAAAAAAAA\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 1800, \"seat_count\": 1}',1800.00,'completed','2025-07-01 00:40:28'),(3,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"ADWAWWDADDADWAD\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 1800, \"seat_count\": 1}',1800.00,'completed','2025-07-01 05:12:05'),(4,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"AAAAAAA\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 1800, \"seat_count\": 1}',1800.00,'completed','2025-07-01 08:11:01');
+INSERT INTO `t_payment` VALUES (1,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"USER\", \"expiry_date\": \"12/99\", \"status\": \"completed\"}',1800.00,'completed','2025-06-30 01:06:14'),(2,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"AAAAAAAAAAA\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 1800, \"seat_count\": 1}',1800.00,'completed','2025-07-01 00:40:28'),(3,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"ADWAWWDADDADWAD\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 1800, \"seat_count\": 1}',1800.00,'completed','2025-07-01 05:12:05'),(4,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"AAAAAAA\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 1800, \"seat_count\": 1}',1800.00,'completed','2025-07-01 08:11:01'),(5,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"AAAAAAAAAAAAAA\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 1800, \"seat_count\": 1}',1800.00,'completed','2025-07-02 02:15:39');
 /*!40000 ALTER TABLE `t_payment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -242,7 +242,7 @@ CREATE TABLE `t_seatreservation` (
 
 LOCK TABLES `t_seatreservation` WRITE;
 /*!40000 ALTER TABLE `t_seatreservation` DISABLE KEYS */;
-INSERT INTO `t_seatreservation` VALUES (1,3,111,'C-9'),(2,8,111,'H-16'),(3,8,111,'D-10');
+INSERT INTO `t_seatreservation` VALUES (1,3,111,'C-9'),(2,8,111,'H-16'),(3,8,111,'D-10'),(4,6,111,'C-6');
 /*!40000 ALTER TABLE `t_seatreservation` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -255,4 +255,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-02 10:51:24
+-- Dump completed on 2025-07-09 15:31:33

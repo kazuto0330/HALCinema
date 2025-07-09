@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = event.currentTarget;
         const {
             movieId, movieTitle, movieImage, screeningDate, screeningTime,
-            movieRunningTime, screenId, seatNumber, seatReservationId, movieDescription
+            movieRunningTime, screenId, seatNumber, seatReservationId, movieDescription, amount, createdAt
         } = card.dataset;
 
         document.getElementById('modal-movie-title').textContent = movieTitle;
@@ -279,6 +279,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('modal-seat-info').textContent = `シアター${screenId} (座席: ${seatNumber})`;
         document.getElementById('modal-movie-description').textContent = movieDescription;
         document.getElementById('modal-transaction-id').textContent = `取引ID: ${seatReservationId}`;
+        console.log({seatReservationId});
+
+        document.getElementById('modal-seat-amount').textContent = `購入価格: ${amount}`;
+        console.log({amount});
+        document.getElementById('modal-seat-createdAt').textContent = `購入日時: ${createdAt}`;
 
         movieDetailModal.style.display = 'flex';
     };
