@@ -962,7 +962,6 @@ def member_login():
 
 
 # register画面
-
 def generate_unique_account_id():
     conn = conn_db()
     cursor = conn.cursor()
