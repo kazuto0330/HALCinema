@@ -901,6 +901,9 @@ def movie_information(movie_id):
             weekday = s['scheduledScreeningDate'].strftime('%a')
             day_key = f"{date_str} ({weekday})"
 
+            # 曜日クラスを追加（HTMLで使えるように）
+            s['weekdayClass'] = weekday
+
             schedule_by_day[day_key].append(s)
 
         return render_template("movie_information.html",

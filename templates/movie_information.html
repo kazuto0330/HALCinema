@@ -56,7 +56,14 @@
                     {% set hours = (total_seconds // 3600)|int %}
                     {% set minutes = ((total_seconds % 3600) // 60)|int %}
                     <span class="time">{{ "%02d:%02d" % (hours, minutes) }}</span>
-                    <span class="status">{{ slot.reservationStatus }}</span>
+                    <span class="status
+                          {% if slot.reservationStatus == '○' %}good
+                          {% elif slot.reservationStatus == '△' %}warning
+                          {% elif slot.reservationStatus == '×' %}bad
+                          {% else %}?{% endif %}">
+                          {{ slot.reservationStatus }}
+                    </span>
+
                     <button type="button" class="submit-btn" onclick="location.href='/seat_reservation/{{ slot.scheduledShowingId }}'">予約</button>
                 </div>
                 {% endfor %}
@@ -64,7 +71,7 @@
             {% endfor %}
         </section>
 
-        <div class="eiga">&copy; 2025 青山剛昌／名探偵コナン製作委員会</div>
+        <div class="eiga">&copy; 2025 {{ movie.movieTitle }}製作委員会</div>
 
     </main>
 

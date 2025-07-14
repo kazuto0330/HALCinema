@@ -144,6 +144,11 @@ header {
     flex-direction: column;
 }
 
+.dayCard:hover {
+    background-color: #333;  /* 少し明るくする */
+    cursor: pointer;         /* カーソルをポインターに */
+}
+
 .Mon {
     background-color: #DA3E41;
 }
@@ -186,7 +191,7 @@ header {
 .date .day {
     font-size: 35px;
     font-weight: bold;
-    color: FFFFFF;
+    color: #FFFFFF;
 }
 
 .Mon:hover {
@@ -271,7 +276,28 @@ header {
     font-size: 1.5em;
     display: flex;
     align-items: center;
+
 }
+
+.slot .status.good {
+  color: green;
+  font-weight: 1500;
+}
+
+.slot .status.warning {
+  color: orange;
+  font-weight: bold;
+}
+
+.slot.status.bad {
+  color: red;
+  font-weight: bold;
+}
+
+.status.unknown {
+  color: gray;
+}
+
 
 
 
