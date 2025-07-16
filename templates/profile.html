@@ -187,28 +187,14 @@
                 <div class="profile-section">
                     <h3 class="section-title">購入履歴</h3>
                     <div class="movie-history">
-
                         {% if user_history %}
                             {% for record in user_history %}
-                                <div class="movie-card"
-                                     data-movie-id="{{ record.moviesId }}"
-                                     data-movie-title="{{ record.movieTitle }}"
-                                     data-movie-image="{{ url_for('static', filename='images/movie/original/' + record.movieImage) }}"
-                                     data-screening-date="{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}"
-                                     data-screening-time="{{ record.screeningStartTime }}"
-                                     data-movie-running-time="{{ record.movieRunningTime }}"
-                                     data-screen-id="{{ record.screenId }}"
-                                     data-seat-number="{{ record.seatNumber }}"
-                                     data-seat-reservation-id="{{ record.seatReservationId }}"
-                                     data-movie-description="{{ record.movieDescription | e }}"
-                                     data-amount="{{record.amount}}円"
-                                     data-created-at="{{record.createdAt.strftime('%Y年%m月%d日  %H時%M分')}}"
-                                     >
-                                    <img src="{{ url_for('static', filename='images/movie/200h/' + record.movieImage) }}" alt="{{ record.movieTitle }}">
+                                <div class="movie-card">
+                                    <img src="{{ url_for('static', filename='images/movie/200h/' + record.movieImage) }}" alt="{{ record.movieTitle }}" style="margin-right: 15px;">
                                     <div class="movie-info">
                                         <h4>{{ record.movieTitle }}</h4>
-                                        <p>{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}　{{ record.screeningStartTime }} ~</p>
-                                        <span class="theater">シアター{{ record.screenId }} (座席: {{ record.seatNumber }})</span>
+                                        <p>{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}　{{ formatted_time }} ~</p>
+                                        <span class="theater">シアター{{ record.theaterNumber }} (座席: {{ record.reservedSeats }})</span>
                                     </div>
                                 </div>
                             {% endfor %}
@@ -216,6 +202,7 @@
                         {% else %}
                             <p class="no-history">購入履歴はありません。</p>
                         {% endif %}
+
                     </div>
                 </div>
 

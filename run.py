@@ -409,18 +409,39 @@ def _delete_icon_files(filename: str, base_upload_path: Path):
 def watchHistory(user_id):
     """指定したIDの視聴履歴を取得する関数"""
     sql = """
-          SELECT
-            SR.*, SS.*, M.*
-          FROM
-              t_seatreservation AS SR
-          JOIN
-              t_scheduledshowing AS SS ON SR.scheduledShowingId = SS.scheduledShowingId
-          JOIN
-              t_movies AS M ON SS.moviesId = M.moviesId
-          WHERE
-              SR.accountId = %s
-          ORDER BY
-              SS.scheduledScreeningDate DESC, M.movieTitle ASC;
+    SELECT
+        bb.bulkBookingId AS transactionId,
+        m.movieImage,
+        m.movieTitle,
+        m.movieRunningTime,
+        ss.scheduledScreeningDate,
+        ss.screeningStartTime,
+        ss.screenId AS theaterNumber,
+        GROUP_CONCAT(sr.seatNumber ORDER BY sr.seatNumber SEPARATOR ', ') AS reservedSeats
+    FROM
+        t_account AS a
+    JOIN
+        t_bulkbooking AS bb ON a.accountId = bb.accountId
+    JOIN
+        t_seatreservationstatus AS srs ON bb.bulkBookingId = srs.bulkBookingId
+    JOIN
+        t_seatreservation AS sr ON srs.seatReservationId = sr.seatReservationId
+    JOIN
+        t_scheduledshowing AS ss ON sr.scheduledShowingId = ss.scheduledShowingId
+    JOIN
+        t_movies AS m ON ss.moviesId = m.moviesId
+    WHERE
+        a.accountId = %s
+    GROUP BY
+        bb.bulkBookingId,
+        m.movieImage,
+        m.movieTitle,
+        m.movieRunningTime,
+        ss.scheduledScreeningDate,
+        ss.screeningStartTime,
+        ss.screenId
+    ORDER BY
+        ss.scheduledScreeningDate DESC, ss.screeningStartTime DESC;
           """
     history_data = []  # 視聴履歴のリストを格納する変数
     try:
