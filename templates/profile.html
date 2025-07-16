@@ -189,11 +189,24 @@
                     <div class="movie-history">
                         {% if user_history %}
                             {% for record in user_history %}
-                                <div class="movie-card">
+                                <div class="movie-card"
+                                    data-movie-id="{{ record.moviesId }}"
+                                    data-movie-title="{{ record.movieTitle }}"
+                                    data-movie-image="{{ url_for('static', filename='images/movie/original/' + record.movieImage) }}"
+                                    data-screening-date="{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}"
+                                    data-screening-time="{{ record.screeningStartTime }}"
+                                    data-movie-running-time="{{ record.movieRunningTime }}"
+                                    data-screen-id="{{ record.screenId }}"
+                                    data-seat-number="{{ record.reservedSeats }}"
+                                    data-seat-reservation-id="{{ record.transactionId }}"
+                                    data-movie-description="{{ record.movieDescription | e }}"
+                                    data-amount="{{record.totalAmount}}円"
+                                    data-created-at="{{record.transactionDatetime.strftime('%Y年%m月%d日  %H時%M分')}}">
+                                     
                                     <img src="{{ url_for('static', filename='images/movie/200h/' + record.movieImage) }}" alt="{{ record.movieTitle }}" style="margin-right: 15px;">
                                     <div class="movie-info">
                                         <h4>{{ record.movieTitle }}</h4>
-                                        <p>{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}　{{ formatted_time }} ~</p>
+                                        <p>{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}　{{ record.screeningStartTime }}～　（{{ record.movieRunningTime }}分）</p>
                                         <span class="theater">シアター{{ record.theaterNumber }} (座席: {{ record.reservedSeats }})</span>
                                     </div>
                                 </div>

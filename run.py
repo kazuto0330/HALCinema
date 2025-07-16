@@ -411,13 +411,16 @@ def watchHistory(user_id):
     sql = """
     SELECT
         bb.bulkBookingId AS transactionId,
+        bb.reservationDatetime AS transactionDatetime,
+        m.moviesId,
         m.movieImage,
         m.movieTitle,
         m.movieRunningTime,
         ss.scheduledScreeningDate,
         ss.screeningStartTime,
         ss.screenId AS theaterNumber,
-        GROUP_CONCAT(sr.seatNumber ORDER BY sr.seatNumber SEPARATOR ', ') AS reservedSeats
+        GROUP_CONCAT(sr.seatNumber ORDER BY sr.seatNumber SEPARATOR ', ') AS reservedSeats,
+        bb.totalReservationAmount AS totalAmount
     FROM
         t_account AS a
     JOIN
@@ -434,14 +437,17 @@ def watchHistory(user_id):
         a.accountId = %s
     GROUP BY
         bb.bulkBookingId,
+        bb.reservationDatetime,
+        m.moviesId,
         m.movieImage,
         m.movieTitle,
         m.movieRunningTime,
         ss.scheduledScreeningDate,
         ss.screeningStartTime,
-        ss.screenId
+        ss.screenId,
+        bb.totalReservationAmount
     ORDER BY
-        ss.scheduledScreeningDate DESC, ss.screeningStartTime DESC;
+        bb.reservationDatetime DESC;
           """
     history_data = []  # 視聴履歴のリストを格納する変数
     try:
