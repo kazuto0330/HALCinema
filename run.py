@@ -4,7 +4,8 @@ import uuid
 from pathlib import Path
 import re
 import random
-from datetime import date, datetime, timedelta
+import datetime
+from datetime import date, timedelta
 
 import mysql.connector
 from contextlib import contextmanager
@@ -96,8 +97,17 @@ def format_datetime(value, format='%Y年%m月%d日'):
         return ''
     return value.strftime(format)
 
+def format_timedelta_hh_mm(td_object):
+    if not isinstance(td_object, datetime.timedelta):
+        return td_object
+    total_seconds = int(td_object.total_seconds())
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    return f"{hours:02}:{minutes:02}"
+
 
 app.jinja_env.filters['strftime'] = format_datetime
+app.jinja_env.filters['timedelta_hh_mm'] = format_timedelta_hh_mm
 
 
 # ログインしているか確認する関数
@@ -458,7 +468,6 @@ def watchHistory(user_id):
 
             cursor.execute(sql, (user_id,))
             history_data = cursor.fetchall()  # 複数行の結果を取得するため fetchall()
-            print(history_data)
             return history_data
 
     except mysql.connector.Error:

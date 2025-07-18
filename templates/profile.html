@@ -194,7 +194,7 @@
                                     data-movie-title="{{ record.movieTitle }}"
                                     data-movie-image="{{ url_for('static', filename='images/movie/original/' + record.movieImage) }}"
                                     data-screening-date="{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}"
-                                    data-screening-time="{{ record.screeningStartTime }}"
+                                    data-screening-time="{{ record.screeningStartTime | timedelta_hh_mm }}"
                                     data-movie-running-time="{{ record.movieRunningTime }}"
                                     data-screen-id="{{ record.screenId }}"
                                     data-seat-number="{{ record.reservedSeats }}"
@@ -224,7 +224,7 @@
                     <div class="movie-modal-content">
                         <span class="close-modal-btn">&times;</span>
                         <div class="modal-movie-details">
-                            <img id="modal-movie-image" src="" alt="Movie Poster">
+                            <img id="modal-movie-image" src="" alt="Movie Poster" loading="lazy">
                             <div class="modal-movie-info">
                                 <h2 id="modal-movie-title"></h2>
                                 <a id="modal-movie-link" href="" target="_blank">作品詳細へ</a>  

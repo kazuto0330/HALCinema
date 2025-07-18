@@ -602,7 +602,7 @@ body {
 #modal-movie-description {
     margin-top: 1rem;
     font-size: 0.9rem;
-    height: 150px;
+    height: 20px;
     overflow-y: auto;
 }
 
