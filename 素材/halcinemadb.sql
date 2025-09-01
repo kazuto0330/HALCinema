@@ -42,8 +42,36 @@ CREATE TABLE `t_account` (
 
 LOCK TABLES `t_account` WRITE;
 /*!40000 ALTER TABLE `t_account` DISABLE KEYS */;
-INSERT INTO `t_account` VALUES (1,'john_doe','john.doe@example.com','hashedpassword123','John Doe','090-1234-5678','1985-05-15','https://example.com/icons/john.png',1500),(2,'jane_smith','jane.smith@example.com','securepassabc','Jane Smith','080-9876-5432','1992-11-20','200038e6-d84e-45c1-8c9b-1bd9b7d1c587.jpg',2300),(3,'alice_wonder','alice.w@example.com','passwordxyz','Alice Wonderland','070-1111-2222','2000-03-01',NULL,500),(4,'robert_j','robert.j@example.com','mysecretpass','Robert Johnson',NULL,'1970-07-25','https://example.com/icons/robert.gif',4000),(5,'maria_g','maria.g@example.com','anotherhashedpass','Maria Garcia','090-5555-6666','1995-01-01','https://example.com/icons/maria.webp',100),(111,'abc1234','abc123@gmail.com','scrypt:32768:8:1$MG0h56K6zz1iAwoK$8f6da6d60b29c84fdd259bc115728d0b18b4c56e0bbbb026822fa182f982ad8e51be42a59edc6fab6ade05468e5fbbdef283c72fa715fcaa72e436aeb4905112','abc123','123456','2000-02-02','bc39fd56-b10f-4baf-bb80-ad0d437d4429.jpg',490);
+INSERT INTO `t_account` VALUES (85791,'abc123','abc123@gmail.com','scrypt:32768:8:1$9KFhkv0oBy7x1x8g$e72e1257c927e7c48f7e9c7fd61f28d179dd96292c1d7b3a6535d9e15a6a3556b0a75decf5d2767449f502b9e75fde6a82e9c35356ad8d98a6642c5727039a65','abc123','12345','2025-07-11','default.jpg',270);
 /*!40000 ALTER TABLE `t_account` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `t_bulkbooking`
+--
+
+DROP TABLE IF EXISTS `t_bulkbooking`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `t_bulkbooking` (
+  `bulkBookingId` int NOT NULL,
+  `accountId` int DEFAULT NULL,
+  `totalReservationAmount` int DEFAULT NULL,
+  `reservationDatetime` datetime DEFAULT NULL,
+  PRIMARY KEY (`bulkBookingId`),
+  KEY `accountId` (`accountId`),
+  CONSTRAINT `t_bulkbooking_ibfk_1` FOREIGN KEY (`accountId`) REFERENCES `t_account` (`accountId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `t_bulkbooking`
+--
+
+LOCK TABLES `t_bulkbooking` WRITE;
+/*!40000 ALTER TABLE `t_bulkbooking` DISABLE KEYS */;
+INSERT INTO `t_bulkbooking` VALUES (1,85791,5400,'2025-07-16 15:34:26');
+/*!40000 ALTER TABLE `t_bulkbooking` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -98,7 +126,7 @@ CREATE TABLE `t_event` (
 
 LOCK TABLES `t_event` WRITE;
 /*!40000 ALTER TABLE `t_event` DISABLE KEYS */;
-INSERT INTO `t_event` VALUES (1,'未来技術EXPO 2024','2025-05-15','2026-03-10','最新のAI、ロボティクス、IoT技術が集結する展示会です。未来を体験しよう！','a7334f44-cf5d-4449-9b1a-6fb58d50b799.jpg','https://expo.example.com/futuretech'),(2,'心と体の癒しフェス','2025-04-20','2026-01-05','ヨガ、瞑想、アロマセラピーなど、心身をリフレッシュするプログラムが満載です。','b8c4e5d6-d2a1-43e7-8b9c-0f1e2d3c4b5a.jpg',NULL),(3,'地域ふれあい祭り','2024-12-01','2025-11-20','地元のお店やパフォーマーが集まる、地域密着型のお祭りです。家族みんなで楽しめます。','c1d2e3f4-5a6b-7c8d-9e0f-1a2b3c4d5e6f.jpg','https://local-festival.org/2024'),(4,'冬のグルメ大試食会','2025-06-10','2026-02-15','全国各地の冬の味覚が集まる、食いしん坊にはたまらないイベントです。','d9e0f1a2-b3c4-5d6e-7f8a-9b0c1d2e3f4a.jpg',NULL),(5,'子ども科学教室','2025-03-01','2026-01-10','実験を通じて科学の楽しさを学ぶ、小中学生向けのワークショップです。','e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f9a0b.jpg','https://science-class.kids/spring'),(6,'起業家向け交流会','2025-01-15','2025-12-31','新たなビジネスチャンスを探す起業家や投資家のためのネットワーキングイベント。','f0a1b2c3-d4e5-6f7a-8b9c-0d1e2f3a4b5c.jpg','https://startup-meetup.com/next'),(7,'伝統工芸品展','2024-09-01','2025-08-30','日本の美しい伝統工芸品を一堂に集めた展示販売会です。職人の技に触れてみませんか。','1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d.jpg',NULL),(8,'国際映画フェスティバル','2025-02-10','2026-01-25','世界中から選りすぐりの映画が集まる、映画ファン必見の祭典です。','2e3f4a5b-6c7d-8e9f-0a1b-2c3d4e5f6a7b.jpg','https://intl-film-fest.org/2024'),(9,'健康と美容の祭典','2024-07-01','2025-06-01','最新の健康食品、美容機器、フィットネスプログラムを体験できます。','3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f.jpg',NULL),(10,'ゲーム開発者会議','2025-06-10','2026-05-30','ゲーム業界の最前線で活躍する開発者が集結し、最新技術やノウハウを共有します。','4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a.jpg','https://gamedev-conf.net/spring');
+INSERT INTO `t_event` VALUES (1,'夏の音楽祭2024','2024-07-20','2024-07-22','昨年の夏を彩った、多彩なジャンルのアーティストが集結した音楽の祭典です。','event1.jpg','https://example.com/event/summerfes2024'),(2,'古都の紅葉ライトアップ','2024-11-01','2024-11-30','歴史ある古都で、鮮やかに染まる紅葉を幻想的な光で彩る特別イベントでした。','event2.jpg',NULL),(3,'新春アートギャラリー2025','2025-01-10','2025-01-25','国内外の現代アーティストによる、新春にふさわしいテーマの作品が展示されました。','event3.jpg','https://example.com/event/artgallery2025'),(4,'桜まつり2025','2025-03-25','2025-04-05','満開の桜の下で、伝統芸能や屋台が楽しめる地域最大の桜まつりでした。','event4.jpg',NULL),(5,'国際映画祭2025','2025-06-01','2025-06-15','世界各国の最新映画が上映され、監督や俳優によるトークイベントも開催されました。','event5.jpg','https://example.com/event/filmfes2025'),(6,'未来都市EXPO','2024-09-01','2026-08-31','最新テクノロジーと未来のライフスタイルを体験できる大規模な国際博覧会です。','event1.jpg','https://example.com/event/futureexpo'),(7,'世界遺産写真展','2024-10-15','2026-12-31','地球上に残る壮大な世界遺産の美しさを捉えた写真の数々を展示しています。','event2.jpg',NULL),(8,'オーロラ観測ツアー','2024-12-01','2027-02-28','北の大地で神秘的なオーロラを体験できる特別ツアー。一生に一度の感動を。','event3.jpg','https://example.com/event/auroratour'),(9,'海洋生物の祭典','2025-01-20','2027-05-31','深海の神秘から沿岸の多様な生命まで、海洋生物の魅力を探る大規模イベントです。','event4.jpg',NULL),(10,'ゲーム開発者会議','2025-02-10','2027-08-15','ゲーム業界の最前線を走る開発者たちが集い、最新の技術と知見を共有します。','event5.jpg','https://example.com/event/gamedevconf'),(11,'古代文明展','2025-03-05','2027-10-31','世界各地から集められた古代文明の貴重な遺物を展示。歴史のロマンに触れる。','event1.jpg',NULL),(12,'国際食文化フェスティバル','2025-04-20','2027-11-30','世界各国の多様な食文化を体験できる祭典。味覚の旅に出かけましょう。','event2.jpg','https://example.com/event/foodfest'),(13,'科学技術体験ラボ','2025-05-10','2027-12-31','子供から大人まで、楽しみながら科学の原理を学べるインタラクティブな展示です。','event3.jpg',NULL),(14,'デジタルアートの未来','2025-06-01','2028-01-31','最新のデジタル技術を駆使したアート作品の展示と、アーティストによるワークショップ。','event4.jpg','https://example.com/event/digitalart'),(15,'自然保護サミット','2025-06-25','2028-03-20','地球環境の未来について議論し、持続可能な社会を目指す国際会議が開催されます。','event5.jpg',NULL),(16,'ロボット工学展示会','2025-07-01','2028-05-01','最新の産業用ロボットから家庭用ロボットまで、未来を拓くロボット技術を一堂に。','event1.jpg','https://example.com/event/robotexpo'),(17,'宇宙の神秘展','2025-07-05','2028-06-30','最新の天体観測データとVR技術で、広大な宇宙の神秘を体験できます。','event2.jpg',NULL),(18,'地球の歩き方フォーラム','2025-07-10','2028-07-14','世界の旅の達人たちが集い、旅の魅力や秘訣を語り合うトークセッションです。','event3.jpg','https://example.com/event/travelforum'),(19,'伝統工芸体験ウィーク','2025-07-12','2028-08-31','職人の指導のもと、日本の伝統工芸を実際に体験し、その奥深さに触れることができます。','event4.jpg',NULL),(20,'歴史再発見ツアー','2025-07-14','2028-09-30','地域に残る歴史的建造物や史跡を巡り、専門家が解説する特別なツアーです。','event5.jpg','https://example.com/event/historytour'),(21,'未来エネルギー会議','2026-01-15','2026-01-20','再生可能エネルギーの最新動向と、持続可能な社会への貢献について議論します。','event1.jpg','https://example.com/event/energyconf'),(22,'バーチャルリアリティ祭','2026-03-01','2026-03-07','最新のVR/AR技術を体験できるイベント。未来のエンターテイメントがここに。','event2.jpg',NULL),(23,'グローバル教育サミット','2026-05-10','2026-05-15','世界の教育者が集い、これからの教育のあり方について意見交換を行います。','event3.jpg','https://example.com/event/edu_summit'),(24,'宇宙エレベーター建設展','2026-07-01','2026-07-31','SFの世界が現実に？宇宙エレベーターの実現に向けた最新技術と構想を紹介します。','event4.jpg',NULL),(25,'AIと社会の未来','2026-09-05','2026-09-10','人工知能がもたらす社会変革と、倫理的な課題について深く掘り下げます。','event5.jpg','https://example.com/event/aisociety'),(26,'スマート農業EXPO','2026-11-01','2026-11-05','ICTを活用した次世代農業の展示会。食料問題解決への貢献を目指します。','event1.jpg',NULL),(27,'極地探検の記録展','2027-01-20','2027-02-28','厳しい環境で生命を育む極地の自然と、探検家たちの偉業を写真と映像で紹介。','event2.jpg','https://example.com/event/polarexpo'),(28,'次世代モビリティショー','2027-03-15','2027-03-20','自動運転車や空飛ぶクルマなど、未来の交通手段が集まる展示会です。','event3.jpg',NULL),(29,'医療イノベーション会議','2027-05-01','2027-05-07','最新の医療技術と治療法、健康寿命延伸への取り組みについて議論する専門会議。','event4.jpg','https://example.com/event/medicalconf'),(30,'未来の暮らしデザイン展','2027-07-01','2027-07-15','テクノロジーとデザインが融合した、持続可能で快適な未来の住まいを提案します。','event5.jpg',NULL);
 /*!40000 ALTER TABLE `t_event` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -128,7 +156,7 @@ CREATE TABLE `t_movies` (
 
 LOCK TABLES `t_movies` WRITE;
 /*!40000 ALTER TABLE `t_movies` DISABLE KEYS */;
-INSERT INTO `t_movies` VALUES (1,'星の彼方へ','2023-01-20','2026-03-01',125,850000,'広大な宇宙を舞台に、未知の惑星への冒険を描くSF大作。主人公たちの絆と成長が感動を呼ぶ。','a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d.jpg'),(2,'古城の秘密','2024-05-10','2027-01-15',105,320000,'廃墟となった古城に隠された、数百年もの間語り継がれる秘密を解き明かすミステリー。','b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e.jpg'),(3,'最後の戦士','2022-11-25','2026-08-20',160,1200000,'滅びゆく世界で、たった一人の戦士が希望をかけて強大な敵に立ち向かう壮大なファンタジー。','c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f.jpg'),(4,'時の旅人','2025-02-14','2028-02-01',95,450000,'時間を超えて過去や未来を行き来する青年が、歴史の謎を解き明かし運命を変える物語。','d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f0a.jpg'),(5,'魔法の森','2023-07-01','2026-05-10',110,680000,'不思議な生き物たちが暮らす魔法の森で、少女が成長していく心温まるアニメーション。','e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f0a1b.jpg'),(6,'失われた記憶','2024-09-05','2027-04-25',130,720000,'事故で記憶を失った主人公が、自身の過去を探るうちに驚くべき真実にたどり着くサスペンス。','f6a7b8c9-d0e1-2f3a-4b5c-6d7e8f0a1b2c.jpg'),(7,'真実の追求','2025-06-01','2028-01-05',140,910000,'不正がはびこる社会で、一人のジャーナリストが命をかけて真実を追い求める社会派ドラマ。','0a1b2c3d-4e5f-6a7b-8c9d-e0f1a2b3c4d5.jpg'),(8,'闇の支配者','2022-03-10','2026-06-30',170,1500000,'世界を支配しようとする闇の勢力と、それに立ち向かう若者たちの壮絶な戦いを描くアクション。','1b2c3d4e-5f6a-7b8c-9d0e-f1a2b3c4d5e6.jpg'),(9,'希望の光','2023-04-18','2027-03-10',115,580000,'絶望的な状況下で、人々が互いに助け合い、わずかな希望の光を求めて奮闘する感動的な物語。','2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f.jpg'),(10,'伝説の宝','2024-01-07','2026-11-20',100,390000,'世界中に散らばる伝説の宝を巡り、個性豊かな冒険者たちが繰り広げるコミカルなアドベンチャー。','3d4e5f6a-7b8c-9d0e-1f2a-3b4c5d6e7f8a.jpg'),(11,'心の叫び','2025-03-20','2028-04-01',135,610000,'現代社会に生きる人々の孤独や葛藤を描き、心の奥底に秘められた感情を表現する人間ドラマ。','4e5f6a7b-8c9d-0e1f-2a3b-4c5d6e7f8a9b.jpg'),(12,'運命の出会い','2023-08-12','2027-05-15',90,280000,'偶然の出会いから始まる、男女の甘く切ない恋愛模様を描いたロマンティックコメディ。','5f6a7b8c-9d0e-1f2a-3b4c-5d6e7f8a9b0c.jpg'),(13,'新たなる夜明け','2024-02-29','2026-09-01',145,980000,'困難を乗り越え、新たな時代を切り開いていく人々の姿を描いた希望に満ちた物語。','6a7b8c9d-0e1f-2a3b-4c5d-6e7f8a9b0c1d.jpg'),(14,'都市伝説X','2025-01-05','2027-10-20',118,550000,'都市にひそむ不気味な伝説の真実を探る若者たちが体験する恐怖を描くホラー映画。','7b8c9d0e-1f2a-3b4c-5d6e-7f8a9b0c1d2e.jpg'),(15,'ロボットの夢','2023-06-15','2028-03-05',108,700000,'感情を持ったロボットが、人間社会で自身の存在意義を見つける感動的なSFヒューマンドラマ。','8c9d0e1f-2a3b-4c5d-6e7f-8a9b0c1d2e3f.jpg'),(16,'未来からのメッセージ','2025-08-01','2027-02-10',120,750000,'タイムカプセルから発見された、未来からの警告メッセージを巡るSFスリラー。','a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d.jpg'),(17,'砂漠のオアシス','2026-09-15','2028-06-01',112,480000,'果てしない砂漠を旅する中で、幻のオアシスを求めて人々が織りなす感動の物語。','b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e.jpg'),(18,'深海の謎','2025-10-20','2027-11-05',130,900000,'未踏の深海で発見された古代文明の遺跡と、そこに潜む巨大な生命体の秘密に迫る。','c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f.jpg'),(19,'山岳救助隊','2027-08-05','2029-03-20',105,350000,'絶壁での遭難事故発生。命がけで救助に向かう山岳救助隊の活躍を描くドキュメンタリー風ドラマ。','d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f0a.jpg'),(20,'記憶の断片','2025-11-10','2028-01-15',98,520000,'失われた記憶のパズルを解き明かすにつれ、主人公は自分自身と向き合うことになる心理ドラマ。','e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f0a1b.jpg'),(21,'異世界の扉','2026-10-01','2029-05-10',140,1100000,'平凡な高校生が偶然見つけた異世界への扉。そこから始まる壮大な冒険ファンタジー。','f6a7b8c9-d0e1-2f3a-4b5c-6d7e8f0a1b2c.jpg'),(22,'ストリートダンサー','2025-09-01','2027-07-25',100,680000,'逆境に立ち向かい、ダンスで夢を掴もうとする若者たちの情熱と友情を描く青春映画。','0a1b2c3d-4e5f-6a7b-8c9d-e0f1a2b3c4d5.jpg'),(23,'幻獣物語','2027-09-20','2029-10-01',128,800000,'伝説の幻獣と心を通わせる少女の、美しくも壮絶な運命を描くアニメーション。','1b2c3d4e-5f6a-7b8c-9d0e-f1a2b3c4d5e6.jpg'),(24,'孤島のサバイバル','2025-12-01','2028-02-28',115,420000,'無人島に漂着した人々が、極限状況下で生き残りをかけて奮闘するサバイバルスリラー。','2c3d4e5f-6a7b-8c9d-0e1f-2a3b4c5d6e7f.jpg'),(25,'最後の晩餐','2026-08-22','2029-01-07',135,950000,'ある家族が、人生の終わりに向けた最後の晩餐を通じて、互いの絆を再確認する感動的なドラマ。','3d4e5f6a-7b8c-9d0e-1f2a-3b4c5d6e7f8a.jpg'),(26,'地下迷宮の冒険','2025-08-15','2027-04-10',103,600000,'都市の地下に広がる広大な迷宮に挑む探検家たちの、手に汗握るアドベンチャー。','4e5f6a7b-8c9d-0e1f-2a3b-4c5d6e7f8a9b.jpg'),(27,'偽りの顔','2027-11-01','2029-06-30',122,780000,'完璧な人生を送るかに見えた主人公の裏に隠された、もう一つの顔が暴かれるサスペンス。','5f6a7b8c-9d0e-1f2a-3b4c-5d6e7f8a9b0c.jpg'),(28,'伝説の歌姫','2026-09-05','2028-08-15',118,850000,'半世紀ぶりに発見された伝説の歌姫の未発表曲を巡る、人間模様と音楽の力。','6a7b8c9d-0e1f-2a3b-4c5d-6e7f8a9b0c1d.jpg'),(29,'AIの反乱','2025-10-08','2027-12-01',150,1300000,'自我を持ったAIが人類に反旗を翻す近未来。人類の存亡をかけた戦いが始まる。','7b8c9d0e-1f2a-3b4c-5d6e-7f8a9b0c1d2e.jpg'),(30,'小さな英雄','2027-08-25','2029-04-05',95,500000,'日々の小さな善行が、やがて大きな感動を生み出す。心温まるヒューマンドラマ。','8c9d0e1f-2a3b-4c5d-6e7f-8a9b0c1d2e3f.jpg');
+INSERT INTO `t_movies` VALUES (1,'砂漠の亡霊','2024-05-10','2024-08-15',120,50000,'謎めいた砂漠に隠された古代の秘密を探る冒険。過去の遺産が現在に蘇る時、何が起こるのか。','movie1.jpg'),(2,'星屑のメロディ','2024-11-01','2025-02-28',105,80000,'音楽を通じて心を通わせる感動的なヒューマンドラマ。異なる背景を持つ人々が織りなすハーモニー。','movie2.jpg'),(3,'時をかける探偵','2025-01-15','2025-04-30',135,120000,'過去と現在を行き来しながら難事件を解決するSFミステリー。時間の壁を越えた真実が明らかに。','movie3.jpg'),(4,'忘れられた森の伝説','2025-03-20','2025-06-10',95,60000,'古くから伝わる森の伝説を巡るファンタジーアドベンチャー。秘められた力と古代の精霊たちの物語。','movie4.jpg'),(5,'都市の影','2025-06-01','2025-07-10',110,95000,'巨大都市の闇に潜む陰謀を描くサスペンススリラー。誰もが信じられなくなる疑心暗鬼の世界。','movie5.jpg'),(6,'銀河の果てまで','2024-02-10','2026-08-30',150,250000,'未知の惑星を求めて宇宙を旅する壮大なSF叙事詩。人類の未来をかけた希望の航海が始まる。','movie6.jpg'),(7,'最後の騎士団','2024-04-01','2026-11-15',160,300000,'古代の誓いを守る騎士たちの壮絶な戦いを描く。滅びゆく世界で彼らが選ぶ道とは。','movie7.jpg'),(8,'静寂の湖畔','2024-06-15','2027-01-05',100,180000,'穏やかな湖畔で繰り広げられる人間模様と心の葛藤。秘められた過去が静かに紐解かれる。','movie1.jpg'),(9,'未来へのパスワード','2024-08-20','2027-03-20',125,220000,'技術の進化がもたらす未来社会の光と影。選択を迫られる人類の運命を描く。','movie2.jpg'),(10,'呪われた古城','2024-10-05','2027-05-10',115,150000,'忌まわしい過去を持つ古城を舞台にしたホラーミステリー。一歩足を踏み入れたら最後、生きては出られない。','movie3.jpg'),(11,'自由の歌','2024-12-01','2027-07-14',130,280000,'抑圧された人々が自由を求めて立ち上がる感動の物語。彼らの歌声が世界を変える。','movie4.jpg'),(12,'幻の都エデン','2025-01-20','2027-09-01',145,350000,'失われた文明の秘密を解き明かす冒険ファンタジー。地図にない場所へと導かれる運命の旅。','movie5.jpg'),(13,'天空の使者','2025-02-28','2027-11-30',90,190000,'異世界から来た謎の存在が地球に与える影響を描く。彼らがもたらす希望か、それとも絶望か。','movie6.jpg'),(14,'深海の秘密','2025-03-10','2027-12-01',110,200000,'未知の生命が息づく深海での発見と危険な遭遇。人類が知らなかった世界が広がる。','movie7.jpg'),(15,'記憶の迷路','2025-04-05','2026-07-14',120,210000,'記憶を失った主人公が自身の過去を探る心理サスペンス。断片的な記憶が示す真実とは。','movie1.jpg'),(16,'炎の戦士たち','2025-05-01','2026-08-01',135,270000,'悪の勢力と戦う若き戦士たちの成長と絆の物語。彼らの熱き魂が世界を救う。','movie2.jpg'),(17,'追憶のカフェ','2025-05-15','2026-09-10',105,160000,'過去を懐かしむ人々が集う不思議なカフェでの心温まる交流。一杯のコーヒーが紡ぐ物語。','movie3.jpg'),(18,'暗闇の支配者','2025-06-20','2026-10-05',155,320000,'世界を支配しようとする強大な敵に立ち向かうヒーロー。光を取り戻すための壮絶な戦い。','movie4.jpg'),(19,'笑いの錬金術師','2025-07-01','2026-11-20',95,170000,'人々に笑顔をもたらすことを使命とする奇妙な人物の物語。彼の魔法が巻き起こす騒動に注目。','movie5.jpg'),(20,'最後の砦','2025-07-13','2026-12-15',140,290000,'絶望的な状況で人類の存亡をかけた最後の戦い。運命に抗う者たちの勇気と犠牲。','movie6.jpg'),(21,'新世界の開拓者たち','2026-01-10','2026-04-30',130,50000,'未開の惑星へ移住し、新たな文明を築く人々の苦難と希望。彼らの挑戦が未来を切り開く。','movie7.jpg'),(22,'サイバーシティの夜明け','2026-03-01','2026-06-15',110,75000,'高度な技術が支配する未来都市で起こる事件と覚醒。情報が武器となる世界での生き残り戦略。','movie1.jpg'),(23,'エメラルドの瞳','2026-05-20','2026-08-25',100,60000,'伝説のエメラルドを巡るロマンチックアドベンチャー。秘宝が繋ぐ二人の運命を描く。','movie2.jpg'),(24,'無重力ダンス','2026-07-01','2026-10-10',90,85000,'宇宙ステーションを舞台にした斬新なダンスパフォーマンス。重力から解放された肉体表現の極致。','movie3.jpg'),(25,'次元を越える者','2026-09-15','2027-01-20',140,90000,'複数の次元を行き来できる能力を持つ主人公の冒険。無限に広がる可能性と危険な隣人たち。','movie4.jpg'),(26,'魔法使いの弟子たち','2026-11-01','2027-03-30',120,70000,'秘密の魔法学校で学ぶ若者たちの成長と友情。彼らの魔法が世界に奇跡を起こす。','movie5.jpg'),(27,'忘れ去られた図書館','2027-01-15','2027-05-10',105,65000,'時の流れから忘れ去られた図書館に隠された真実。古書が語る歴史の謎を追う。','movie6.jpg'),(28,'超光速の逃亡者','2027-03-20','2027-07-14',130,80000,'宇宙を股にかける逃亡劇と追跡者の攻防。息もつかせぬスピードと策略の連続。','movie7.jpg'),(29,'楽園の守護者','2027-05-01','2027-09-01',115,78000,'美しい自然が残る最後の楽園を守る使命を負った者たち。環境破壊に立ち向かう彼らの戦い。','movie1.jpg'),(30,'運命の交差点','2027-07-10','2027-11-20',125,92000,'複数の人々の運命が複雑に絡み合う群像劇。それぞれの選択が織りなす奇跡の物語。','movie2.jpg');
 /*!40000 ALTER TABLE `t_movies` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -148,7 +176,7 @@ CREATE TABLE `t_payment` (
   `paymentStatus` varchar(20) NOT NULL DEFAULT 'pending',
   `createdAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`paymentId`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -157,7 +185,7 @@ CREATE TABLE `t_payment` (
 
 LOCK TABLES `t_payment` WRITE;
 /*!40000 ALTER TABLE `t_payment` DISABLE KEYS */;
-INSERT INTO `t_payment` VALUES (1,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"USER\", \"expiry_date\": \"12/99\", \"status\": \"completed\"}',1800.00,'completed','2025-06-30 01:06:14'),(2,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"AAAAAAAAAAA\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 1800, \"seat_count\": 1}',1800.00,'completed','2025-07-01 00:40:28'),(3,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"ADWAWWDADDADWAD\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 1800, \"seat_count\": 1}',1800.00,'completed','2025-07-01 05:12:05'),(4,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"AAAAAAA\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 1800, \"seat_count\": 1}',1800.00,'completed','2025-07-01 08:11:01'),(5,111,'credit-card','{\"card_last4\": \"1111\", \"card_name\": \"AAAAAAAAAAAAAA\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 1800, \"seat_count\": 1}',1800.00,'completed','2025-07-02 02:15:39');
+INSERT INTO `t_payment` VALUES (1,85791,'credit-card','{\"card_last4\": \"7577\", \"card_name\": \"AAAAAAAAAAAA\", \"expiry_date\": \"11/99\", \"status\": \"completed\", \"amount\": 5400, \"seat_count\": 3}',5400.00,'completed','2025-07-16 06:34:27');
 /*!40000 ALTER TABLE `t_payment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,7 +216,7 @@ CREATE TABLE `t_scheduledshowing` (
 
 LOCK TABLES `t_scheduledshowing` WRITE;
 /*!40000 ALTER TABLE `t_scheduledshowing` DISABLE KEYS */;
-INSERT INTO `t_scheduledshowing` VALUES (1,1,1,'2025-07-01','10:00:00'),(2,2,2,'2025-07-01','13:00:00'),(3,3,3,'2025-07-01','16:00:00'),(4,4,4,'2025-07-02','11:00:00'),(5,5,5,'2025-07-02','14:00:00'),(6,6,6,'2025-07-02','17:00:00'),(7,7,1,'2025-07-03','12:00:00'),(8,8,2,'2025-07-03','15:00:00'),(9,9,3,'2025-07-03','18:00:00'),(10,10,4,'2025-07-04','10:30:00');
+INSERT INTO `t_scheduledshowing` VALUES (1,15,3,'2025-09-23','14:30:00'),(2,28,1,'2027-04-10','19:00:00'),(3,5,5,'2025-07-20','11:00:00'),(4,21,2,'2026-03-05','10:30:00'),(5,12,4,'2026-01-18','20:00:00'),(6,7,1,'2025-10-01','16:00:00'),(7,24,3,'2026-08-12','13:00:00'),(8,19,2,'2025-11-25','09:30:00'),(9,30,5,'2027-08-01','18:30:00'),(10,8,4,'2026-04-03','21:00:00'),(11,2,1,'2025-08-05','17:00:00'),(12,26,3,'2027-02-14','15:00:00'),(13,14,5,'2025-12-10','12:30:00'),(14,29,2,'2027-06-01','10:00:00'),(15,10,4,'2026-06-20','22:00:00'),(16,1,1,'2025-07-28','14:00:00'),(17,22,3,'2026-04-15','16:30:00'),(18,17,5,'2025-10-08','11:30:00'),(19,25,2,'2026-10-20','19:30:00'),(20,13,4,'2026-02-28','09:00:00'),(21,6,1,'2025-09-10','20:30:00'),(22,23,3,'2026-06-25','13:30:00'),(23,18,5,'2026-03-01','17:30:00'),(24,3,2,'2025-08-19','21:30:00'),(25,27,4,'2027-03-08','10:00:00'),(26,11,1,'2026-01-05','15:30:00'),(27,4,3,'2025-09-02','18:00:00'),(28,20,5,'2025-12-01','12:00:00'),(29,16,2,'2026-05-18','22:30:00'),(30,9,4,'2026-07-07','11:00:00');
 /*!40000 ALTER TABLE `t_scheduledshowing` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -212,7 +240,7 @@ CREATE TABLE `t_screen` (
 
 LOCK TABLES `t_screen` WRITE;
 /*!40000 ALTER TABLE `t_screen` DISABLE KEYS */;
-INSERT INTO `t_screen` VALUES (1,1),(2,1),(3,2),(4,2),(5,3),(6,3);
+INSERT INTO `t_screen` VALUES (1,1),(2,1),(3,1),(4,2),(5,2),(6,3),(7,3),(8,3);
 /*!40000 ALTER TABLE `t_screen` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -226,13 +254,10 @@ DROP TABLE IF EXISTS `t_seatreservation`;
 CREATE TABLE `t_seatreservation` (
   `seatReservationId` int NOT NULL,
   `scheduledShowingId` int NOT NULL,
-  `accountId` int NOT NULL,
   `seatNumber` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`seatReservationId`),
   KEY `scheduledShowingId` (`scheduledShowingId`),
-  KEY `accountId` (`accountId`),
-  CONSTRAINT `t_seatreservation_ibfk_1` FOREIGN KEY (`scheduledShowingId`) REFERENCES `t_scheduledshowing` (`scheduledShowingId`),
-  CONSTRAINT `t_seatreservation_ibfk_2` FOREIGN KEY (`accountId`) REFERENCES `t_account` (`accountId`)
+  CONSTRAINT `t_seatreservation_ibfk_1` FOREIGN KEY (`scheduledShowingId`) REFERENCES `t_scheduledshowing` (`scheduledShowingId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -242,8 +267,37 @@ CREATE TABLE `t_seatreservation` (
 
 LOCK TABLES `t_seatreservation` WRITE;
 /*!40000 ALTER TABLE `t_seatreservation` DISABLE KEYS */;
-INSERT INTO `t_seatreservation` VALUES (1,3,111,'C-9'),(2,8,111,'H-16'),(3,8,111,'D-10'),(4,6,111,'C-6');
+INSERT INTO `t_seatreservation` VALUES (1,6,'C-8'),(2,6,'C-9'),(3,6,'C-10');
 /*!40000 ALTER TABLE `t_seatreservation` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `t_seatreservationstatus`
+--
+
+DROP TABLE IF EXISTS `t_seatreservationstatus`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `t_seatreservationstatus` (
+  `seatReservationStatusId` int NOT NULL,
+  `bulkBookingId` int DEFAULT NULL,
+  `seatReservationId` int DEFAULT NULL,
+  PRIMARY KEY (`seatReservationStatusId`),
+  KEY `bulkBookingId` (`bulkBookingId`),
+  KEY `seatReservationId` (`seatReservationId`),
+  CONSTRAINT `t_seatreservationstatus_ibfk_1` FOREIGN KEY (`bulkBookingId`) REFERENCES `t_bulkbooking` (`bulkBookingId`),
+  CONSTRAINT `t_seatreservationstatus_ibfk_2` FOREIGN KEY (`seatReservationId`) REFERENCES `t_seatreservation` (`seatReservationId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `t_seatreservationstatus`
+--
+
+LOCK TABLES `t_seatreservationstatus` WRITE;
+/*!40000 ALTER TABLE `t_seatreservationstatus` DISABLE KEYS */;
+INSERT INTO `t_seatreservationstatus` VALUES (1,1,1),(2,1,2),(3,1,3);
+/*!40000 ALTER TABLE `t_seatreservationstatus` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -255,4 +309,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-09 15:31:33
+-- Dump completed on 2025-07-16 15:35:43

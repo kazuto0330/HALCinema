@@ -4,7 +4,8 @@ import uuid
 from pathlib import Path
 import re
 import random
-from datetime import date, datetime, timedelta
+import datetime
+from datetime import date, timedelta
 
 import mysql.connector
 from contextlib import contextmanager
@@ -96,8 +97,17 @@ def format_datetime(value, format='%Y年%m月%d日'):
         return ''
     return value.strftime(format)
 
+def format_timedelta_hh_mm(td_object):
+    if not isinstance(td_object, datetime.timedelta):
+        return td_object
+    total_seconds = int(td_object.total_seconds())
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    return f"{hours:02}:{minutes:02}"
+
 
 app.jinja_env.filters['strftime'] = format_datetime
+app.jinja_env.filters['timedelta_hh_mm'] = format_timedelta_hh_mm
 
 
 # ログインしているか確認する関数
@@ -409,18 +419,45 @@ def _delete_icon_files(filename: str, base_upload_path: Path):
 def watchHistory(user_id):
     """指定したIDの視聴履歴を取得する関数"""
     sql = """
-          SELECT
-            SR.*, SS.*, M.*
-          FROM
-              t_seatreservation AS SR
-          JOIN
-              t_scheduledshowing AS SS ON SR.scheduledShowingId = SS.scheduledShowingId
-          JOIN
-              t_movies AS M ON SS.moviesId = M.moviesId
-          WHERE
-              SR.accountId = %s
-          ORDER BY
-              SS.scheduledScreeningDate DESC, M.movieTitle ASC;
+    SELECT
+        bb.bulkBookingId AS transactionId,
+        bb.reservationDatetime AS transactionDatetime,
+        m.moviesId,
+        m.movieImage,
+        m.movieTitle,
+        m.movieRunningTime,
+        ss.scheduledScreeningDate,
+        ss.screeningStartTime,
+        ss.screenId AS theaterNumber,
+        GROUP_CONCAT(sr.seatNumber ORDER BY sr.seatNumber SEPARATOR ', ') AS reservedSeats,
+        bb.totalReservationAmount AS totalAmount
+    FROM
+        t_account AS a
+    JOIN
+        t_bulkbooking AS bb ON a.accountId = bb.accountId
+    JOIN
+        t_seatreservationstatus AS srs ON bb.bulkBookingId = srs.bulkBookingId
+    JOIN
+        t_seatreservation AS sr ON srs.seatReservationId = sr.seatReservationId
+    JOIN
+        t_scheduledshowing AS ss ON sr.scheduledShowingId = ss.scheduledShowingId
+    JOIN
+        t_movies AS m ON ss.moviesId = m.moviesId
+    WHERE
+        a.accountId = %s
+    GROUP BY
+        bb.bulkBookingId,
+        bb.reservationDatetime,
+        m.moviesId,
+        m.movieImage,
+        m.movieTitle,
+        m.movieRunningTime,
+        ss.scheduledScreeningDate,
+        ss.screeningStartTime,
+        ss.screenId,
+        bb.totalReservationAmount
+    ORDER BY
+        bb.reservationDatetime DESC;
           """
     history_data = []  # 視聴履歴のリストを格納する変数
     try:
@@ -431,7 +468,6 @@ def watchHistory(user_id):
 
             cursor.execute(sql, (user_id,))
             history_data = cursor.fetchall()  # 複数行の結果を取得するため fetchall()
-            print(history_data)
             return history_data
 
     except mysql.connector.Error:
