@@ -21,6 +21,8 @@
       <label>電話番号: <input type="text" name="phoneNumber" required></label><br>
       <label>生年月日: <input type="date" name="birthDate" required></label><br>
       <button type="submit">登録</button>
+      <p>すでにアカウントをお持ちの方は<a href="{{ url_for('login') }}" style="color: #00d4ff;" ><u>こちら</u></a></p>
+
     </form>
   </main>
   {% include '_footer.html' %}
