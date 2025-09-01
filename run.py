@@ -995,12 +995,6 @@ def seat_reservation(showing_id):
     return render_template("seat_reservation.html", screenId=screenId, showing_id=showing_id, reserved_seats=reserved_seats)
 
 
-# member_login画面
-@app.route('/member_login')
-def member_login():
-    return render_template("member_login.html")
-
-
 # register画面
 def generate_unique_account_id():
     conn = conn_db()
@@ -1031,34 +1025,50 @@ def register():
 
         # 必填项检查
         if not all([accountName, emailAddress, password, confirm_password, realName, phoneNumber, birthDate]):
-            errors["general"] = "すべての必須項目を入力してください。"
+            errors["general"] = "すべての必須項目を入力してください"
 
         # 密码格式检查
         password_pattern = r"^(?=.*[a-zA-Z])(?=.*\d).{8,}$"
         if not re.match(password_pattern, password):
-            errors["password"] = "パスワードは半角英数字を含む8文字以上で構成してください。"
+            errors["password"] = "パスワードは半角英数字を含む八文字以上で構成してください"
 
         # 密码一致性检查
         if password != confirm_password:
-            errors["confirm_password"] = "パスワードが一致しません。"
+            errors["confirm_password"] = "パスワードが一致しません"
 
         # 邮箱格式检查
         if '@' not in emailAddress or '.' not in emailAddress:
-            errors["emailAddress"] = "メールアドレスの形式が正しくありません。"
+            errors["emailAddress_format"] = "メールアドレスの形式が正しくありません"
 
         # 电话格式检查
         if not re.match(r"^[0-9\s\+\-]+$", phoneNumber):
-            errors["phoneNumber"] = "電話番号の形式が正しくありません。"
+            errors["phoneNumber_format"] = "電話番号の形式が正しくありません"
+
+        # 数据库查重检查
+        conn = conn_db()
+        cursor = conn.cursor(buffered=True)
+
+        cursor.execute("SELECT COUNT(*) FROM t_account WHERE accountName = %s", (accountName,))
+        if cursor.fetchone()[0] > 0:
+            errors["accountName"] = "このアカウント名は既に使用されています"
+
+        cursor.execute("SELECT COUNT(*) FROM t_account WHERE emailAddress = %s", (emailAddress,))
+        if cursor.fetchone()[0] > 0:
+            errors["emailAddress"] = "このメールアドレスは既に使用されています"
+
+        cursor.execute("SELECT COUNT(*) FROM t_account WHERE phoneNumber = %s", (phoneNumber,))
+        if cursor.fetchone()[0] > 0:
+            errors["phoneNumber"] = "この電話番号は既に使用されています"
 
         if errors:
+            cursor.close()
+            conn.close()
             return render_template('register.html', error="\n".join(errors.values()))
 
         # 密码加密
         hashed_password = generate_password_hash(password)
 
         # 插入数据库
-        conn = conn_db()
-        cursor = conn.cursor(buffered=True)
         sql = """
               INSERT INTO t_account (accountId, accountName, emailAddress, password,
                                      realName, phoneNumber, birthDate,
@@ -1084,6 +1094,7 @@ def register():
         return redirect('/success')
 
     return render_template('register.html')
+
 
 
 

@@ -8,11 +8,20 @@
 <body>
   {% include '_header.html' %}
   <main>
-    {% if error %}
-    <p style="color:red;">{{ error }}</p>
-    {% endif %}
     <form method="POST">
+      {% if error %}
+      <div class="error-box">
+        <div class="error-list">
+          {% for line in error.split('\n') %}
+            <div class="error-message">{{ line }}</div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      {% endif %}
+    
       <h2>ユーザー登録</h2>
+    
       <label>アカウント名: <input type="text" name="accountName" required></label><br>
       <label>メールアドレス: <input type="email" name="emailAddress" required></label><br>
       <label>パスワード: <input type="password" name="password" required></label><br>
@@ -20,10 +29,12 @@
       <label>本名: <input type="text" name="realName" required></label><br>
       <label>電話番号: <input type="text" name="phoneNumber" required></label><br>
       <label>生年月日: <input type="date" name="birthDate" required></label><br>
+    
       <button type="submit">登録</button>
       <p>すでにアカウントをお持ちの方は<a href="{{ url_for('login') }}" style="color: #00d4ff;" ><u>こちら</u></a></p>
-
     </form>
+    
+    
   </main>
   {% include '_footer.html' %}
   <script src="{{ url_for('static', filename='js/test.js') }}"></script>
