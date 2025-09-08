@@ -397,22 +397,27 @@ def _delete_icon_files(filename: str, base_upload_path: Path):
         filename: 削除するファイル名。
         base_upload_path: 保存先ディレクトリのベースパス(Pathオブジェクト)。
     """
+
     if not filename:
         return
-
-    base_upload_path = Path(base_upload_path)
-    print(f"古い画像ファイル {filename} の削除を開始します。")
-    for width, height in IMAGE_SIZES:
-        file_path = base_upload_path / f"{width}x{height}" / filename
-        try:
-            if file_path.exists():
-                file_path.unlink() # os.remove(file_path) と同じ
-                print(f"  - 削除成功: {file_path}")
-            else:
-                print(f"  - ファイルなし: {file_path}")
-        except OSError as e:
-            # 削除に失敗しても処理は続行するが、ログには残す
-            print(f"エラー: 古い画像の削除に失敗しました。 Path: {file_path}, Error: {e}")
+    
+    elif filename == "default.jpg":
+        print("デフォルトのアイコンだったため画像は削除されません")
+        return
+    else:
+        base_upload_path = Path(base_upload_path)
+        print(f"古い画像ファイル {filename} の削除を開始します。")
+        for width, height in IMAGE_SIZES:
+            file_path = base_upload_path / f"{width}x{height}" / filename
+            try:
+                if file_path.exists():
+                    file_path.unlink() # os.remove(file_path) と同じ
+                    print(f"  - 削除成功: {file_path}")
+                else:
+                    print(f"  - ファイルなし: {file_path}")
+            except OSError as e:
+                # 削除に失敗しても処理は続行するが、ログには残す
+                print(f"エラー: 古い画像の削除に失敗しました。 Path: {file_path}, Error: {e}")
 
 
 # 視聴履歴を取得する関数（user_id）
