@@ -1113,7 +1113,7 @@ def success():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if session['user_id']:
+    if session.get('user_id'):
         return redirect('/profile')
     
     if request.method == 'POST':
