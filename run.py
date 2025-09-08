@@ -1113,6 +1113,9 @@ def success():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if session['user_id']:
+        return redirect('/profile')
+    
     if request.method == 'POST':
         email = request.form['emailAddress']
         password = request.form['password']
