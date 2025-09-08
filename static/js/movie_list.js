@@ -8,7 +8,7 @@ const tabUnderline = document.getElementById('TabUnderline');
  * @param {HTMLElement} button - クリックされたタブボタン要素。
  * @param {number} targetScrollLeft - MovieContainerの目標スクロール位置。
  */
-function setActiveTab(button, targetScrollLeft) {
+function setActiveTab(button, targetScrollLeft, newUrl) {
     // すべてのTabButtonから'active'クラスを削除
     document.querySelectorAll('.TabButton').forEach(btn => {
         btn.classList.remove('active');
@@ -22,6 +22,11 @@ function setActiveTab(button, targetScrollLeft) {
 
     // MovieContainerを即座にスクロール
     movieContainer.scrollLeft = targetScrollLeft;
+
+    //設定されている場合、新しいurlを設定
+    if (newUrl){
+        history.pushState(null, '', newUrl);
+    }
 }
 
 // 初期状態を設定
@@ -39,12 +44,14 @@ window.addEventListener('load', () => {
 
 // 上映中ボタンがクリックされた時の処理
 nowBtn.addEventListener('click', () => {
-    setActiveTab(nowBtn, 0); // 「上映中」タブへ切り替え、コンテンツを左端に
+    const newUrl = '/movie_list';
+    setActiveTab(nowBtn, 0, newUrl); // 「上映中」タブへ切り替え、コンテンツを左端に
 });
 
 // 公開予定ボタンがクリックされた時の処理
 comingBtn.addEventListener('click', () => {
-    setActiveTab(comingBtn, movieContainer.clientWidth); // 「公開予定」タブへ切り替え、コンテンツを右に
+    const newUrl = '/movie_list?set=comingsoon';
+    setActiveTab(comingBtn, movieContainer.clientWidth, newUrl); // 「公開予定」タブへ切り替え、コンテンツを右に
 });
 
 
