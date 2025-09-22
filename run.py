@@ -5,7 +5,7 @@ from pathlib import Path
 import re
 import random
 import datetime
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 
 import mysql.connector
 from contextlib import contextmanager
