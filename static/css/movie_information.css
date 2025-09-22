@@ -132,7 +132,6 @@ header {
 .dayCard {
     width: 100px;
     height: 150px;
-    background-color: #1e1e1e;
     border: 1px solid #333;
     border-radius: 8px;
     color: #fff;
@@ -150,31 +149,31 @@ header {
 }
 
 .Mon {
-    background-color: #DA3E41;
+    background-color: #FF6B6B;
 }
 
 .Tue{
-    background-color: #D8DA3E;
+    background-color: #FFA94D;
 }
 
 .Wed{
-    background-color: #5BDA3E;
+    background-color: #FFD43B;
 }
 
 .Thu{
-    background-color: #5BDA3E;
+    background-color: #69DB7C;
 }
 
 .Fri{
-    background-color: #5BDA3E;
+    background-color: #4DABF7;
 }
 
 .Sat{
-    background-color: #5BDA3E;
+    background-color: #9775FA;
 }
 
 .Sun{
-    background-color: #5BDA3E;
+    background-color: #F783AC;
 }
 
 
@@ -273,15 +272,15 @@ header {
 }
 
 .slot .status {
-    font-size: 1.5em;
+    font-size: 3rem;
     display: flex;
     align-items: center;
+    font-weight: 900;
 
 }
 
 .slot .status.good {
   color: green;
-  font-weight: 1500;
 }
 
 .slot .status.warning {
