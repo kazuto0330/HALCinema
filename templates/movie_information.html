@@ -30,25 +30,28 @@
             <h2>上映スケジュール</h2>
             <div class="scheduleGrid">
             {% for day, schedules in schedule.items() %}
-                <div class="dayCard" onclick="showSchedule('{{ day }}')">
+                {% set weekday = day.split(' ')[1].strip('()') %}  {# "Mon", "Tue" などを取得 #}
+                <div class="dayCard {{ weekday }}" onclick="showSchedule('{{ day }}')">
                     <div class="date">
                         <span class="month">{{ day.split(' ')[0].split('-')[1] }}/</span>
                         <span class="day">{{ day.split(' ')[0].split('-')[2] }}</span>
                     </div>
                     <div class="weekdayBox">
-                        {{ day.split(' ')[1].strip('()') }}
+                        {{ weekday }}
                     </div>
                 </div>
             {% endfor %}
             </div>
         </section>
 
+
         <section>
             <!-- スケジュール一覧（曜日順で動的に出力） -->
             {% for day, schedules in schedule.items() %}
-            <div class="reservationSchedule hidden" id="schedule-{{ loop.index }}">
-                <h2>{{ day }}　予約状況</h2>
-                <hr>
+            {% set weekday = day.split(' ')[1] %}   {# 例: "Mon" を取り出す #}
+                <div class="reservationSchedule hidden {{ weekday }}" id="schedule-{{ loop.index }}">
+                    <h2>{{ day }}　予約状況</h2>
+                    <hr>
                 {% for slot in schedules %}
                 <div class="slot">
                     <span class="label">{{ slot.screenId }}</span>
