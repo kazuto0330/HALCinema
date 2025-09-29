@@ -540,8 +540,8 @@ def validate_credit_card(card_number, expiry_date, security_code, card_name):
                 errors.append('有効期限の月が正しくありません')
 
             # 現在年と比較（20XX年として処理）
-            current_year = datetime.now().year % 100
-            current_month = datetime.now().month
+            current_year = datetime.datetime.now().year % 100
+            current_month = datetime.datetime.now().month
             if year < current_year or (year == current_year and month < current_month):
                 errors.append('有効期限が過去の日付です')
         except ValueError:
@@ -627,7 +627,7 @@ def save_payment_info(user_id, payment_method, payment_data, amount):
             json.dumps(payment_data),  # JSON形式で保存
             amount,
             payment_data.get('status', 'pending'),  # 支払い状況：pending, completed, failed
-            datetime.now()
+            datetime.datetime.now()
         )
 
         cursor.execute(sql, values)
@@ -1368,7 +1368,7 @@ def process_payment():
                 payment_data = {
                     'payment_number': payment_number,
                     'phone_number': phone_number[-4:] if phone_number and len(phone_number) >= 4 else '',  # 下4桁のみ保存
-                    'expire_date': (datetime.now().replace(hour=23, minute=59, second=59) +
+                    'expire_date': (datetime.datetime.now().replace(hour=23, minute=59, second=59) +
                                     timedelta(days=3)).isoformat()  # 3日後まで有効
                 }
                 payment_status = 'completed'  # コンビニ払いは番号発行で完了とする
@@ -1378,7 +1378,7 @@ def process_payment():
             qr_code = generate_paypay_qr()
             payment_data = {
                 'qr_code': qr_code,
-                'expire_time': (datetime.now() + timedelta(minutes=15)).isoformat()  # 15分後まで有効
+                'expire_time': (datetime.datetime.now() + timedelta(minutes=15)).isoformat()  # 15分後まで有効
             }
             payment_status = 'completed'  # PayPayもQRコード生成で完了とする
             message = 'PayPay決済用QRコードを生成しました'
