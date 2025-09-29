@@ -49,6 +49,9 @@
           <div class="user-email">{{user_data.emailAddress}}</div>
         </div>
         <a href="/profile" class="dropdown-item">プロフィール</a>
+        {% if session.get('user_role') == 'Admin' %}
+            <a href="/admin" class="dropdown-item">管理者ページ</a>
+        {% endif %}
         <a href="/logout" class="dropdown-item">ログアウト</a>
       </div>
     </div>

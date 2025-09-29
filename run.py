@@ -122,6 +122,26 @@ def login_required(f):
     return decorated_function
 
 
+# ログイン/ロール確認
+def role_required(allowed_roles):
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapped_view(*args, **kwargs):
+            # ログイン確認
+            if "user_id" not in session:
+                return redirect(url_for("login"))
+
+            session_role = session.get("user_role")
+
+            if session_role not in set(allowed_roles):
+                flash("このページにアクセスする権限がありません。", "red")
+                return redirect(request.referrer or url_for("index"))
+
+            return view_func(*args, **kwargs)
+        return wrapped_view
+    return decorator
+
+
 #ヘッダーに表示するデータを取得
 @app.context_processor
 def inject_user():
@@ -1123,7 +1143,7 @@ def login():
         conn = conn_db()
         cursor = conn.cursor(buffered=True)
         cursor.execute("""
-                       SELECT accountId, accountName, emailAddress, password, accountIcon, points
+                       SELECT accountId, accountName, emailAddress, password, accountIcon, points, role
                        FROM t_account
                        WHERE emailAddress = %s
                        """, (email,))
@@ -1137,9 +1157,11 @@ def login():
                 'accountName': user[1],
                 'emailAddress': user[2],
                 'accountIcon': user[4],
-                'points': user[5]
+                'points': user[5],
+                'role': user[6]
             }
             session['user_id'] = user[0]
+            session['user_role'] = user[6]
             
             if "url" in session:
                 return redirect(session.pop('url',None))
@@ -1679,8 +1701,16 @@ def member():
     return render_template("member.html")
 
 
+# admin画面
+@app.route('/admin', methods=['GET', 'POST'])
+@role_required(["Admin"])
+def admin():
+    return render_template("admin.html")
+
+
 # add_movie画面
 @app.route('/add_movie', methods=['GET', 'POST'])
+@role_required(["Admin"])
 def add_movie():
     if request.method == 'POST':
         con = conn_db()
@@ -1792,6 +1822,7 @@ def add_movie():
 
 # add_event画面
 @app.route('/add_event', methods=['GET', 'POST'])
+@role_required(["Admin"])
 def add_event():
     if request.method == 'POST':
         con = conn_db()
@@ -1900,6 +1931,7 @@ def add_event():
 
 # add_screening画面
 @app.route('/add_screening', methods=['GET', 'POST'])
+@role_required(["Admin"])
 def add_screening():
     if request.method == 'POST':
         con = conn_db()

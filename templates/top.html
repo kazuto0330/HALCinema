@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/reset.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/top.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
     <title>HALシネマ トップページ</title>
 </head>
 
 <body>
+    {% include 'flash.html' %}
     {% include '_header.html' %}
 
 
@@ -123,5 +125,6 @@
     {% include '_footer.html' %}
 
     <script src="{{ url_for('static', filename='js/top.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/flash.js') }}"></script>
 </body>
 </html>

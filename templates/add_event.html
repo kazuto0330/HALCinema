@@ -38,7 +38,8 @@
         <label for="eventUrl">イベントURL</label>
         <input type="url" id="eventUrl" name="eventUrl" placeholder="https://">
 
-        <button type="submit">登録</button>
+        <button type="submit" class="btn-submit">登録</button>
+        <button type="button" class="btn-back" onclick="location.href='/admin'">戻る</button>
     </form>
     <script src="{{ url_for('static', filename='js/flash.js') }}"></script>
 </body>

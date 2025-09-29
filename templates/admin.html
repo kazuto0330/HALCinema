@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>管理者ページ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_movie.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
+</head>
+
+<body>
+    {% include 'flash.html' %}
+
+    <h1>管理者ページ</h1>
+
+    <div class="admin-links">
+        <a href="/add_movie" class="admin-btn">映画情報登録</a>
+        <a href="/add_event" class="admin-btn">イベント情報登録</a>
+        <a href="/add_screening" class="admin-btn">上映予定登録</a>
+        <a href="/" class="admin-btn">戻る</a>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/flash.js') }}"></script>
+</body>
+
+</html>
