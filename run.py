@@ -29,6 +29,7 @@ IMAGE_SIZES = [(400, 400), (80, 80)]
 app.config['USER_ICON_UPLOAD_FOLDER'] = 'static/images/usericon'
 app.config['MOVIE_UPLOAD_FOLDER'] = 'static/images/movie'
 app.config['EVENT_UPLOAD_FOLDER'] = 'static/images/event'
+app.config['TEMP_UPLOAD_FOLDER'] = 'static/images/temp'
 
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 86400
 
@@ -1724,28 +1725,33 @@ def add_movie():
         else:
             moviesId = "00001"
 
+        errors = {}
+        
         # 入力画面から値の受け取り
         movieTitle = request.form.get('movieTitle')
         movieReleaseDate = request.form.get('movieReleaseDate')
         movieEndDate = request.form.get('movieEndDate')
         movieRunningTime = request.form.get('movieRunningTime')
         movieSynopsis = request.form.get('movieSynopsis')
+        
+        tempFilename = request.form.get('movieImage', None)
+        # 日付チェック
+        if tempFilename == None:
+            errors["movieImage"] = "画像を選択してください。"
+            
+        temp_path = os.path.join('static', 'images', 'temp', tempFilename)
+        img = Image.open(temp_path)
 
-        errors = {}
 
         # 日付チェック
         if movieReleaseDate > movieEndDate:
             errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
 
-        file = request.files.get('movieImage')
-        if not file or file.filename == '':
-            errors["movieImage"] = "画像が選択されていません。"
-
         # エラーがある場合はテンプレート再表示
         if errors:
             return render_template('add_movie.html', errors=errors)
 
-        if file:
+        if img:
             try:
                 # ベースの保存先パス
                 base_upload_path = app.config['MOVIE_UPLOAD_FOLDER']
@@ -1758,9 +1764,6 @@ def add_movie():
 
                 # ファイル名を生成
                 base_filename = str(uuid.uuid4()) + '.jpg'
-
-                # Pillowで画像を開く
-                img = Image.open(file.stream)
 
                 # オリジナル画像を保存
                 img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
@@ -1818,6 +1821,32 @@ def add_movie():
         return redirect('/add_movie')
 
     return render_template("add_movie.html")
+
+# add_movie確認画面
+@app.route('/confirm_movie', methods=['POST'])
+def confirm_movie():
+    movieTitle = request.form['movieTitle']
+    movieReleaseDate = request.form['movieReleaseDate']
+    movieEndDate = request.form['movieEndDate']
+    movieRunningTime = request.form['movieRunningTime']
+    movieSynopsis = request.form['movieSynopsis']
+    file = request.files['movieImage']
+
+
+    temp_upload_path = app.config['TEMP_UPLOAD_FOLDER']
+    filename = None
+    if file and file.filename:
+        filename = file.filename
+        file.save(os.path.join(temp_upload_path, filename))  # 一時保存
+
+    return render_template('confirm_movie.html',
+                           movieTitle=movieTitle,
+                           movieReleaseDate=movieReleaseDate,
+                           movieEndDate=movieEndDate,
+                           movieRunningTime=movieRunningTime,
+                           movieSynopsis=movieSynopsis,
+                           movieImage=filename)
+
 
 
 # add_event画面
