@@ -1,5 +1,6 @@
 import json
 import os
+import ast
 import uuid
 from pathlib import Path
 import re
@@ -2003,31 +2004,16 @@ def add_screening():
         moviesId = request.form.get('moviesId')
         screenId = request.form.get('screenId')
         scheduledScreeningDate = request.form.get('scheduledScreeningDate')
-        screeningStartTimes = request.form.getlist('screeningStartTimes')  # 複数受け取り
-
-        errors = {}
-
-        if not screeningStartTimes:
-            errors['screeningStartTimes'] = '上映開始時刻を1つ以上選択してください'
-
-        # エラーあれば画面戻す
-        if errors:
-            now_playing = fetch_movies(status='now_playing')
-            coming_soon = fetch_movies(status='coming_soon')
-            movies = now_playing + coming_soon
-            screens = get_screens()
-            return render_template(
-                'add_screening.html',
-                errors=errors,
-                movies=movies,
-                screens=screens,
-                movies_json=movies,
-                selected_moviesId=moviesId,
-                selected_screenId=screenId,
-                selected_date=scheduledScreeningDate,
-                
-                selected_times=screeningStartTimes
-            )
+        screeningStartTimesStr = request.form.get('screeningStartTimes')
+        
+        # 安全にPythonリストに変換
+        try:
+            screeningStartTimes = ast.literal_eval(screeningStartTimesStr)
+            if not isinstance(screeningStartTimes, list):
+                screeningStartTimes = [screeningStartTimes]  # 万が一単一値の場合もリスト化
+        except Exception:
+            # 変換失敗したら空リストにする
+            screeningStartTimes = []
 
         # 複数時刻分、レコードを分けて挿入
         for start_time in screeningStartTimes:
@@ -2039,8 +2025,7 @@ def add_screening():
                 )
             """
 
-            # IDはユニークなので、ループ毎にインクリメント（例）
-            # ※実務ではもっと安全なID管理をしてください
+            # ループ毎にインクリメント
             cur.execute("SELECT MAX(scheduledShowingId) FROM t_scheduledShowing")
             max_id = cur.fetchone()[0]
             if max_id:
@@ -2072,6 +2057,47 @@ def add_screening():
     screens = get_screens()
 
     return render_template("add_screening.html", movies=movies, screens=screens, movies_json=movies)
+
+# add_screening確認画面
+@app.route('/confirm_screening', methods=['POST'])
+def confirm_screening():
+    moviesId = request.form['moviesId']
+    screenId = request.form['screenId']
+    scheduledScreeningDate = request.form['scheduledScreeningDate']
+    screeningStartTimes = request.form.getlist('screeningStartTimes')
+    
+    errors = {}
+
+    if not screeningStartTimes:
+        errors['screeningStartTimes'] = '上映開始時刻を1つ以上選択してください'
+
+    # エラーあれば画面戻す
+    if errors:
+        now_playing = fetch_movies(status='now_playing')
+        coming_soon = fetch_movies(status='coming_soon')
+        movies = now_playing + coming_soon
+        screens = get_screens()
+        return render_template(
+            'add_screening.html',
+            errors=errors,
+            movies=movies,
+            screens=screens,
+            movies_json=movies,
+            selected_moviesId=moviesId,
+            selected_screenId=screenId,
+            selected_date=scheduledScreeningDate,
+            selected_times=screeningStartTimes
+        )
+
+    # エラーがある場合はテンプレート再表示
+    if errors:
+        return render_template('add_event.html', errors=errors)
+    
+    return render_template('confirm_screening.html',
+                           moviesId=moviesId,
+                           screenId=screenId,
+                           scheduledScreeningDate=scheduledScreeningDate,
+                           screeningStartTimes=screeningStartTimes)
 
 
 # 実行制御
