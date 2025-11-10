@@ -29,6 +29,11 @@ label {
     color: #555;
 }
 
+p{
+    white-space: pre-wrap;     /* 改行を保持＋折り返し */
+    overflow-wrap: break-word; /* 長い単語でも折り返し */
+  }
+
 input,
 textarea,
 select,
