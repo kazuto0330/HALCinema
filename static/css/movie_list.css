@@ -133,13 +133,16 @@ a {
 
 @media (max-width: 480px) {
     .Tab{
-        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-        gap: 9px 13px;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 20px 15px;
     }
     #ComingTab{
         gap: 13px 13px;
     }
     .MovieImg img {
         min-width: 0px;
+    }
+    .MovieImg img:hover{
+    transform: scale(1)translateY(0px);
     }
 }

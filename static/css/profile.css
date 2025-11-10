@@ -142,8 +142,8 @@ body {
 
 .header-controls {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 10px;
+    right: 10px;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -664,7 +664,10 @@ body {
         width: max(15vw,85px);    
         height: max(15vw,85px);
     }
-
+    .avatar-overlay {
+        width: max(15vw,85px);    
+        height: max(15vw,85px);
+    }
     .profile-name {
         font-size: max(4.3vw,24px);
     }
@@ -692,4 +695,14 @@ body {
 }
 
 /* --- 画面幅: 480px以下 (スマートフォン) --- */
-@media (max-width: 480px) {}
+@media (max-width: 480px) {
+    .collapsible-content.open{
+        padding: 0;
+    }
+    .edit-actions {
+        display: flex;
+        justify-content: flex-start;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+}
