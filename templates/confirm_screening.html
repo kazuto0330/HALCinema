@@ -12,7 +12,12 @@
         <p><strong>映画タイトル：</strong>{{ moviesId }}</p>
         <p><strong>上映スクリーン：</strong>{{ screenId }}</p>
         <p><strong>上映日：</strong>{{ scheduledScreeningDate }}</p>
-        <p><strong>上映開始時刻：</strong><br>{{ screeningStartTimes }}</p>
+        <p><strong>上映開始時刻：</strong><br>
+        {% if screeningStartTimes %}
+            {{ screeningStartTimes | join('<br>') | safe }}
+        {% endif %}
+        </p>
+
 
         <!-- hiddenで再送信用データ -->
         <input type="hidden" name="moviesId" value="{{ moviesId }}">
