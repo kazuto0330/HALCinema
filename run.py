@@ -1724,8 +1724,6 @@ def add_movie():
             moviesId = f"{int(max_id) + 1:05}"
         else:
             moviesId = "00001"
-
-        errors = {}
         
         # 入力画面から値の受け取り
         movieTitle = request.form.get('movieTitle')
@@ -1735,21 +1733,8 @@ def add_movie():
         movieSynopsis = request.form.get('movieSynopsis')
         
         tempFilename = request.form.get('movieImage', None)
-        # 日付チェック
-        if tempFilename == None:
-            errors["movieImage"] = "画像を選択してください。"
-            
         temp_path = os.path.join('static', 'images', 'temp', tempFilename)
         img = Image.open(temp_path)
-
-
-        # 日付チェック
-        if movieReleaseDate > movieEndDate:
-            errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
-
-        # エラーがある場合はテンプレート再表示
-        if errors:
-            return render_template('add_movie.html', errors=errors)
 
         if img:
             try:
@@ -1831,7 +1816,20 @@ def confirm_movie():
     movieRunningTime = request.form['movieRunningTime']
     movieSynopsis = request.form['movieSynopsis']
     file = request.files['movieImage']
-
+    
+    errors = {}
+    
+    # 画像チェック
+    if not file:
+        errors["movieImage"] = "画像を選択してください。"
+        
+    # 日付チェック
+    if movieReleaseDate > movieEndDate:
+        errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
+    
+    # エラーがある場合はテンプレート再表示
+    if errors:
+        return render_template('add_movie.html', errors=errors)
 
     temp_upload_path = app.config['TEMP_UPLOAD_FOLDER']
     filename = None
@@ -1871,22 +1869,14 @@ def add_event():
         eventEndDate = request.form.get('eventEndDate')
         eventDescription = request.form.get('eventDescription')
         eventUrl = request.form.get('eventUrl')
+        
+        tempFilename = request.form.get('eventImage', None)
+        temp_path = os.path.join('static', 'images', 'temp', tempFilename)
+        img = Image.open(temp_path)
 
         errors = {}
 
-        # 日付チェック
-        if eventStartDate > eventEndDate:
-            errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
-
-        file = request.files.get('eventImage')
-        if not file or file.filename == '':
-            errors["eventImage"] = "画像が選択されていません。"
-
-        # エラーがある場合はテンプレート再表示
-        if errors:
-            return render_template('add_event.html', errors=errors)
-
-        if file:
+        if img:
             try:
                 # ベースの保存先パス
                 base_upload_path = app.config['EVENT_UPLOAD_FOLDER']
@@ -1899,9 +1889,6 @@ def add_event():
 
                 # ファイル名を生成
                 base_filename = str(uuid.uuid4()) + '.jpg'
-
-                # Pillowで画像を開く
-                img = Image.open(file.stream)
 
                 # オリジナル画像を保存
                 img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
@@ -1956,6 +1943,44 @@ def add_event():
         return redirect('/add_event')
 
     return render_template("add_event.html")
+
+# add_movie確認画面
+@app.route('/confirm_event', methods=['POST'])
+def confirm_event():
+    eventTitle = request.form['eventTitle']
+    eventStartDate = request.form['eventStartDate']
+    eventEndDate = request.form['eventEndDate']
+    eventDescription = request.form['eventDescription']
+    file = request.files['eventImage']
+    eventUrl = request.form['eventUrl']
+    
+    errors = {}
+    
+    # 画像チェック
+    if not file:
+        errors["eventImage"] = "画像を選択してください。"
+        
+    # 日付チェック
+    if eventStartDate > eventEndDate:
+        errors["date"] = "開始日が終了日より未来になっています。正しい日付を入力してください。"
+    
+    # エラーがある場合はテンプレート再表示
+    if errors:
+        return render_template('add_event.html', errors=errors)
+
+    temp_upload_path = app.config['TEMP_UPLOAD_FOLDER']
+    filename = None
+    if file and file.filename:
+        filename = file.filename
+        file.save(os.path.join(temp_upload_path, filename))  # 一時保存
+
+    return render_template('confirm_event.html',
+                           eventTitle=eventTitle,
+                           eventStartDate=eventStartDate,
+                           eventEndDate=eventEndDate,
+                           eventDescription=eventDescription,
+                           eventImage=filename,
+                           eventUrl=eventUrl)
 
 
 # add_screening画面
