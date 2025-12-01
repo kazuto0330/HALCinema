@@ -299,4 +299,8 @@ a {
     .Arrow {
         display: none;
     }
+    /* 画像をホバー時の効果を削除 */
+    .ContentImg:hover {
+    transform: scale(1) translateY(0px);
+    }
 }
