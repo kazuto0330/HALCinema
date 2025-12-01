@@ -22,7 +22,10 @@
         </div>
 
         <div class="theater">
-            <a href="seat_reservation" class="theater-name2">シアター1</a>
+          <a href="{{ url_for('seat_reservation', hall_id=1) }}">
+            <button>シアター1</button>
+          </a>
+    
             <span class="seat-info2" style="margin-left: -5px;">274</span>
             <span class="seat-info2" style="margin-left: 120px;">20</span>
             <span class="seat-info2" style="margin-left: 135px;">6</span>
