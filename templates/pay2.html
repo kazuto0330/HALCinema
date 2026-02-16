@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>お支払い方法選択 - HAL CINEMA</title>
-    <link rel="stylesheet" href="pay2.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pay2.css') }}">
 </head>
 <body>
     <!-- Body部分のみ -->
@@ -45,7 +45,7 @@
             <!-- 現金 -->
             <div class="payment-option" data-method="cash">
                 <div class="option-icon">
-                    <img src="cash.png" alt="現金">
+                    <img src="{{ url_for('static', filename='images/cash.png') }}" alt="現金">
                 </div>
                 <div class="option-text">
                     <div class="option-title">現金</div>
@@ -56,7 +56,7 @@
             <!-- クレジットカード -->
             <div class="payment-option" data-method="credit">
                 <div class="option-icon">
-                    <img src="card.png" alt="クレジットカード">
+                    <img src="{{ url_for('static', filename='images/card.png') }}" alt="クレジットカード">
                 </div>
                 <div class="option-text">
                     <div class="option-title">クレジットカード</div>
@@ -67,7 +67,7 @@
             <!-- コード決済 -->
             <div class="payment-option" data-method="qr">
                 <div class="option-icon">
-                    <img src="code.png" alt="コード決済">
+                    <img src="{{ url_for('static', filename='images/code.png') }}" alt="コード決済">
                 </div>
                 <div class="option-text">
                     <div class="option-title">コード決済</div>
@@ -77,6 +77,6 @@
         </div>
     </div>
 
-    <script src="pay2.js"></script>
+    <script src="{{ url_for('static', filename='js/pay2.js') }}"></script>
 </body>
 </html>
