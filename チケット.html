@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HAL CINEMA Ticket</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
+    body {
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        font-family: 'Noto Sans JP', "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+    }
+
+    .ticket {
+        background-color: white;
+        width: 320px;
+        padding: 30px 25px;
+        box-sizing: border-box;
+        border: 1px solid #e0e0e0; /* 境界線を薄く表示 */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        position: relative;
+    }
+
+    /* ヘッダー部分 */
+    .header {
+        margin-bottom: 20px;
+    }
+
+    .cinema-name {
+        font-size: 28px;
+        font-weight: 900;
+        margin: 0;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+    }
+
+    .movie-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 5px 0 0 0;
+    }
+
+    /* メインコンテンツ（QRと時間） */
+    .content-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end; /* 下揃え */
+        margin-bottom: 15px;
+    }
+
+    .qr-code img {
+        width: 100px;
+        height: 100px;
+        display: block;
+    }
+
+    .datetime-info {
+        text-align: right;
+        margin-bottom: 5px; /* QRコードとのバランス調整 */
+    }
+
+    .date {
+        font-size: 14px;
+        color: #333;
+        margin-bottom: 2px;
+    }
+
+    .time {
+        font-size: 38px;
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -1px;
+    }
+
+    /* シアターと座席 */
+    .seat-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .theater {
+        font-size: 22px;
+        font-weight: 900;
+    }
+
+    .seat-number {
+        background-color: black;
+        color: white;
+        font-size: 28px;
+        font-weight: 900;
+        padding: 2px 15px;
+        letter-spacing: 1px;
+    }
+
+    /* 価格 */
+    .price {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+    }
+
+</style>
+</head>
+<body>
+
+    <div class="ticket">
+        <div class="header">
+            <h1 class="cinema-name">HAL CINEMA</h1>
+            <p class="movie-title">映画タイトル</p>
+        </div>
+
+        <div class="content-row">
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=HAL_CINEMA_TICKET" alt="QR Code">
+            </div>
+            <div class="datetime-info">
+                <div class="date">yyyy/mm/dd(曜)</div>
+                <div class="time">12:00</div>
+            </div>
+        </div>
+
+        <div class="seat-row">
+            <div class="theater">シアター1</div>
+            <div class="seat-number">A-12</div>
+        </div>
+
+        <div class="price">1,500円</div>
+    </div>
+
+</body>
+</html>
