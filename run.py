@@ -2156,37 +2156,52 @@ def generate_ticket_bulk(bulk_booking_id):
 
     # ---------- PDF作成 ----------
     font_path = r"C:\Windows\Fonts\msgothic.ttc"
-    pdfmetrics.registerFont(TTFont("MSGothic", font_path))
+    pdfmetrics.registerFont(TTFont("MSGothic", font_path, subfontIndex=0))         # 通常
+    pdfmetrics.registerFont(TTFont("MSGothic-Bold", font_path, subfontIndex=1))    # 太字
+
     buffer = io.BytesIO()
-    width, height = 85 * mm, 150 * mm
+    width, height = 75 * mm, 100 * mm
     c = canvas.Canvas(buffer, pagesize=(width, height))
 
     for data in data_list:
-        # タイトル
-        c.setFont("MSGothic", 16)
-        c.drawString(10*mm, 135*mm, data['movieTitle'])
+        # ---------- 上部に映画館名（左揃え） ----------
+        c.setFont("MSGothic-Bold", 18)
+        c.drawString(5*mm, 90*mm, "HAL CINEMA")
 
-        # 詳細
-        c.setFont("MSGothic", 11)
-        c.drawString(10*mm, 120*mm, f"上映日: {data['scheduledScreeningDate']}")
-        c.drawString(10*mm, 112*mm, f"開始: {data['screeningStartTime']}")
-        c.drawString(10*mm, 104*mm, f"シアター: {data['theaterNumber']}")
-        c.drawString(10*mm, 96*mm, f"座席: {data['seatNumber']}")
+        # ---------- 映画タイトル（左揃え） ----------
+        c.setFont("MSGothic-Bold", 14)
+        c.drawString(7*mm, 82*mm, data['movieTitle'])
 
-        # QRコード
+        # ---------- 上映日・曜日・開始時刻（中央揃え） ----------
+        screening_date = data['scheduledScreeningDate']
+        weekday_jp = ['月','火','水','木','金','土','日'][screening_date.weekday()]
+        date_str = screening_date.strftime(f"%y/%m/%d({weekday_jp})")
+        c.setFont("MSGothic", 10)
+        c.drawCentredString(width/2 - 7*mm, 72*mm, date_str)                      # 上映日
+        c.drawCentredString(width/2 + 7*mm, 66*mm, f"{data['screeningStartTime']} ～")  # 開始時刻
+
+        # ---------- QRコード（中央揃え、40mm角） ----------
         qr_data = f"HALCINEMA:{data['seatReservationId']}"
-        qr = qrcode.make(qr_data)
+        qr_img = qrcode.make(qr_data)
         qr_buffer = io.BytesIO()
-        qr.save(qr_buffer, format='PNG')
+        qr_img.save(qr_buffer, format='PNG')
         qr_buffer.seek(0)
-        qr_img = ImageReader(qr_buffer)
-        c.drawImage(qr_img, 20*mm, 20*mm, 45*mm, 45*mm)
+        qr_reader = ImageReader(qr_buffer)
+        qr_size = 40*mm
+        qr_x = (width - qr_size)/2
+        qr_y = 25*mm
+        c.drawImage(qr_reader, qr_x, qr_y, qr_size, qr_size)
 
-        # チケットID
+        # ---------- 座席情報（中央揃え） ----------
+        seat_info = f"シアター{data['theaterNumber']}　{data['seatNumber']}"
+        c.setFont("MSGothic-Bold", 12)
+        c.drawCentredString(width/2, 20*mm, seat_info)
+
+        # ---------- チケットID（右揃え） ----------
         c.setFont("MSGothic", 8)
-        c.drawString(10*mm, 15*mm, f"Ticket ID: {data['seatReservationId']}")
+        c.drawRightString(width-5*mm, 10*mm, f"Ticket ID: {data['seatReservationId']}")
 
-        # 座席ごとにページ追加
+        # ページ追加
         c.showPage()
 
     c.save()
