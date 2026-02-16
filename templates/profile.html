@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <title>HALシネマ プロフィール画面</title>
 </head>
+
 <body>
     {% include '_header.html' %}
 
@@ -32,7 +34,9 @@
                 <!-- アイコンとニックネーム、メールアドレス -->
                 <div class="profile-header">
                     <div class="profile-avatar" data-tippy-content="アイコンの変更">
-                        <img src="{{ url_for('static', filename='images/usericon/400x400/' + userData.accountIcon) }}" onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/usericon/400x400/default.jpg') }}';" alt="プロフィール画像" id="avatar-img">
+                        <img src="{{ url_for('static', filename='images/usericon/400x400/' + userData.accountIcon) }}"
+                            onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/usericon/400x400/default.jpg') }}';"
+                            alt="プロフィール画像" id="avatar-img">
                         <div class="avatar-overlay" id="avatar-plus-button">
                             <span>+</span>
                         </div>
@@ -53,7 +57,9 @@
                     <div class="titleContainer collapsible-header">
                         <h3 class="section-title">基本情報</h3>
                         <div class="header-controls">
-                            <div id="infoChangeButton" class="infoChangeButton" onclick="toggleEditMode()" data-tippy-content="プロフィールを編集"><img src="{{ url_for('static', filename='images/pencil.png' ) }}" alt="鉛筆の画像"></div>
+                            <div id="infoChangeButton" class="infoChangeButton" onclick="toggleEditMode()"
+                                data-tippy-content="プロフィールを編集"><img
+                                    src="{{ url_for('static', filename='images/pencil.png' ) }}" alt="鉛筆の画像"></div>
                             <span class="toggle-icon"></span>
                         </div>
                     </div>
@@ -63,35 +69,40 @@
                                 <label>ニックネーム</label>
                                 <div class="info-display">
                                     <span id="display-nick">{{ userData.accountName }}</span>
-                                    <input type="text" id="edit-nick" value="{{ userData.accountName }}" style="display: none;">
+                                    <input type="text" id="edit-nick" value="{{ userData.accountName }}"
+                                        style="display: none;">
                                 </div>
                             </div>
                             <div class="info-item">
                                 <label>お名前</label>
                                 <div class="info-display">
                                     <span id="display-name">{{ userData.realName }}</span>
-                                    <input type="text" id="edit-name" value="{{ userData.realName }}" style="display: none;">
+                                    <input type="text" id="edit-name" value="{{ userData.realName }}"
+                                        style="display: none;">
                                 </div>
                             </div>
                             <div class="info-item">
                                 <label>メールアドレス</label>
                                 <div class="info-display">
                                     <span id="display-email">{{ userData.emailAddress }}</span>
-                                    <input type="email" id="edit-email" value="{{ userData.emailAddress }}" style="display: none;">
+                                    <input type="email" id="edit-email" value="{{ userData.emailAddress }}"
+                                        style="display: none;">
                                 </div>
                             </div>
                             <div class="info-item">
                                 <label>電話番号</label>
                                 <div class="info-display">
                                     <span id="display-phone">{{ userData.phoneNumber }}</span>
-                                    <input type="tel" id="edit-phone" value="{{ userData.phoneNumber }}" style="display: none;">
+                                    <input type="tel" id="edit-phone" value="{{ userData.phoneNumber }}"
+                                        style="display: none;">
                                 </div>
                             </div>
                             <div class="info-item">
                                 <label>生年月日</label>
                                 <div class="info-display">
                                     <span id="display-birth">{{ userData.birthDate|strftime('%Y年%m月%d日') }}</span>
-                                    <input type="date" id="edit-birth" value="{{ userData.birthDate|strftime('%Y-%m-%d') }}" style="display: none;">
+                                    <input type="date" id="edit-birth"
+                                        value="{{ userData.birthDate|strftime('%Y-%m-%d') }}" style="display: none;">
                                 </div>
                             </div>
                         </div>
@@ -118,12 +129,12 @@
                                 </div>
                             </div>
                             <div class="explanation">
-                            <h4>ポイントはどこで使える？</h4>
-                            <ul>
-                                <li>無料鑑賞券 引き換え</li>
-                                <li>ポップコーン・ドリンク割引</li>
-                                <li>その他特典</li>
-                            </ul>
+                                <h4>ポイントはどこで使える？</h4>
+                                <ul>
+                                    <li>無料鑑賞券 引き換え</li>
+                                    <li>ポップコーン・ドリンク割引</li>
+                                    <li>その他特典</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -134,21 +145,21 @@
                             <div class="rank-container">
                                 {% set rank_points = user_history|length %}
                                 {% if rank_points < 3 %}
-                                    {% set rank = 'ブロンズ' %}
-                                    {% set rank_class = 'bronze' %}
-                                    {% set next_rank = 'シルバー' %}
-                                    {% set points_to_next = 3 - rank_points %}
-                                    {% set progress = (rank_points / 3) * 100 %}
+                                {% set rank = 'ブロンズ' %}
+                                {% set rank_class = 'bronze' %}
+                                {% set next_rank = 'シルバー' %}
+                                {% set points_to_next = 3 - rank_points %}
+                                {% set progress = (rank_points / 3) * 100 %}
                                 {% elif rank_points < 7 %}
-                                    {% set rank = 'シルバー' %}
-                                    {% set rank_class = 'silver' %}
-                                    {% set next_rank = 'ゴールド' %}
-                                    {% set points_to_next = 7 - rank_points %}
-                                    {% set progress = ((rank_points - 3) / 4) * 100 %}
+                                {% set rank = 'シルバー' %}
+                                {% set rank_class = 'silver' %}
+                                {% set next_rank = 'ゴールド' %}
+                                {% set points_to_next = 7 - rank_points %}
+                                {% set progress = ((rank_points - 3) / 4) * 100 %}
                                 {% else %}
-                                    {% set rank = 'ゴールド' %}
-                                    {% set rank_class = 'gold' %}
-                                    {% set progress = 100 %}
+                                {% set rank = 'ゴールド' %}
+                                {% set rank_class = 'gold' %}
+                                {% set progress = 100 %}
                                 {% endif %}
 
                                 <div class="rank-header">
@@ -160,9 +171,9 @@
                                 </div>
                                 <div class="rank-progress-info">
                                     {% if rank != 'ゴールド' %}
-                                        <span>あと{{ points_to_next }}回購入で{{ next_rank }}ランク</span>
+                                    <span>あと{{ points_to_next }}回購入で{{ next_rank }}ランク</span>
                                     {% else %}
-                                        <span>あなたはゴールドランクです！</span>
+                                    <span>あなたはゴールドランクです！</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -181,39 +192,46 @@
                 </div>
             </div>
 
-            
+
             <div class="rightContainer">
                 <!-- 購入履歴 -->
                 <div class="profile-section">
                     <h3 class="section-title">購入履歴</h3>
                     <div class="movie-history">
                         {% if user_history %}
-                            {% for record in user_history %}
-                                <div class="movie-card"
-                                    data-movie-id="{{ record.moviesId }}"
-                                    data-movie-title="{{ record.movieTitle }}"
-                                    data-movie-image="{{ url_for('static', filename='images/movie/original/' + record.movieImage) }}"
-                                    data-screening-date="{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}"
-                                    data-screening-time="{{ record.screeningStartTime | timedelta_hh_mm }}"
-                                    data-movie-running-time="{{ record.movieRunningTime }}"
-                                    data-screen-id="{{ record.screenId }}"
-                                    data-seat-number="{{ record.reservedSeats }}"
-                                    data-seat-reservation-id="{{ record.transactionId }}"
-                                    data-movie-description="{{ record.movieDescription | e }}"
-                                    data-amount="{{record.totalAmount}}円"
-                                    data-created-at="{{record.transactionDatetime.strftime('%Y年%m月%d日  %H時%M分')}}">
-                                     
-                                    <img src="{{ url_for('static', filename='images/movie/200h/' + record.movieImage) }}" alt="{{ record.movieTitle }}" style="margin-right: 15px;">
-                                    <div class="movie-info">
-                                        <h4>{{ record.movieTitle }}</h4>
-                                        <p>{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}　{{ record.screeningStartTime }}～　（{{ record.movieRunningTime }}分）</p>
-                                        <span class="theater">シアター{{ record.theaterNumber }} (座席: {{ record.reservedSeats }})</span>
-                                    </div>
-                                </div>
-                            {% endfor %}
+                        {% for record in user_history %}
+                        <div class="movie-card" data-movie-id="{{ record.moviesId }}"
+                            data-movie-title="{{ record.movieTitle }}"
+                            data-movie-image="{{ url_for('static', filename='images/movie/original/' + record.movieImage) }}"
+                            data-screening-date="{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}"
+                            data-screening-time="{{ record.screeningStartTime | timedelta_hh_mm }}"
+                            data-movie-running-time="{{ record.movieRunningTime }}"
+                            data-screen-id="{{ record.screenId }}" data-seat-number="{{ record.reservedSeats }}"
+                            data-seat-reservation-id="{{ record.transactionId }}"
+                            data-movie-description="{{ record.movieDescription | e }}"
+                            data-amount="{{record.totalAmount}}円"
+                            data-created-at="{{record.transactionDatetime.strftime('%Y年%m月%d日  %H時%M分')}}">
+
+                            <img src="{{ url_for('static', filename='images/movie/200h/' + record.movieImage) }}"
+                                alt="{{ record.movieTitle }}" style="margin-right: 15px;">
+                            <div class="movie-info">
+                                <h4>{{ record.movieTitle }}</h4>
+                                <p>{{ record.scheduledScreeningDate.strftime('%Y年%m月%d日') }}　{{ record.screeningStartTime }}～　（{{ record.movieRunningTime }}分）
+                                </p>
+                                <span class="theater">シアター{{ record.theaterNumber }} (座席:
+                                    {{ record.reservedSeats }})</span>
+                            </div>
+                        </div>
+                        <div class="ticket-area">
+                            <a class="ticket-download-btn"
+                                href="{{ url_for('generate_ticket_bulk', bulk_booking_id=record.transactionId) }}">
+                                チケットPDFを発行
+                            </a>
+                        </div>
+                        {% endfor %}
 
                         {% else %}
-                            <p class="no-history">購入履歴はありません。</p>
+                        <p class="no-history">購入履歴はありません。</p>
                         {% endif %}
 
                     </div>
@@ -227,14 +245,14 @@
                             <img id="modal-movie-image" src="" alt="Movie Poster" loading="lazy">
                             <div class="modal-movie-info">
                                 <h2 id="modal-movie-title"></h2>
-                                <a id="modal-movie-link" href="" target="_blank">作品詳細へ</a>  
+                                <a id="modal-movie-link" href="" target="_blank">作品詳細へ</a>
                                 <p id="modal-screening-date"></p>
                                 <p id="modal-screening-time"></p>
                                 <p id="modal-seat-info"></p>
 
                                 <p id="modal-seat-amount"></p>
                                 <p id="modal-seat-createdAt"></p>
-                                
+
                                 <p id="modal-movie-description"></p>
                                 <p id="modal-transaction-id" class="transaction-id"></p>
                             </div>
@@ -247,11 +265,12 @@
 
 
     {% include '_footer.html' %}
-    
+
     <!-- Cropper.jsのJavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    
+
     <!-- 自分のJavaScriptファイル or <script>タグ -->
     <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 </body>
+
 </html>

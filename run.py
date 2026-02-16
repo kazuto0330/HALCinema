@@ -1,24 +1,34 @@
+import ast
+import datetime
+import io
 import json
 import os
-import uuid
-from pathlib import Path
-import re
 import random
-import datetime
+import re
+import uuid
+from collections import defaultdict
+from contextlib import contextmanager
 from datetime import date, timedelta
+from functools import wraps
+from pathlib import Path
+from urllib.parse import urljoin, urlparse
 
 import mysql.connector
-from contextlib import contextmanager
+import qrcode
+from flask import (Flask, flash, jsonify, make_response, redirect,
+                   render_template, request, send_file, session, url_for)
 from PIL import Image
-from functools import wraps
-from flask import Flask, render_template, request, session, redirect, url_for, jsonify, flash
-from werkzeug.security import generate_password_hash, check_password_hash
+from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen import canvas
+from werkzeug.security import check_password_hash, generate_password_hash
+from reportlab.lib.utils import ImageReader
 
-from collections import defaultdict
-
-from urllib.parse import urlparse, urljoin
 
 app = Flask(__name__)
+font_path = "C:/Windows/Fonts/msgothic.ttc"
+pdfmetrics.registerFont(TTFont("MSGothic", font_path))
 
 # セッションの暗号化
 app.secret_key = 'qawsedrftgyhujikolp'
@@ -29,6 +39,7 @@ IMAGE_SIZES = [(400, 400), (80, 80)]
 app.config['USER_ICON_UPLOAD_FOLDER'] = 'static/images/usericon'
 app.config['MOVIE_UPLOAD_FOLDER'] = 'static/images/movie'
 app.config['EVENT_UPLOAD_FOLDER'] = 'static/images/event'
+app.config['TEMP_UPLOAD_FOLDER'] = 'static/images/temp'
 
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 86400
 
@@ -1723,29 +1734,19 @@ def add_movie():
             moviesId = f"{int(max_id) + 1:05}"
         else:
             moviesId = "00001"
-
+        
         # 入力画面から値の受け取り
         movieTitle = request.form.get('movieTitle')
         movieReleaseDate = request.form.get('movieReleaseDate')
         movieEndDate = request.form.get('movieEndDate')
         movieRunningTime = request.form.get('movieRunningTime')
         movieSynopsis = request.form.get('movieSynopsis')
+        
+        tempFilename = request.form.get('movieImage', None)
+        temp_path = os.path.join('static', 'images', 'temp', tempFilename)
+        img = Image.open(temp_path)
 
-        errors = {}
-
-        # 日付チェック
-        if movieReleaseDate > movieEndDate:
-            errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
-
-        file = request.files.get('movieImage')
-        if not file or file.filename == '':
-            errors["movieImage"] = "画像が選択されていません。"
-
-        # エラーがある場合はテンプレート再表示
-        if errors:
-            return render_template('add_movie.html', errors=errors)
-
-        if file:
+        if img:
             try:
                 # ベースの保存先パス
                 base_upload_path = app.config['MOVIE_UPLOAD_FOLDER']
@@ -1758,9 +1759,6 @@ def add_movie():
 
                 # ファイル名を生成
                 base_filename = str(uuid.uuid4()) + '.jpg'
-
-                # Pillowで画像を開く
-                img = Image.open(file.stream)
 
                 # オリジナル画像を保存
                 img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
@@ -1819,12 +1817,45 @@ def add_movie():
 
     return render_template("add_movie.html")
 
-@app.route('/hall/<int:hall_id>')
-def hall_view(hall_id):
-    return render_template("seat_reservation.html",
-                           screenId=hall_id,
-                           showing_id=None,
-                           reserved_seats=[])
+# add_movie確認画面
+@app.route('/confirm_movie', methods=['POST'])
+def confirm_movie():
+    movieTitle = request.form['movieTitle']
+    movieReleaseDate = request.form['movieReleaseDate']
+    movieEndDate = request.form['movieEndDate']
+    movieRunningTime = request.form['movieRunningTime']
+    movieSynopsis = request.form['movieSynopsis']
+    file = request.files['movieImage']
+    
+    errors = {}
+    
+    # 画像チェック
+    if not file:
+        errors["movieImage"] = "画像を選択してください。"
+        
+    # 日付チェック
+    if movieReleaseDate > movieEndDate:
+        errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
+    
+    # エラーがある場合はテンプレート再表示
+    if errors:
+        return render_template('add_movie.html', errors=errors)
+
+    temp_upload_path = app.config['TEMP_UPLOAD_FOLDER']
+    filename = None
+    if file and file.filename:
+        filename = file.filename
+        file.save(os.path.join(temp_upload_path, filename))  # 一時保存
+
+    return render_template('confirm_movie.html',
+                           movieTitle=movieTitle,
+                           movieReleaseDate=movieReleaseDate,
+                           movieEndDate=movieEndDate,
+                           movieRunningTime=movieRunningTime,
+                           movieSynopsis=movieSynopsis,
+                           movieImage=filename)
+
+
 
 # add_event画面
 @app.route('/add_event', methods=['GET', 'POST'])
@@ -1848,22 +1879,14 @@ def add_event():
         eventEndDate = request.form.get('eventEndDate')
         eventDescription = request.form.get('eventDescription')
         eventUrl = request.form.get('eventUrl')
+        
+        tempFilename = request.form.get('eventImage', None)
+        temp_path = os.path.join('static', 'images', 'temp', tempFilename)
+        img = Image.open(temp_path)
 
         errors = {}
 
-        # 日付チェック
-        if eventStartDate > eventEndDate:
-            errors["date"] = "公開日が終了日より未来になっています。正しい日付を入力してください。"
-
-        file = request.files.get('eventImage')
-        if not file or file.filename == '':
-            errors["eventImage"] = "画像が選択されていません。"
-
-        # エラーがある場合はテンプレート再表示
-        if errors:
-            return render_template('add_event.html', errors=errors)
-
-        if file:
+        if img:
             try:
                 # ベースの保存先パス
                 base_upload_path = app.config['EVENT_UPLOAD_FOLDER']
@@ -1876,9 +1899,6 @@ def add_event():
 
                 # ファイル名を生成
                 base_filename = str(uuid.uuid4()) + '.jpg'
-
-                # Pillowで画像を開く
-                img = Image.open(file.stream)
 
                 # オリジナル画像を保存
                 img.convert('RGB').save(os.path.join(path_original, base_filename), 'JPEG', quality=95)
@@ -1934,6 +1954,43 @@ def add_event():
 
     return render_template("add_event.html")
 
+# add_movie確認画面
+@app.route('/confirm_event', methods=['POST'])
+def confirm_event():
+    eventTitle = request.form['eventTitle']
+    eventStartDate = request.form['eventStartDate']
+    eventEndDate = request.form['eventEndDate']
+    eventDescription = request.form['eventDescription']
+    file = request.files['eventImage']
+    eventUrl = request.form['eventUrl']
+    
+    errors = {}
+    
+    # 画像チェック
+    if not file:
+        errors["eventImage"] = "画像を選択してください。"
+        
+    # 日付チェック
+    if eventStartDate > eventEndDate:
+        errors["date"] = "開始日が終了日より未来になっています。正しい日付を入力してください。"
+    
+    # エラーがある場合はテンプレート再表示
+    if errors:
+        return render_template('add_event.html', errors=errors)
+
+    temp_upload_path = app.config['TEMP_UPLOAD_FOLDER']
+    filename = None
+    if file and file.filename:
+        filename = file.filename
+        file.save(os.path.join(temp_upload_path, filename))  # 一時保存
+
+    return render_template('confirm_event.html',
+                           eventTitle=eventTitle,
+                           eventStartDate=eventStartDate,
+                           eventEndDate=eventEndDate,
+                           eventDescription=eventDescription,
+                           eventImage=filename,
+                           eventUrl=eventUrl)
 
 
 # add_screening画面
@@ -1956,31 +2013,16 @@ def add_screening():
         moviesId = request.form.get('moviesId')
         screenId = request.form.get('screenId')
         scheduledScreeningDate = request.form.get('scheduledScreeningDate')
-        screeningStartTimes = request.form.getlist('screeningStartTimes')  # 複数受け取り
-
-        errors = {}
-
-        if not screeningStartTimes:
-            errors['screeningStartTimes'] = '上映開始時刻を1つ以上選択してください'
-
-        # エラーあれば画面戻す
-        if errors:
-            now_playing = fetch_movies(status='now_playing')
-            coming_soon = fetch_movies(status='coming_soon')
-            movies = now_playing + coming_soon
-            screens = get_screens()
-            return render_template(
-                'add_screening.html',
-                errors=errors,
-                movies=movies,
-                screens=screens,
-                movies_json=movies,
-                selected_moviesId=moviesId,
-                selected_screenId=screenId,
-                selected_date=scheduledScreeningDate,
-                
-                selected_times=screeningStartTimes
-            )
+        screeningStartTimesStr = request.form.get('screeningStartTimes')
+        
+        # 安全にPythonリストに変換
+        try:
+            screeningStartTimes = ast.literal_eval(screeningStartTimesStr)
+            if not isinstance(screeningStartTimes, list):
+                screeningStartTimes = [screeningStartTimes]  # 万が一単一値の場合もリスト化
+        except Exception:
+            # 変換失敗したら空リストにする
+            screeningStartTimes = []
 
         # 複数時刻分、レコードを分けて挿入
         for start_time in screeningStartTimes:
@@ -1992,8 +2034,7 @@ def add_screening():
                 )
             """
 
-            # IDはユニークなので、ループ毎にインクリメント（例）
-            # ※実務ではもっと安全なID管理をしてください
+            # ループ毎にインクリメント
             cur.execute("SELECT MAX(scheduledShowingId) FROM t_scheduledShowing")
             max_id = cur.fetchone()[0]
             if max_id:
@@ -2025,6 +2066,138 @@ def add_screening():
     screens = get_screens()
 
     return render_template("add_screening.html", movies=movies, screens=screens, movies_json=movies)
+
+# add_screening確認画面
+@app.route('/confirm_screening', methods=['POST'])
+def confirm_screening():
+    moviesId = request.form['moviesId']
+    screenId = request.form['screenId']
+    scheduledScreeningDate = request.form['scheduledScreeningDate']
+    screeningStartTimes = request.form.getlist('screeningStartTimes')
+    
+    errors = {}
+
+    if not screeningStartTimes:
+        errors['screeningStartTimes'] = '上映開始時刻を1つ以上選択してください'
+
+    # エラーあれば画面戻す
+    if errors:
+        now_playing = fetch_movies(status='now_playing')
+        coming_soon = fetch_movies(status='coming_soon')
+        movies = now_playing + coming_soon
+        screens = get_screens()
+        return render_template(
+            'add_screening.html',
+            errors=errors,
+            movies=movies,
+            screens=screens,
+            movies_json=movies,
+            selected_moviesId=moviesId,
+            selected_screenId=screenId,
+            selected_date=scheduledScreeningDate,
+            selected_times=screeningStartTimes
+        )
+
+    # エラーがある場合はテンプレート再表示
+    if errors:
+        return render_template('add_event.html', errors=errors)
+    
+    return render_template('confirm_screening.html',
+                           moviesId=moviesId,
+                           screenId=screenId,
+                           scheduledScreeningDate=scheduledScreeningDate,
+                           screeningStartTimes=screeningStartTimes)
+
+
+# ==========================
+# チケットPDF生成（複数座席対応）
+# ==========================
+@app.route('/ticket/bulk/<int:bulk_booking_id>')
+@login_required
+def generate_ticket_bulk(bulk_booking_id):
+    # ---------- DB接続 ----------
+    con = conn_db()
+    cur = con.cursor(dictionary=True)
+
+    # bulkBookingId ごとの座席情報取得
+    sql = """
+    SELECT
+        bb.bulkBookingId AS transactionId,
+        bb.reservationDatetime AS transactionDatetime,
+        m.movieTitle,
+        m.movieRunningTime,
+        ss.scheduledScreeningDate,
+        ss.screeningStartTime,
+        ss.screenId AS theaterNumber,
+        sr.seatReservationId,
+        sr.seatNumber
+    FROM
+        t_bulkbooking AS bb
+    JOIN
+        t_seatreservationstatus AS srs ON bb.bulkBookingId = srs.bulkBookingId
+    JOIN
+        t_seatreservation AS sr ON srs.seatReservationId = sr.seatReservationId
+    JOIN
+        t_scheduledshowing AS ss ON sr.scheduledShowingId = ss.scheduledShowingId
+    JOIN
+        t_movies AS m ON ss.moviesId = m.moviesId
+    WHERE
+        bb.bulkBookingId = %s
+    ORDER BY
+        sr.seatNumber;
+    """
+    cur.execute(sql, (bulk_booking_id,))
+    data_list = cur.fetchall()
+    cur.close()
+    con.close()
+
+    if not data_list:
+        abort(404)
+
+    # ---------- PDF作成 ----------
+    font_path = r"C:\Windows\Fonts\msgothic.ttc"
+    pdfmetrics.registerFont(TTFont("MSGothic", font_path))
+    buffer = io.BytesIO()
+    width, height = 85 * mm, 150 * mm
+    c = canvas.Canvas(buffer, pagesize=(width, height))
+
+    for data in data_list:
+        # タイトル
+        c.setFont("MSGothic", 16)
+        c.drawString(10*mm, 135*mm, data['movieTitle'])
+
+        # 詳細
+        c.setFont("MSGothic", 11)
+        c.drawString(10*mm, 120*mm, f"上映日: {data['scheduledScreeningDate']}")
+        c.drawString(10*mm, 112*mm, f"開始: {data['screeningStartTime']}")
+        c.drawString(10*mm, 104*mm, f"シアター: {data['theaterNumber']}")
+        c.drawString(10*mm, 96*mm, f"座席: {data['seatNumber']}")
+
+        # QRコード
+        qr_data = f"HALCINEMA:{data['seatReservationId']}"
+        qr = qrcode.make(qr_data)
+        qr_buffer = io.BytesIO()
+        qr.save(qr_buffer, format='PNG')
+        qr_buffer.seek(0)
+        qr_img = ImageReader(qr_buffer)
+        c.drawImage(qr_img, 20*mm, 20*mm, 45*mm, 45*mm)
+
+        # チケットID
+        c.setFont("MSGothic", 8)
+        c.drawString(10*mm, 15*mm, f"Ticket ID: {data['seatReservationId']}")
+
+        # 座席ごとにページ追加
+        c.showPage()
+
+    c.save()
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"ticket_{bulk_booking_id}.pdf",
+        mimetype='application/pdf'
+    )
 
 
 # 実行制御

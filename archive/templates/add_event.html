@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>イベント情報登録</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_movie.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
+</head>
+
+<body>
+    {% include 'flash.html' %}
+    <h1>イベント情報登録フォーム</h1>
+
+    <form action="/confirm_event" method="post" enctype="multipart/form-data">
+
+        <label for="eventTitle">イベントタイトル</label>
+        <input type="text" id="eventTitle" name="eventTitle" required>
+
+        <label for="eventStartDate">イベント開始日</label>
+        <input type="date" id="eventStartDate" name="eventStartDate" required>
+
+        <label for="eventEndDate">イベント終了日</label>
+        <input type="date" id="eventEndDate" name="eventEndDate">
+        {% if errors and errors.date %}
+        <p class="error-message">{{ errors.date }}</p>
+        {% endif %}
+
+        <label for="eventDescription">イベント詳細</label>
+        <textarea id="eventDescription" name="eventDescription" rows="6" required></textarea>
+
+        <label for="eventImage">イベント画像</label>
+        <input type="file" id="eventImage" name="eventImage" accept="image/*">
+        {% if errors and errors.eventImage %}
+        <p class="error-message">{{ errors.eventImage }}</p>
+        {% endif %}
+
+        <label for="eventUrl">イベントURL</label>
+        <input type="url" id="eventUrl" name="eventUrl" placeholder="https://">
+
+        <button type="submit" class="btn-submit">登録</button>
+        <button type="button" class="btn-back" onclick="location.href='/admin'">戻る</button>
+    </form>
+    <script src="{{ url_for('static', filename='js/flash.js') }}"></script>
+</body>
+
+</html>

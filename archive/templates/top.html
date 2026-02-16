@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/reset.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/top.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flash.css') }}">
+    <title>HALシネマ トップページ</title>
+</head>
+
+<body>
+    {% include 'flash.html' %}
+    {% include '_header.html' %}
+
+
+    <!-- スライドショー -->
+    <div class="slideshow-container">
+        <div class="slideshow-wrapper">
+            {% if screen_event %}
+                {% for event in screen_event %}
+                    <div class="slide-item">
+                        <a href="/event/{{ event.eventInfoId }}"><img src="{{ url_for('static', filename='images/event/original/' + event.eventImage ) }}" alt="{{ event.eventTitle }}" loading="lazy"></a>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- 左右のナビゲーションボタン -->
+        <button class="slide-button prev-button"></button>
+        <button class="slide-button next-button"></button>
+    </div>
+
+
+    <!-- メインコンテンツ -->
+     <!-- 人気の映画 -->
+    <div class="ContentContainer">
+        <div class="ContentBox">
+            <div class="ContentText">人気の映画</div>
+            <a href="/movie_list" class="ContentTextMore">
+                <div>もっとみる</div>
+            </a>
+        </div>
+
+        <div class="Content">
+            <div class="ScrollButton LeftButton Arrow">&#10094</div>
+
+            <div class="ScrollContainer CssOnly JsScroll">
+                <div class="ImageWrapper">
+                    {% if now_playing %}
+                        {% for movie in now_playing %}
+                            <a href="/movie_information/{{ movie.moviesId }}" data-tippy-content="{{ movie.movieTitle }}">
+                                <img src="{{ url_for('static', filename='images/movie/200h/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg" loading="lazy">
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="ScrollButton RightButton Arrow">&#10095;</div>
+        </div>
+    </div>
+
+
+    <!-- 開催中のイベント -->
+    <div class="ContentContainer">
+        <div class="ContentBox">
+            <div class="ContentText">イベント</div>
+            <a href="" class="ContentTextMore">
+                <div>もっとみる</div>
+            </a>
+        </div>
+
+        <div class="Content">
+            <div class="ScrollButton LeftButton Arrow">&#10094</div>
+
+            <div class="ScrollContainer CssOnly JsScroll">
+                <div class="ImageWrapper Event">
+                    {% if events %}
+                        {% for event in events %}
+                        <a href="/event/{{ event.eventInfoId }}" data-tippy-content="{{ event.eventTitle }}">
+                            <img src="{{ url_for('static', filename='images/event/200h/' + event.eventImage ) }}" alt="{{ event.eventTitle }}" class="ContentImg EventImg" loading="lazy">
+                        </a>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="ScrollButton RightButton Arrow">&#10095;</div>
+        </div>
+    </div>
+
+
+    <!-- 公開中の映画 -->
+    <div class="ContentContainer">
+        <div class="ContentBox">
+            <div class="ContentText">公開予定の映画</div>
+            <a href="/movie_list?set=comingsoon" class="ContentTextMore">
+                <div>もっとみる</div>
+            </a>
+        </div>
+
+        <div class="Content">
+            <div class="ScrollButton LeftButton Arrow">&#10094</div>
+
+            <div class="ScrollContainer CssOnly JsScroll">
+                <div class="ImageWrapper">
+                    {% if coming_soon %}
+                        {% for movie in coming_soon %}
+                            <a href="/movie_information/{{ movie.moviesId }}" data-tippy-content="{{ movie.movieTitle }}">
+                                <img src="{{ url_for('static', filename='images/movie/200h/' + movie.movieImage ) }}" alt="{{ movie.movieTitle }}" class="ContentImg" loading="lazy">
+                                <div>{{ movie.movieReleaseDate|strftime('%Y年%m月%d日') }} 公開</div>
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="ScrollButton RightButton Arrow">&#10095;</div>
+        </div>
+    </div>
+
+
+    {% include '_footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/top.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/flash.js') }}"></script>
+</body>
+</html>

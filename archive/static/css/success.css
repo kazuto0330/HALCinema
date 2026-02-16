@@ -1,0 +1,58 @@
+/* 页面整体背景和字体设置 */
+body {
+  background-color: #000000;
+  color: #f0f0f0;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* main 区域居中布局 */
+main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+/* 标题样式 */
+main h2 {
+  font-size: 24px;
+  margin-top: 150px;
+  margin-bottom: 30px;
+  color: #ffffff;
+}
+
+/* 按钮表单样式 */
+main form {
+  display: inline-block;
+  margin: 10px;
+}
+
+/* 按钮样式 */
+button[type="submit"] {
+  padding: 12px 24px;
+  font-size: 16px;
+  background: linear-gradient(135deg, #007bff, #00d4ff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}
+/* 按钮容器横向排列 */
+.button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+
+button[type="submit"]:hover {
+  background: linear-gradient(135deg, #0056b3, #00aaff);
+}

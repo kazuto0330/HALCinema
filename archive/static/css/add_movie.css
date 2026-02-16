@@ -1,0 +1,100 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8;
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    background: linear-gradient(to bottom, #ffffff, #f9f9f9);
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 25px;
+    text-align: center;
+    color: #333;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-top: 15px;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #555;
+}
+
+p{
+    white-space: pre-wrap;     /* 改行を保持＋折り返し */
+    overflow-wrap: break-word; /* 長い単語でも折り返し */
+  }
+
+input,
+textarea,
+select,
+button {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+/* 1つ目のボタン（登録） */
+form button:first-of-type {
+    margin-top: 20px;
+    background: linear-gradient(45deg, #28a745, #218838);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 12px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+form button:first-of-type:hover {
+    background: linear-gradient(45deg, #218838, #1e7e34);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+/* 2つ目のボタン（戻る） */
+form button:nth-of-type(2) {
+    margin-top: 15px;
+    background: linear-gradient(45deg, #007BFF, #0056b3);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 12px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+form button:nth-of-type(2):hover {
+    background: linear-gradient(45deg, #0056b3, #003f7f);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+}
+
+.error-message {
+    color: red;
+    margin: -2px 0 0 5px;
+    font-size: 14px;
+}

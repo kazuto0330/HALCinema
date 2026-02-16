@@ -1,0 +1,306 @@
+/* ===================================
+   基本スタイル
+   =================================== */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000918;
+    color: white;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+/* ===================================
+   スライドショー (.slideshow-container)
+   =================================== */
+.slideshow-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 2vh 0;
+}
+
+.slideshow-wrapper {
+    display: flex;
+}
+
+/* --- スライドアイテム --- */
+.slide-item {
+    width: 75vw;
+    max-width: 1200px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    padding: 0;
+    transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
+    filter: brightness(0.4);
+    transform: scale(0.95);
+    pointer-events: none; /* アクティブでないスライドはクリック不可 */
+}
+
+.slide-item.active {
+    filter: brightness(1);
+    transform: scale(1);
+    pointer-events: auto; /* アクティブなスライドのみクリック可能 */
+}
+
+.slide-item a {
+    display: block;
+}
+
+.slide-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* --- 左右ナビゲーションボタン --- */
+.slide-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.slide-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.slide-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    border-top: 4px solid #fff;
+    border-right: 4px solid #fff;
+}
+
+.prev-button {
+    left: 1%;
+}
+.prev-button::after {
+    transform: translate(-40%, -50%) rotate(-135deg);
+}
+
+.next-button {
+    right: 1%;
+}
+.next-button::after {
+    transform: translate(-60%, -50%) rotate(45deg);
+}
+
+
+/* ===================================
+   メインコンテンツ (.ContentContainer)
+   =================================== */
+/* --- セクションコンテナ --- */
+.ContentContainer {
+    margin: 4vw 0;
+}
+
+/* --- タイトルエリア (.ContentBox) --- */
+.ContentBox {
+    display: flex;
+    align-items: center;
+}
+
+.ContentText {
+    font-weight: bold;
+    margin-left: 40px;
+    font-size: 1.4rem;
+}
+
+.ContentTextMore {
+    margin: 0 25px 0 auto;
+    font-size: 1rem;
+}
+
+.ContentTextMore:hover {
+    color: #bbb;
+}
+
+/* --- 横スクロールエリア (.Content) --- */
+.Content {
+    position: relative;
+}
+
+.ScrollContainer {
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch; /* iOSでのスムーズスクロール */
+    padding: 20px 0 10px 0;
+}
+
+/* WebKit系ブラウザのスクロールバーを非表示 */
+.ScrollContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.ImageWrapper {
+    display: flex;
+    flex-direction: row;
+    padding: 0 10px;
+    padding-left: 50px;
+}
+
+/* --- コンテンツ画像 (映画・イベント共通) --- */
+.ContentImg {
+    width: 11.25vw;
+    min-width: 110px;
+    max-width: 165px;
+    margin-right: 2vw;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 3px 5px 10px rgba(255, 255, 255, 0.1);
+    filter: brightness(100%);
+    transition: all 0.3s ease;
+}
+
+.ContentImg:hover {
+    transform: scale(1.1) translateY(-5px);
+}
+
+.ContentImg.darken {
+    filter: brightness(50%);
+}
+
+/* --- イベントセクション個別スタイル --- */
+.EventImg {
+    min-width: 185px;
+    max-width: 350px;
+}
+.ImageWrapper.Event a img {
+    width: 22vw;
+}
+
+/* --- 公開予定映画の公開日テキスト --- */
+.ImageWrapper a div {
+    text-align: center;
+    margin: 5px 20px 0 0;
+    font-size: 0.8rem;
+}
+
+/* --- 左右スクロールボタン --- */
+.ScrollButton {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    user-select: none;
+    cursor: pointer;
+    visibility: hidden; /* ホバーで表示 */
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+
+.ContentContainer:hover .ScrollButton {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.Arrow {
+    color: #fff;
+    font-size: 23px;
+    font-weight: bold;
+    user-select: none;
+    z-index: 100;
+    padding: 20px;
+    transition: all 0.1s ease;
+}
+
+.Arrow:hover {
+    font-size: 28px;
+}
+
+.LeftButton {
+    left: 0;
+}
+
+.RightButton {
+    right: 0;
+}
+
+
+/* ===================================
+   レスポンシブデザイン (メディアクエリ)
+   =================================== */
+
+/* --- 画面幅: 1440px以下 --- */
+@media (max-width: 1440px) {
+    .slide-item {
+        width: 65vw;
+        min-width: 650px;
+        max-width: 850px;
+    }
+}
+
+/* --- 画面幅: 769px以下 (タブレット) --- */
+@media (max-width: 769px) {
+    /* スライドショー */
+    .slideshow-container {
+        padding: 1vh 0;
+    }
+    .slide-item {
+        width: 80vw;
+        min-width: 1px; /* 1440pxのmin-widthをリセット */
+    }
+
+    /* メインコンテンツ */
+    .ContentText {
+        margin-left: 18px;
+        font-size: max(16px, 2.5vw);
+    }
+    .ContentTextMore {
+        margin: 0 10px 0 auto;
+        font-size: max(14px, 2vw);
+    }
+    .ImageWrapper {
+        padding-left: 30px;
+    }
+    .ContentImg {
+        width: 13.25vw;
+        min-width: 95px;
+    }
+    .ImageWrapper.Event a img {
+        width: 26vw;
+        min-width: 160px;
+    }
+}
+
+/* --- 画面幅: 480px以下 (スマートフォン) --- */
+@media (max-width: 480px) {
+    /* スライドショー */
+    .slide-item {
+        width: 100vw;
+    }
+
+    /* メインコンテンツ */
+    .ContentContainer {
+        margin: 6vw 0;
+    }
+    /* スマホではタッチスクロールを想定し、矢印ボタンを非表示 */
+    .Arrow {
+        display: none;
+    }
+    /* 画像をホバー時の効果を削除 */
+    .ContentImg:hover {
+    transform: scale(1) translateY(0px);
+    }
+}

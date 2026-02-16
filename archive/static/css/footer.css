@@ -1,0 +1,41 @@
+#Footer{
+    width: 100%;
+    margin-top: 100px;
+    padding: 10px 0;
+    background-color: #1a1a1a;
+    color: white;
+}
+#FooterLogo{
+    display: flex;
+    justify-content: center;
+    margin: 5px auto 0 auto;
+}
+#FooterLogoImg{
+    width: 100px;
+    margin: 0 auto;
+}
+#Copyright{
+    margin: 9px 0 0 0;
+    text-align: center;
+    color: #ccc;
+}
+
+
+@media (max-width: 1440px) {}
+
+@media (max-width: 769px) {
+    #FooterLogoImg {
+        width: max(75px,15vw);
+    }
+    #Copyright {
+        font-size: max(10px,2vw);
+    }
+}
+
+@media (max-width: 480px) {}
+
+
+body.js-footer-absolute #Footer {
+position: absolute;
+bottom: 0px;
+}

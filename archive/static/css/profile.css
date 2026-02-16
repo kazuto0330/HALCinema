@@ -1,0 +1,708 @@
+/* ===================================
+   全体・基本スタイル
+==================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #000918;
+    color: #fff;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 1620px;
+    min-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.leftContainer{
+    width: 60%;
+    margin-right: 3vw;
+}
+
+.rightContainer{
+    width: 35%;
+}
+
+
+/* ===================================
+   プロフィールヘッダー
+==================================== */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    position: relative;
+}
+
+.profile-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    object-fit: cover;
+    transition: filter 0.3s ease;
+}
+
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.profile-avatar:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.profile-avatar:hover img {
+    filter: brightness(0.7);
+}
+
+.profile-info {
+    font-weight: bold;
+}
+
+.profile-name {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.profile-mail {
+    font-size: 1.1rem;
+    text-indent: 0.3em;
+}
+
+
+/* ===================================
+   各セクションの共通スタイル
+==================================== */
+.profile-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.titleContainer {
+    position: relative;
+}
+
+.section-title {
+    width: 100%;
+    font-size: 1.5rem;
+    color: #fff;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+
+/* ===================================
+   基本情報セクション (折りたたみ)
+==================================== */
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.header-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.infoChangeButton img {
+    width: 3vw;
+    min-width: 27px;
+    max-width: 35px;
+}
+
+.toggle-icon {
+    display: inline-block;
+    width: 0.8em;
+    height: 0.8em;
+    border-top: 2px solid #fff;
+    border-right: 2px solid #fff;
+    transform: rotate(135deg); /* 下向きの矢印 */
+    transition: transform 0.3s ease;
+    margin-left: 0.5em;
+}
+
+.toggle-icon.open {
+    transform: rotate(-45deg); /* 上向きの矢印 */
+}
+
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+    padding: 0 1rem;
+}
+
+.collapsible-content.open {
+    padding: 1rem;
+    max-height: 1000px; /* 十分な高さを設定 */
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-item label {
+    color: #ddd;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.info-display input {
+    width: 100%; /* 親要素に追従するように変更 */
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.info-display input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+}
+
+.edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.save-btn,
+.cancel-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.save-btn {
+    background: #27ae60;
+    color: white;
+}
+.save-btn:hover {
+    background: #219a52;
+}
+
+.cancel-btn {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+
+/* ===================================
+   ポイント・ランク セクション
+==================================== */
+#point-rank{
+    cursor: pointer;
+    user-select: none;
+}
+
+.is-hidden {
+    display: none;
+}
+
+.explanation ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.explanation li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.explanation li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.points-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: stretch; /* 高さを揃える */
+}
+
+.points-card, .rank-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.points-card {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    padding: 1rem;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.points-value {
+    font-size: 2rem;
+    font-weight: bold;
+    display: block;
+    margin-top: 0.5rem;
+}
+
+.use-points-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+}
+
+.use-points-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.rank-container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.rank-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.rank-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.current-rank {
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+    color: #fff;
+}
+.current-rank.bronze { background: linear-gradient(45deg, #cd7f32, #a0522d); }
+.current-rank.silver { background: linear-gradient(45deg, #c0c0c0, #a9a9a9); }
+.current-rank.gold { background: linear-gradient(45deg, #ffd700, #f0c400); }
+
+.progress-bar-container {
+    height: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 5px;
+    transition: width 0.5s ease-in-out;
+}
+
+.rank-progress-info {
+    text-align: right;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+
+/* ===================================
+   購入履歴セクション
+==================================== */
+.movie-history {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.movie-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.movie-card:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    cursor: pointer;
+}
+
+.movie-card img {
+    width: 80px;
+    height: 120px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.movie-info {
+    flex: 1;
+}
+
+.movie-info h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.movie-info p {
+    color: #bbb;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+
+.theater {
+    background: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    display: inline-block; /* 背景がテキスト幅に合うように */
+}
+
+
+/* ===================================
+   モーダルウィンドウ
+==================================== */
+
+/* --- キーフレームアニメーション --- */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoomIn { from { transform: scale(0.9); } to { transform: scale(1); } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes zoomOut { from { transform: scale(1); } to { transform: scale(0.9); } }
+
+/* --- 画像トリミング用モーダル --- */
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    color: #333;
+    padding: 2rem;
+    border-radius: 10px;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.cropper-img-container {
+    max-width: 60vw;
+    max-height: 60vh;
+    margin-bottom: 1.5rem;
+}
+
+#image-to-crop {
+    display: block;
+    max-width: 100%;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+.btn-primary { background-color: #007bff; color: white; }
+.btn-primary:hover { background-color: #0056b3; }
+.btn-secondary { background-color: #6c757d; color: white; }
+.btn-secondary:hover { background-color: #5a6268; }
+
+/* --- 購入履歴詳細モーダル --- */
+.movie-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease-out;
+}
+.movie-modal-overlay.closing {
+    animation: fadeOut 0.1s ease-out forwards;
+}
+
+.movie-modal-content {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 800px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    animation: zoomIn 0.3s ease-out;
+}
+.movie-modal-overlay.closing .movie-modal-content {
+    animation: zoomOut 0.2s ease-out forwards;
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.close-modal-btn:hover {
+    color: #e74c3c;
+}
+
+.modal-movie-details {
+    display: flex;
+    align-items: flex-start;
+    margin-top: 30px;
+    gap: 2rem;
+}
+
+.modal-movie-details img {
+    width: 250px;
+    border-radius: 10px;
+    object-fit: contain;
+}
+
+.modal-movie-info {
+    width: 100%;
+}
+
+.modal-movie-info h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.modal-movie-info p {
+    margin-bottom: 0.8rem;
+    line-height: 1.6;
+    color: #ccc;
+}
+
+#modal-movie-link {
+    color: #3498db;
+    text-indent: 0.8em;
+    margin-bottom: 0.8rem;
+    display: block;
+}
+
+#modal-screening-date,
+#modal-screening-time,
+#modal-seat-info,
+#modal-seat-amount,
+#modal-seat-createdAt {
+    text-indent: 0.8em;
+}
+#modal-seat-amount,
+#modal-seat-createdAt{
+    font-size: 0.9rem;
+}
+
+#modal-seat-amount{
+    margin-top: 40px;
+}
+
+#modal-movie-description {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    height: 20px;
+    overflow-y: auto;
+}
+
+.transaction-id {
+    text-align: right;
+    margin-top: 1rem;
+    margin-right: 3vw;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+
+/* ===================================
+   フッター (インクルードファイル用)
+==================================== */
+.footer {
+    background: rgba(0, 0, 0, 0.8);
+    text-align: center;
+    padding: 2rem;
+    margin-top: 4rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer p {
+    color: #bbb;
+}
+
+
+/* ===================================
+   メディアクエリ (レスポンシブ対応)
+==================================== */
+/* --- 画面幅: 1440px以下 --- */
+@media (max-width: 1200px) {
+    .container {
+        flex-direction: column;
+        width: 80%;
+        min-width: 670px;
+    }
+    
+    .leftContainer,
+    .rightContainer{
+        width: 100%;
+    }
+}
+
+/* --- 画面幅: 769px以下 (タブレット) --- */
+@media (max-width: 769px) {
+    .profile-header {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .container {
+        width: 100%;
+        min-width: 0px;
+    }
+
+    .profile-avatar img {
+        width: max(15vw,85px);    
+        height: max(15vw,85px);
+    }
+    .avatar-overlay {
+        width: max(15vw,85px);    
+        height: max(15vw,85px);
+    }
+    .profile-name {
+        font-size: max(4.3vw,24px);
+    }
+
+    .profile-mail {
+        font-size: max(2.3vw,13px);
+    }
+    
+    .profile-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* --- 画面幅: 666px以下 --- */
+@media (max-width: 666px) {
+    .points-section {
+        display: block;
+        padding: 5px 20px;
+    }
+
+    .points-card {
+        margin-bottom: 10px;
+    }
+}
+
+/* --- 画面幅: 480px以下 (スマートフォン) --- */
+@media (max-width: 480px) {
+    .collapsible-content.open{
+        padding: 0;
+    }
+    .edit-actions {
+        display: flex;
+        justify-content: flex-start;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+}

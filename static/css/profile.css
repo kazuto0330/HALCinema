@@ -630,6 +630,31 @@ body {
     color: #bbb;
 }
 
+/* ===================================
+   チケット発行ボタン（落ち着いたデザイン）
+==================================== */
+.ticket-download-btn {
+    display: inline-block;
+    background: rgba(52, 152, 219, 0.2); /* 落ち着いたブルー半透明 */
+    color: #3498db;                        /* 文字も淡いブルー */
+    padding: 0.7rem 1.4rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    text-align: center;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(52, 152, 219, 0.4);
+}
+
+.ticket-download-btn:hover {
+    background: rgba(52, 152, 219, 0.35);  /* ホバーで少し濃く */
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(52, 152, 219, 0.2);
+}
+
+
 
 /* ===================================
    メディアクエリ (レスポンシブ対応)

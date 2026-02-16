@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/event.css') }}">
+    <title>HALシネマ イベントページ</title>
+</head>
+
+<body>
+
+    {% include '_header.html' %}
+
+
+
+
+    <div id="MainContent">
+        <div id="Left">
+            <img src="{{ url_for('static', filename='images/event/original/' + event.eventImage) }}" alt="{{event.eventTitle}}" id="MainImg">
+            <div id="MainEvent">
+                <div id="Title">{{event.eventTitle}}</div>
+                <div id="SmallFeature">
+                    <div id="Date">{{event. eventStartDate|strftime('%Y年%m月%d日')}}</div>
+                    <a href="{{event.eventUrl}}" id="EventUrl" target="_blank">{{event.eventUrl}}</a>
+                </div>
+                <div id="MainText">{{event.eventDescription}}</div>
+            </div>
+        </div>
+
+
+        <div id="Right">
+            <div id="RecommendedEvents">
+                <h1>おすすめのイベント</h1>
+                <div id="EventsList">
+                    {% for event in recommendation %}
+                    <a href="{{event.eventInfoId}}">
+                        <div class="Event">
+                            <div class="EventImg"><img src="{{ url_for('static', filename='images/event/200h/' + event.eventImage) }}" alt="{{event.eventTitle}}">
+                            </div>
+                            <div class="EventText">{{event.eventTitle}}</div>
+                        </div>
+                    </a>
+                    {% endfor %}
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include '_footer.html' %}
+
+    <script src="{{ url_for('static', filename='js/event.js') }}"></script>
+</body>
+
+</html>
