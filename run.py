@@ -1695,6 +1695,83 @@ def get_payment_details(payment_id):
             conn.close()
 
 
+
+
+@app.route('/pay2')
+@login_required  # ログインが必要
+def pay2():
+    # セッションから座席情報と上映情報を取得
+    seats = session.get('selected_seats')
+    showing_id = session.get('showing_id')
+
+    # 座席情報がない場合は座席選択ページにリダイレクト
+    if not seats or not showing_id:
+        return redirect(url_for('index'))  # または適切なページにリダイレクト
+
+    # 料金計算（1席1800円として）
+    total_amount = len(seats) * 1800
+    session['total_amount'] = total_amount
+
+    # 上映情報を取得
+    sql = """
+          SELECT ss.scheduledShowingId, \
+                 ss.moviesId, \
+                 ss.screenId, \
+                 ss.scheduledScreeningDate, \
+                 ss.screeningStartTime, \
+                 m.movieTitle, \
+                 m.movieImage, \
+                 m.movieRunningTime, \
+                 s.screenType
+          FROM t_scheduledshowing AS ss \
+                   JOIN \
+               t_movies AS m ON ss.moviesId = m.moviesId \
+                   JOIN \
+               t_screen AS s ON ss.screenId = s.screenId
+          WHERE ss.scheduledShowingId = %s; \
+          """
+
+    showing_info = None
+    try:
+        with get_db_cursor() as cursor:
+            if cursor is None:
+                print("カーソルの取得に失敗しました。")
+                return redirect(url_for('index'))
+
+            cursor.execute(sql, (showing_id,))
+            showing_info = cursor.fetchone()
+
+            if not showing_info:
+                print("上映情報が見つかりません。")
+                return redirect(url_for('index'))
+
+            # 座席番号を文字列形式に変換（表示用）
+            seat_labels = []
+            for seat in seats:
+                if isinstance(seat, dict):
+                    # 辞書形式の場合（{'row': 'A', 'seatNumber': 1}）
+                    seat_label = f"{seat.get('row')}-{seat.get('seatNumber')}"
+                else:
+                    # 文字列形式の場合（'A-1'）
+                    seat_label = str(seat)
+                seat_labels.append(seat_label)
+
+            seats_display = ', '.join(seat_labels)
+
+            return render_template("pay2.html",
+                                   seats=seats_display,
+                                   seats_list=seats,  # JavaScriptで使用
+                                   total_amount=total_amount,
+                                   showing_info=showing_info)
+
+    except mysql.connector.Error as e:
+        print(f"データベースエラー: {e}")
+        return redirect(url_for('index'))
+
+
+
+
+
 # member画面
 @app.route('/member')
 def member():
