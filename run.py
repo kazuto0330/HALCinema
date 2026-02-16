@@ -1706,7 +1706,7 @@ def pay2():
 
     # 座席情報がない場合は座席選択ページにリダイレクト
     if not seats or not showing_id:
-        return redirect(url_for('index'))  # または適切なページにリダイレクト
+        return redirect(url_for('index'))
 
     # 料金計算（1席1800円として）
     total_amount = len(seats) * 1800
@@ -1749,10 +1749,8 @@ def pay2():
             seat_labels = []
             for seat in seats:
                 if isinstance(seat, dict):
-                    # 辞書形式の場合（{'row': 'A', 'seatNumber': 1}）
                     seat_label = f"{seat.get('row')}-{seat.get('seatNumber')}"
                 else:
-                    # 文字列形式の場合（'A-1'）
                     seat_label = str(seat)
                 seat_labels.append(seat_label)
 
@@ -1760,15 +1758,13 @@ def pay2():
 
             return render_template("pay2.html",
                                    seats=seats_display,
-                                   seats_list=seats,  # JavaScriptで使用
+                                   seats_list=seats,
                                    total_amount=total_amount,
                                    showing_info=showing_info)
 
     except mysql.connector.Error as e:
         print(f"データベースエラー: {e}")
         return redirect(url_for('index'))
-
-
 
 
 
