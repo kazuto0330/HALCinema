@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お支払い方法選択 - HAL CINEMA</title>
+    <link rel="stylesheet" href="pay2.css">
+</head>
+<body>
+    <!-- Body部分のみ -->
+    <div class="payment-container">
+        <!-- 予約情報カード -->
+        <div class="reservation-card">
+            <div class="cinema-header">HAL CINEMA</div>
+            <div class="reservation-details">
+                <h2 class="movie-title">映画名が入ります</h2>
+                <div class="detail-row">
+                    <span class="detail-label">スクリーン:</span>
+                    <span class="detail-value">000</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">日時:</span>
+                    <span class="detail-value">2020/09/50 15;00;00〜</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">座席:</span>
+                    <span class="detail-value">C-10,C-11</span>
+                </div>
+                <div class="detail-row price-row">
+                    <span class="detail-label">料金:</span>
+                    <span class="detail-value price">$3600</span>
+                </div>
+            </div>
+            <div class="reservation-date">Jun,30</div>
+        </div>
+
+        <!-- 注意書き -->
+        <p class="notice-text">上記の内容でよろしければ、お支払い方法を選択してください。</p>
+
+        <!-- 支払い方法選択タイトル -->
+        <h1 class="payment-title">支払い方法を選択してください</h1>
+
+        <!-- 支払い方法選択ボタン -->
+        <div class="payment-options">
+            <!-- 現金 -->
+            <div class="payment-option" data-method="cash">
+                <div class="option-icon">
+                    <img src="cash.png" alt="現金">
+                </div>
+                <div class="option-text">
+                    <div class="option-title">現金</div>
+                    <div class="option-subtitle">CASHI</div>
+                </div>
+            </div>
+
+            <!-- クレジットカード -->
+            <div class="payment-option" data-method="credit">
+                <div class="option-icon">
+                    <img src="card.png" alt="クレジットカード">
+                </div>
+                <div class="option-text">
+                    <div class="option-title">クレジットカード</div>
+                    <div class="option-subtitle">CRESIT</div>
+                </div>
+            </div>
+
+            <!-- コード決済 -->
+            <div class="payment-option" data-method="qr">
+                <div class="option-icon">
+                    <img src="code.png" alt="コード決済">
+                </div>
+                <div class="option-text">
+                    <div class="option-title">コード決済</div>
+                    <div class="option-subtitle">CODE　PAY</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="pay2.js"></script>
+</body>
+</html>
