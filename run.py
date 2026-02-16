@@ -18,17 +18,11 @@ import qrcode
 from flask import (Flask, flash, jsonify, make_response, redirect,
                    render_template, request, send_file, session, url_for)
 from PIL import Image
-from reportlab.lib.units import mm
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
 from werkzeug.security import check_password_hash, generate_password_hash
-from reportlab.lib.utils import ImageReader
 
+from ticket_generator import TicketGenerator
 
 app = Flask(__name__)
-font_path = "C:/Windows/Fonts/msgothic.ttc"
-pdfmetrics.registerFont(TTFont("MSGothic", font_path))
 
 # セッションの暗号化
 app.secret_key = 'qawsedrftgyhujikolp'
@@ -2124,6 +2118,7 @@ def generate_ticket_bulk(bulk_booking_id):
     SELECT
         bb.bulkBookingId AS transactionId,
         bb.reservationDatetime AS transactionDatetime,
+        bb.totalReservationAmount,
         m.movieTitle,
         m.movieRunningTime,
         ss.scheduledScreeningDate,
@@ -2152,67 +2147,25 @@ def generate_ticket_bulk(bulk_booking_id):
     con.close()
 
     if not data_list:
-        abort(404)
+        flash("予約情報が見つかりません", "error")
+        return redirect(url_for('index'))
 
-    # ---------- PDF作成 ----------
-    font_path = r"C:\Windows\Fonts\msgothic.ttc"
-    pdfmetrics.registerFont(TTFont("MSGothic", font_path, subfontIndex=0))         # 通常
-    pdfmetrics.registerFont(TTFont("MSGothic-Bold", font_path, subfontIndex=1))    # 太字
-
-    buffer = io.BytesIO()
-    width, height = 75 * mm, 100 * mm
-    c = canvas.Canvas(buffer, pagesize=(width, height))
-
-    for data in data_list:
-        # ---------- 上部に映画館名（左揃え） ----------
-        c.setFont("MSGothic-Bold", 18)
-        c.drawString(5*mm, 90*mm, "HAL CINEMA")
-
-        # ---------- 映画タイトル（左揃え） ----------
-        c.setFont("MSGothic-Bold", 14)
-        c.drawString(7*mm, 82*mm, data['movieTitle'])
-
-        # ---------- 上映日・曜日・開始時刻（中央揃え） ----------
-        screening_date = data['scheduledScreeningDate']
-        weekday_jp = ['月','火','水','木','金','土','日'][screening_date.weekday()]
-        date_str = screening_date.strftime(f"%y/%m/%d({weekday_jp})")
-        c.setFont("MSGothic", 10)
-        c.drawCentredString(width/2 - 7*mm, 72*mm, date_str)                      # 上映日
-        c.drawCentredString(width/2 + 7*mm, 66*mm, f"{data['screeningStartTime']} ～")  # 開始時刻
-
-        # ---------- QRコード（中央揃え、40mm角） ----------
-        qr_data = f"HALCINEMA:{data['seatReservationId']}"
-        qr_img = qrcode.make(qr_data)
-        qr_buffer = io.BytesIO()
-        qr_img.save(qr_buffer, format='PNG')
-        qr_buffer.seek(0)
-        qr_reader = ImageReader(qr_buffer)
-        qr_size = 40*mm
-        qr_x = (width - qr_size)/2
-        qr_y = 25*mm
-        c.drawImage(qr_reader, qr_x, qr_y, qr_size, qr_size)
-
-        # ---------- 座席情報（中央揃え） ----------
-        seat_info = f"シアター{data['theaterNumber']}　{data['seatNumber']}"
-        c.setFont("MSGothic-Bold", 12)
-        c.drawCentredString(width/2, 20*mm, seat_info)
-
-        # ---------- チケットID（右揃え） ----------
-        c.setFont("MSGothic", 8)
-        c.drawRightString(width-5*mm, 10*mm, f"Ticket ID: {data['seatReservationId']}")
-
-        # ページ追加
-        c.showPage()
-
-    c.save()
-    buffer.seek(0)
-
-    return send_file(
-        buffer,
-        as_attachment=True,
-        download_name=f"ticket_{bulk_booking_id}.pdf",
-        mimetype='application/pdf'
-    )
+    # ---------- PDF生成 (Playwright) ----------
+    try:
+        generator = TicketGenerator()
+        # DBから取得したデータをそのまま渡す
+        pdf_bytes = generator.generate_tickets_pdf(data_list)
+        
+        return send_file(
+            io.BytesIO(pdf_bytes),
+            as_attachment=True,
+            download_name=f"ticket_{bulk_booking_id}.pdf",
+            mimetype='application/pdf'
+        )
+    except Exception as e:
+        print(f"PDF生成エラー: {e}")
+        flash("チケットPDFの生成に失敗しました", "error")
+        return redirect(url_for('profile'))
 
 
 # 実行制御
