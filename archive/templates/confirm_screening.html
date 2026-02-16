@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>登録内容確認</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_movie.css') }}">
+</head>
+<body>
+    <h1>登録内容の確認</h1>
+
+    <form action="/add_screening" method="post">
+        <p><strong>映画タイトル：</strong>{{ moviesId }}</p>
+        <p><strong>上映スクリーン：</strong>{{ screenId }}</p>
+        <p><strong>上映日：</strong>{{ scheduledScreeningDate }}</p>
+        <p><strong>上映開始時刻：</strong>
+        {% if screeningStartTimes %}
+{{ screeningStartTimes | join('<br>') | safe }}
+        {% endif %}
+        </p>
+
+
+        <!-- hiddenで再送信用データ -->
+        <input type="hidden" name="moviesId" value="{{ moviesId }}">
+        <input type="hidden" name="screenId" value="{{ screenId }}">
+        <input type="hidden" name="scheduledScreeningDate" value="{{ scheduledScreeningDate }}">
+        <input type="hidden" name="screeningStartTimes" value="{{ screeningStartTimes }}">
+
+        <button type="submit" class="btn-submit">登録する</button>
+        <button type="button" class="btn-back" onclick="history.back()">修正する</button>
+    </form>
+</body>
+</html>

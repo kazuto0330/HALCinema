@@ -386,3 +386,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // ページ読み込み時にセッションストレージのキャッシュをクリア
     sessionStorage.removeItem('user_icon_url');
 });
+
+// チケットダウンロード
+document.querySelectorAll(".movie-card").forEach(card => {
+    card.addEventListener("dblclick", () => {
+        const reservationId = card.dataset.seatReservationId;
+        window.location.href = `/ticket/${reservationId}`;
+    });
+});

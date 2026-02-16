@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>映画情報ページ</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/reset.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/movie_information.css') }}">
+</head>
+
+<body>
+    {% include '_header.html' %}
+    <main>
+        <section class="movieCard">
+            <img src="{{ url_for('static', filename='images/movie/original/' ~ movie.movieImage) }}"
+            alt="{{ movie.movieTitle }} のポスター"
+            class="moviePoster">
+
+            <div class="movieInfo">
+                <h2 class="movieTitle">{{ movie.movieTitle }}</h2>
+                <p class="movieDescription">{{ movie.movieSynopsis }}</p>
+                <p class="movieTime">上映時間: {{ movie.movieRunningTime }}分</p>
+                <p class="movieRelease">公開日: {{ movie.movieReleaseDate|strftime('%Y年%m月%d日') }}</p>
+                <p class="movieRelease">終了日: {{ movie.movieEndDate|strftime('%Y年%m月%d日') }}</p>
+            </div>
+        </section>
+
+        <section class="scheduleSection">
+            <h2>上映スケジュール</h2>
+            <div class="scheduleGrid">
+            {% for day, schedules in schedule.items() %}
+                {% set weekday = day.split(' ')[1].strip('()') %}  {# "Mon", "Tue" などを取得 #}
+                <div class="dayCard {{ weekday }}" onclick="showSchedule('{{ day }}')">
+                    <div class="date">
+                        <span class="month">{{ day.split(' ')[0].split('-')[1] }}/</span>
+                        <span class="day">{{ day.split(' ')[0].split('-')[2] }}</span>
+                    </div>
+                    <div class="weekdayBox">
+                        {{ weekday }}
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        </section>
+
+
+        <section>
+            <!-- スケジュール一覧（曜日順で動的に出力） -->
+            {% for day, schedules in schedule.items() %}
+            {% set weekday = day.split(' ')[1] %}   {# 例: "Mon" を取り出す #}
+                <div class="reservationSchedule hidden {{ weekday }}" id="schedule-{{ loop.index }}">
+                    <h2>{{ day }}　予約状況</h2>
+                    <hr>
+                {% for slot in schedules %}
+                <div class="slot">
+                    <span class="label">{{ slot.screenId }}</span>
+                    {% set total_seconds = slot.screeningStartTime.total_seconds() %}
+                    {% set hours = (total_seconds // 3600)|int %}
+                    {% set minutes = ((total_seconds % 3600) // 60)|int %}
+                    <span class="time">{{ "%02d:%02d" % (hours, minutes) }}</span>
+                    <span class="status
+                          {% if slot.reservationStatus == '○' %}good
+                          {% elif slot.reservationStatus == '△' %}warning
+                          {% elif slot.reservationStatus == '×' %}bad
+                          {% else %}?{% endif %}">
+                          {{ slot.reservationStatus }}
+                    </span>
+
+                    <button type="button" class="submit-btn" onclick="location.href='/seat_reservation/{{ slot.scheduledShowingId }}'">予約</button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </section>
+
+        <div class="eiga">&copy; 2025 {{ movie.movieTitle }}製作委員会</div>
+
+    </main>
+
+    {% include '_footer.html' %}
+</body>
+
+<script>
+function showSchedule(day) {
+    // 全てのスケジュールを非表示
+    const schedules = document.querySelectorAll('.reservationSchedule');
+    schedules.forEach(schedule => schedule.classList.add('hidden'));
+
+    // 選択された日のスケジュールを表示
+    const dayIndex = Array.from(document.querySelectorAll('.dayCard')).findIndex(card =>
+        card.onclick.toString().includes(day)
+    ) + 1;
+
+    const targetSchedule = document.getElementById(`schedule-${dayIndex}`);
+    if (targetSchedule) {
+        targetSchedule.classList.remove('hidden');
+    }
+}
+</script>
+
+</html>

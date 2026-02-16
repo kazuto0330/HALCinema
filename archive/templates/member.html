@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>マイページ - HAL CINEMA</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/member.css') }}">
+</head>
+<body>
+  <main>
+    {% include '_header.html' %}
+
+    <div  iv class="container">
+      <div class="section">
+        <h2>プロフィール</h2>
+        <div class="profile-box">
+          <div class="avatar">
+            <img src="{{ url_for('static', filename='images/genta.jpg') }}" alt="ユーザーアイコン">
+          </div>
+          <div>
+            <p class="username">小嶋元太</p>
+            <p class="email">genta@example.com</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>予約履歴</h2>
+        <div class="movie-item">
+          <span>名探偵コナン</span>
+          <span>2025年6月1日 14:00ー</span>
+      </div>
+        <div class="movie-item">
+          <span>スーパーマリオ</span>
+          <span>2025年5月10日 18:30ー</span>
+        </div>
+      </div>
+
+          <div class="section">
+        <h2>購入履歴</h2>
+        <div class="pay">
+          <span>名探偵コナン</span>
+          <span>2025年6月1日 14:00ー</span>
+        </div>
+        <div class="pay">
+          <span>スーパーマリオ</span>
+          <span>2025年5月10日 18:30ー</span>
+        </div>
+      </div>
+
+
+
+      <div class="section">
+        <h2>設定</h2>
+        <button class="button">ログアウト</button>
+      </div>
+    </div>
+  </main>
+  
+  {% include '_footer.html' %}
+</body>
+</html>
+
