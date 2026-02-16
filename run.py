@@ -1800,6 +1800,12 @@ def pay2():
                                showing_info=None)
 
 
+@app.route('/hall/<int:hall_id>')
+def hall_view(hall_id):
+    return render_template("seat_reservation.html",
+                           screenId=hall_id,
+                           showing_id=None,
+                           reserved_seats=[])
 
 # member画面
 @app.route('/member')
