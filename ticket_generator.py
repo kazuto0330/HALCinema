@@ -77,12 +77,13 @@ class TicketGenerator:
             
         return processed_tickets
 
-    def generate_tickets_pdf(self, db_data_list):
+    def generate_tickets_pdf(self, db_data_list, layout_mode='a4'):
         """
         DBから取得したチケットデータのリストを受け取り、それらを連結したPDFバイナリデータを返す。
         
         Args:
             db_data_list (list): DBから取得した辞書のリスト。
+            layout_mode (str): 'a4' (デフォルト) または 'single'
         
         Returns:
             bytes: PDFファイルのバイナリデータ
@@ -92,9 +93,12 @@ class TicketGenerator:
         processed_tickets = self._process_ticket_data(db_data_list)
         
         # テンプレートレンダリング
-        # Flaskアプリケーションコンテキスト内で実行されることを想定
         try:
-            full_html_content = render_template('ticket_card.html', tickets=processed_tickets)
+            full_html_content = render_template(
+                'ticket_card.html', 
+                tickets=processed_tickets,
+                layout_mode=layout_mode
+            )
         except Exception as e:
             print(f"Template rendering error: {e}")
             raise e
@@ -104,18 +108,23 @@ class TicketGenerator:
         try:
             with sync_playwright() as p:
                 # ブラウザ起動 (ヘッドレスモード)
-                # chromiumを使用。起動引数で少しでも軽量化を試みる。
                 browser = p.chromium.launch(
-                    args=['--disable-dev-shm-usage', '--no-sandbox'] # コンテナ環境等での安定性のため
+                    args=['--disable-dev-shm-usage', '--no-sandbox']
                 )
                 page = browser.new_page()
                 
                 # HTMLコンテンツを設定
                 page.set_content(full_html_content)
                 
-                # PDF生成 (A4サイズ、背景画像/色を印刷)
-                # prefer_css_page_size=True にするとCSSの@page指定が優先される
-                pdf_bytes = page.pdf(format="A4", print_background=True, margin={'top': '0', 'right': '0', 'bottom': '0', 'left': '0'})
+                # PDF生成
+                # layout_mode='single' の場合は CSS @page でサイズ指定されているので、
+                # prefer_css_page_size=True にすれば自動的にそのサイズになる。
+                # 'a4' の場合も CSS @page size: A4 となっているので同様。
+                
+                pdf_bytes = page.pdf(
+                    print_background=True,
+                    prefer_css_page_size=True
+                )
                 
                 browser.close()
                 

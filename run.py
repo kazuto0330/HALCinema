@@ -2150,16 +2150,19 @@ def generate_ticket_bulk(bulk_booking_id):
         flash("予約情報が見つかりません", "error")
         return redirect(url_for('index'))
 
+    # レイアウトタイプの取得 (デフォルト: a4)
+    layout_type = request.args.get('type', 'a4')
+    
     # ---------- PDF生成 (Playwright) ----------
     try:
         generator = TicketGenerator()
-        # DBから取得したデータをそのまま渡す
-        pdf_bytes = generator.generate_tickets_pdf(data_list)
+        # DBから取得したデータとレイアウトタイプを渡す
+        pdf_bytes = generator.generate_tickets_pdf(data_list, layout_mode=layout_type)
         
         return send_file(
             io.BytesIO(pdf_bytes),
             as_attachment=True,
-            download_name=f"ticket_{bulk_booking_id}.pdf",
+            download_name=f"ticket_{bulk_booking_id}_{layout_type}.pdf",
             mimetype='application/pdf'
         )
     except Exception as e:

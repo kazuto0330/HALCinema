@@ -7,52 +7,99 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
 
-    @page {
-        size: A4;
-        margin: 0;
-    }
-
+    /* 共通スタイル */
     body {
         font-family: 'Noto Sans JP', "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
-        background-color: #ffffff; /* 印刷用背景 */
+        background-color: #ffffff;
         margin: 0;
-        padding: 15mm; /* A4の印刷余白 */
-        width: 210mm; /* A4幅 */
-        min-height: 297mm;
         box-sizing: border-box;
-        
-        /* Flexboxで左上から詰めて配置 */
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        align-content: flex-start;
-        gap: 10mm; /* チケット間の隙間 */
     }
 
-    /* --- ここからチケット.htmlのオリジナルスタイル --- */
+    /* --- レイアウトモード別のスタイル --- */
+    {% if layout_mode == 'single' %}
+        /* スマホ・単票モード */
+        /* 
+           チケット本来の幅 320px ≒ 84.7mm (@96dpi)
+           高さをどうするかはコンテンツ次第だが、ここでは少し余裕を持たせて固定する。
+           元のデザインのpadding等を含めると高さはコンテンツ量によるが、
+           概ね 130mm ~ 140mm 程度あれば収まるはず。
+           余白を完全に0にするため、pageのマージンを0にする。
+        */
+        @page {
+            size: 85mm 135mm; /* チケットサイズに合わせて調整 */
+            margin: 0;
+        }
+        body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .ticket {
+            /* コンテナ幅いっぱいに */
+            width: 100% !important; 
+            /* ページ高さに合わせるか、autoにするか。
+               border等を消してコンテンツのみにするなら height: 100% で背景白とか。 */
+            min-height: 100vh;
+            
+            /* PDF出力時の枠線や影は不要なら消すが、デザイン維持なら残す */
+            border: none !important; 
+            box-shadow: none !important;
+            
+            /* 改ページ設定 */
+            page-break-after: always;
+            break-after: page;
+        }
+        .ticket:last-child {
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+        
+    {% else %}
+        /* A4印刷モード (デフォルト) */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            padding: 15mm;
+            width: 210mm;
+            min-height: 297mm;
+            
+            /* Flexboxで左上から詰めて配置 */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-content: flex-start;
+            gap: 10mm;
+        }
+        .ticket {
+            /* 改ページ制御 */
+            break-inside: avoid; 
+            page-break-inside: avoid;
+            /* オリジナルスタイルを使用 */
+        }
+    {% endif %}
+
+    /* --- チケット本体のデザイン (オリジナル) --- */
     .ticket {
         background-color: white;
-        width: 320px; /* オリジナル幅 */
+        width: 320px; /* オリジナル幅 (A4モードで使用) */
         padding: 30px 25px; /* オリジナルパディング */
         box-sizing: border-box;
-        border: 1px solid #e0e0e0; /* オリジナルの境界線 */
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* オリジナルの影 */
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         position: relative;
-
-        /* 改ページ制御 */
-        break-inside: avoid; 
-        page-break-inside: avoid;
     }
 
     /* ヘッダー部分 */
     .header {
         margin-bottom: 20px;
-        border: none; /* 前回の変更をリセット */
+        border: none;
         padding-bottom: 0;
     }
 
     .cinema-name {
-        font-size: 28px; /* オリジナルサイズ */
+        font-size: 28px;
         font-weight: 900;
         margin: 0;
         line-height: 1.2;
@@ -61,10 +108,9 @@
     }
 
     .movie-title {
-        font-size: 20px; /* オリジナルサイズ */
+        font-size: 20px;
         font-weight: 700;
         margin: 5px 0 0 0;
-        /* 長いタイトル対応 */
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -75,7 +121,7 @@
     .content-row {
         display: flex;
         justify-content: space-between;
-        align-items: flex-end; /* 下揃え */
+        align-items: flex-end;
         margin-bottom: 15px;
     }
 
@@ -84,25 +130,25 @@
     }
 
     .qr-code img {
-        width: 100px; /* オリジナルサイズ */
+        width: 100px;
         height: 100px;
         display: block;
     }
 
     .datetime-info {
         text-align: right;
-        margin-bottom: 5px; /* QRコードとのバランス調整 */
+        margin-bottom: 5px;
         flex-grow: 1;
     }
 
     .date {
-        font-size: 14px; /* オリジナルサイズ */
+        font-size: 14px;
         color: #333;
         margin-bottom: 2px;
     }
 
     .time {
-        font-size: 38px; /* オリジナルサイズ */
+        font-size: 38px;
         font-weight: 900;
         line-height: 1;
         letter-spacing: -1px;
@@ -114,20 +160,20 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 15px;
-        background-color: transparent; /* 背景色リセット */
+        background-color: transparent;
         padding: 0;
         border-radius: 0;
     }
 
     .theater {
-        font-size: 22px; /* オリジナルサイズ */
+        font-size: 22px;
         font-weight: 900;
     }
 
     .seat-number {
         background-color: black;
         color: white;
-        font-size: 28px; /* オリジナルサイズ */
+        font-size: 28px;
         font-weight: 900;
         padding: 2px 15px;
         letter-spacing: 1px;
@@ -135,12 +181,11 @@
 
     /* 価格 */
     .price {
-        font-size: 14px; /* オリジナルサイズ */
+        font-size: 14px;
         font-weight: 500;
         color: #333;
     }
     
-    /* 追加情報のスタイル（オリジナルにはないが控えめに追加） */
     .ticket-id {
         font-size: 10px;
         color: #ccc;
