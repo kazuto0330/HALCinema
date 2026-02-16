@@ -133,3 +133,46 @@ class TicketGenerator:
             raise e
             
         return pdf_bytes
+
+    def generate_receipt_pdf(self, receipt_data):
+        """
+        領収書PDFを生成する。
+        
+        Args:
+            receipt_data (dict): テンプレートに渡すデータの辞書。
+        
+        Returns:
+            bytes: PDFファイルのバイナリデータ
+        """
+        try:
+            full_html_content = render_template(
+                'receipt.html', 
+                **receipt_data
+            )
+        except Exception as e:
+            print(f"Receipt Template rendering error: {e}")
+            raise e
+        
+        pdf_bytes = None
+        
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    args=['--disable-dev-shm-usage', '--no-sandbox']
+                )
+                page = browser.new_page()
+                page.set_content(full_html_content)
+                
+                pdf_bytes = page.pdf(
+                    format='A4',
+                    print_background=True,
+                    margin={'top': '0', 'right': '0', 'bottom': '0', 'left': '0'}
+                )
+                
+                browser.close()
+                
+        except Exception as e:
+            print(f"Playwright PDF generation error (Receipt): {e}")
+            raise e
+            
+        return pdf_bytes
