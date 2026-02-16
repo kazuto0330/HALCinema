@@ -1695,17 +1695,26 @@ def get_payment_details(payment_id):
             conn.close()
 
 
-
+# run.pyのpay2ルートを以下のように修正してください
+# これでデバッグ情報が表示され、問題の原因が特定できます
 
 @app.route('/pay2')
 @login_required  # ログインが必要
 def pay2():
+    # デバッグ情報を出力
+    print("=== pay2ルートにアクセス ===")
+    print(f"ログインユーザーID: {session.get('user_id')}")
+    print(f"選択座席: {session.get('selected_seats')}")
+    print(f"上映ID: {session.get('showing_id')}")
+
     # セッションから座席情報と上映情報を取得
     seats = session.get('selected_seats')
     showing_id = session.get('showing_id')
 
     # 座席情報がない場合は座席選択ページにリダイレクト
     if not seats or not showing_id:
+        print("座席または上映情報がありません。indexにリダイレクトします。")
+        flash("座席を選択してから決済ページにアクセスしてください。", "red")
         return redirect(url_for('index'))
 
     # 料金計算（1席1800円として）
@@ -1756,6 +1765,7 @@ def pay2():
 
             seats_display = ', '.join(seat_labels)
 
+            print(f"pay2.htmlをレンダリングします")
             return render_template("pay2.html",
                                    seats=seats_display,
                                    seats_list=seats,
@@ -1765,6 +1775,21 @@ def pay2():
     except mysql.connector.Error as e:
         print(f"データベースエラー: {e}")
         return redirect(url_for('index'))
+
+
+# また、テスト用に座席情報なしでも表示できるルートを追加することもできます：
+@app.route('/pay2/test')
+@login_required
+def pay2_test():
+    """テスト用：座席情報なしでも表示"""
+    print("=== pay2テストモードでアクセス ===")
+
+    # ダミーデータを作成
+    return render_template("pay2.html",
+                           seats="A-1, A-2",
+                           seats_list=[],
+                           total_amount=3600,
+                           showing_info=None)
 
 
 
