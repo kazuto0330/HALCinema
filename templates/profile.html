@@ -222,17 +222,49 @@
                                     {{ record.reservedSeats }})</span>
                             </div>
                         </div>
+                        <style>
+                            .ticket-menu-content {
+                                display: none;
+                                position: absolute;
+                                top: 100%;
+                                right: 0;
+                                background: #1a1a2e; /* ダークテーマ背景 */
+                                border: 1px solid rgba(255, 255, 255, 0.2);
+                                z-index: 1000;
+                                min-width: 180px;
+                                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                                border-radius: 8px;
+                                overflow: hidden;
+                                margin-top: 5px;
+                            }
+                            .ticket-menu-item {
+                                display: block;
+                                padding: 12px 16px;
+                                text-decoration: none;
+                                color: #fff;
+                                font-size: 14px;
+                                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                                transition: background 0.2s, color 0.2s;
+                            }
+                            .ticket-menu-item:last-child {
+                                border-bottom: none;
+                            }
+                            .ticket-menu-item:hover {
+                                background: rgba(255, 255, 255, 0.1);
+                                color: #3498db;
+                            }
+                        </style>
                         <div class="ticket-area" style="position: relative; display: inline-block;">
                             <button class="ticket-download-btn" onclick="toggleTicketMenu(this, event)">
                                 チケットPDFを発行
                             </button>
-                            <div class="ticket-menu" style="display: none; position: absolute; top: 100%; right: 0; background: white; border: 1px solid #ccc; z-index: 1000; min-width: 160px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden;">
+                            <div class="ticket-menu ticket-menu-content">
                                 <a href="{{ url_for('generate_ticket_bulk', bulk_booking_id=record.transactionId, type='a4') }}" 
-                                   style="display: block; padding: 12px 16px; text-decoration: none; color: #333; border-bottom: 1px solid #eee; font-size: 14px; transition: background 0.2s;">
+                                   class="ticket-menu-item">
                                     印刷用PDF (A4)
                                 </a>
                                 <a href="{{ url_for('generate_ticket_bulk', bulk_booking_id=record.transactionId, type='single') }}" 
-                                   style="display: block; padding: 12px 16px; text-decoration: none; color: #333; font-size: 14px; transition: background 0.2s;">
+                                   class="ticket-menu-item">
                                     スマホ用PDF (単票)
                                 </a>
                             </div>
@@ -283,7 +315,7 @@
     <script>
         function toggleTicketMenu(btn, event) {
             // 他の開いているメニューを閉じる
-            document.querySelectorAll('.ticket-menu').forEach(menu => {
+            document.querySelectorAll('.ticket-menu-content').forEach(menu => {
                 if (menu !== btn.nextElementSibling) {
                     menu.style.display = 'none';
                 }
@@ -291,20 +323,20 @@
 
             // メニューの表示/非表示を切り替え
             const menu = btn.nextElementSibling;
-            if (menu.style.display === 'none') {
+            if (menu.style.display === 'none' || menu.style.display === '') {
                 menu.style.display = 'block';
             } else {
                 menu.style.display = 'none';
             }
             
-            // イベントの伝播を止める（documentのクリックイベントが即座に発火しないように）
+            // イベントの伝播を止める
             event.stopPropagation();
         }
 
         // メニュー外クリックで閉じる
         document.addEventListener('click', function(event) {
             if (!event.target.closest('.ticket-download-btn')) {
-                document.querySelectorAll('.ticket-menu').forEach(menu => {
+                document.querySelectorAll('.ticket-menu-content').forEach(menu => {
                     menu.style.display = 'none';
                 });
             }
