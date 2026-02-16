@@ -268,6 +268,11 @@
                                     スマホ用PDF (単票)
                                 </a>
                             </div>
+                            </a>
+                            <a class="ticket-download-btn"
+                                href="{{ url_for('generate_receipt', bulk_booking_id=record.transactionId) }}">
+                                領収書を発行
+                            </a>
                         </div>
                         {% endfor %}
 

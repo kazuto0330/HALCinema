@@ -2150,6 +2150,7 @@ def generate_ticket_bulk(bulk_booking_id):
         flash("予約情報が見つかりません", "error")
         return redirect(url_for('index'))
 
+
     # レイアウトタイプの取得 (デフォルト: a4)
     layout_type = request.args.get('type', 'a4')
     
@@ -2169,6 +2170,86 @@ def generate_ticket_bulk(bulk_booking_id):
         print(f"PDF生成エラー: {e}")
         flash("チケットPDFの生成に失敗しました", "error")
         return redirect(url_for('profile'))
+
+# ==========================
+# 領収書PDF生成
+# ==========================
+@app.route('/receipt/<int:bulk_booking_id>')
+@login_required
+def generate_receipt(bulk_booking_id):
+    # ---------- DB接続 ----------
+    con = conn_db()
+    cur = con.cursor(dictionary=True)
+
+    # bulkBookingId ごとの座席情報取得（座席数だけあればOK）
+    sql = """
+    SELECT
+        bb.bulkBookingId AS transactionId,
+        bb.reservationDatetime AS transactionDatetime,
+        ss.screenId AS theaterNumber,
+        sr.seatNumber
+    FROM
+        t_bulkbooking AS bb
+    JOIN
+        t_seatreservationstatus AS srs ON bb.bulkBookingId = srs.bulkBookingId
+    JOIN
+        t_seatreservation AS sr ON srs.seatReservationId = sr.seatReservationId
+    JOIN
+        t_scheduledshowing AS ss ON sr.scheduledShowingId = ss.scheduledShowingId
+    WHERE
+        bb.bulkBookingId = %s
+    """
+    cur.execute(sql, (bulk_booking_id,))
+    data_list = cur.fetchall()
+    cur.close()
+    con.close()
+
+    if not data_list:
+        abort(404)
+
+    # ---------- 計算 ----------
+    seat_count = len(data_list)
+    unit_price = 1800
+    total_amount = seat_count * unit_price
+
+    # ---------- PDF作成 ----------
+    font_path = r"C:\Windows\Fonts\msgothic.ttc"
+    pdfmetrics.registerFont(TTFont("MSGothic", font_path, subfontIndex=0))
+    pdfmetrics.registerFont(TTFont("MSGothic-Bold", font_path, subfontIndex=1))
+
+    width, height = 75 * mm, 100 * mm
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=(width, height))
+
+    # ---------- 領収書内容 ----------
+    c.setFont("MSGothic-Bold", 18)
+    c.drawString(5*mm, 90*mm, "HAL CINEMA")  # 左揃え
+
+    c.setFont("MSGothic-Bold", 12)
+    c.drawString(5*mm, 80*mm, f"領収書 (Transaction ID: {bulk_booking_id})")
+
+    transaction_datetime = data_list[0]['transactionDatetime']
+    c.setFont("MSGothic", 10)
+    c.drawString(5*mm, 72*mm, f"発行日: {transaction_datetime.strftime('%Y/%m/%d %H:%M')}")
+
+    # 座席数と金額
+    c.setFont("MSGothic", 12)
+    c.drawString(5*mm, 60*mm, f"座席数: {seat_count}席")
+    c.drawString(5*mm, 52*mm, f"単価: {unit_price}円")
+    c.setFont("MSGothic-Bold", 14)
+    c.drawString(5*mm, 44*mm, f"合計金額: {total_amount}円")
+
+    # ページ追加
+    c.showPage()
+    c.save()
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"receipt_{bulk_booking_id}.pdf",
+        mimetype='application/pdf'
+    )
 
 
 # 実行制御
