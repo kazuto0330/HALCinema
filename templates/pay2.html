@@ -16,25 +16,37 @@
         <div class="reservation-card">
             <div class="cinema-header">HAL CINEMA</div>
             <div class="reservation-details">
-                <h2 class="movie-title">映画名が入ります</h2>
+                <h2 class="movie-title">{{ showing_info.movieTitle if showing_info else '映画名が入ります' }}</h2>
                 <div class="detail-row">
                     <span class="detail-label">スクリーン:</span>
-                    <span class="detail-value">000</span>
+                    <span class="detail-value">{{ showing_info.screenType if showing_info else '000' }}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">日時:</span>
-                    <span class="detail-value">2020/09/50 15;00;00〜</span>
+                    <span class="detail-value">
+                        {% if showing_info %}
+                            {{ showing_info.scheduledScreeningDate.strftime('%Y/%m/%d') }} {{ showing_info.screeningStartTime }}〜
+                        {% else %}
+                            2020/09/50 15:00:00〜
+                        {% endif %}
+                    </span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">座席:</span>
-                    <span class="detail-value">C-10,C-11</span>
+                    <span class="detail-value">{{ seats if seats else 'C-10,C-11' }}</span>
                 </div>
                 <div class="detail-row price-row">
                     <span class="detail-label">料金:</span>
-                    <span class="detail-value price">$3600</span>
+                    <span class="detail-value price">¥{{ "{:,}".format(total_amount) if total_amount else '3,600' }}</span>
                 </div>
             </div>
-            <div class="reservation-date">Jun,30</div>
+            <div class="reservation-date">
+                {% if showing_info %}
+                    {{ showing_info.scheduledScreeningDate.strftime('%b,%d') }}
+                {% else %}
+                    Jun,30
+                {% endif %}
+            </div>
         </div>
 
         <!-- 注意書き -->
