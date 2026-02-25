@@ -90,6 +90,13 @@
                 </div>
             </div>
         </div>
+
+        <!-- デバッグ用決済ボタン（初期状態は非表示） -->
+        <div id="debug-payment-container" style="display: none; text-align: center; margin-top: 40px; margin-bottom: 20px;">
+            <button id="debug-payment-btn" style="background-color: #f44336; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.3s ease;">
+                デバッグ用: 支払ったことにする
+            </button>
+        </div>
     </div>
 
     {% include '_footer.html' %}

@@ -46,6 +46,12 @@ function handlePaymentSelection(method) {
     // 選択フィードバック
     showSelectionFeedback(event.currentTarget);
     
+    // デバッグ用ボタンを表示する
+    const debugContainer = document.getElementById('debug-payment-container');
+    if (debugContainer) {
+        debugContainer.style.display = 'block';
+    }
+    
     // 実際の処理はここに追加
     // 例: 次の画面に遷移、APIリクエスト送信など
     setTimeout(() => {
@@ -54,6 +60,31 @@ function handlePaymentSelection(method) {
         // window.location.href = `/payment/${method}`;
     }, 300);
 }
+
+// デバッグ用決済ボタンのイベントリスナー
+document.addEventListener('DOMContentLoaded', function() {
+    const debugBtn = document.getElementById('debug-payment-btn');
+    if (debugBtn) {
+        debugBtn.addEventListener('click', function() {
+            // ホバー効果などのアニメーション後に遷移する
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                window.location.href = '/pay2_comp';
+            }, 150);
+        });
+        
+        // ホバーエフェクト
+        debugBtn.addEventListener('mouseover', function() {
+            this.style.backgroundColor = '#d32f2f';
+            this.style.boxShadow = '0 6px 12px rgba(0,0,0,0.15)';
+        });
+        debugBtn.addEventListener('mouseout', function() {
+            this.style.backgroundColor = '#f44336';
+            this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            this.style.transform = 'scale(1)';
+        });
+    }
+});
 
 // 選択時のビジュアルフィードバック
 function showSelectionFeedback(element) {
